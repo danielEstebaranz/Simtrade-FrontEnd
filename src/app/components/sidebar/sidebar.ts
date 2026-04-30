@@ -1,26 +1,27 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 interface SidebarItem {
   label: string;
-  href: string;
+  fragment: string;
   icon: string;
 }
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, RouterLink],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar {
   protected readonly menuItems = signal<SidebarItem[]>([
-    { label: 'Cartera', href: '#cartera', icon: 'CA' },
-    { label: 'Mercado', href: '#mercado', icon: 'ME' },
-    { label: 'Operaciones', href: '#operaciones', icon: 'OP' },
-    { label: 'Alertas', href: '#alertas', icon: 'OP' },
-    { label: 'Ranking', href: '#ranking', icon: 'RA' },
-    { label: 'Configuracion', href: '#configuracion', icon: 'CO' },
+    { label: 'Cartera', fragment: 'cartera', icon: 'CA' },
+    { label: 'Mercado', fragment: 'mercado', icon: 'ME' },
+    { label: 'Operaciones', fragment: 'operaciones', icon: 'OP' },
+    { label: 'Alertas', fragment: 'alertas', icon: 'AL' },
+    { label: 'Ranking', fragment: 'ranking', icon: 'RA' },
+    { label: 'Configuracion', fragment: 'configuracion', icon: 'CO' },
   ]);
 }

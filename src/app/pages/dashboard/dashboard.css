@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.main-content {
+  background: #f8fafc;
+  color: #111827;
+  flex: 1;
+  padding: 2rem;
+}
+
+.page-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  color: #0369a1;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+button {
+  background: #111827;
+  border: 0;
+  border-radius: 0.45rem;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+}
+
+button:focus-visible {
+  outline: 3px solid #7dd3fc;
+  outline-offset: 3px;
+}
+
+.summary,
+.placeholder-sections {
+  display: grid;
+  gap: 1rem;
+}
+
+.summary {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  max-width: 42rem;
+}
+
+.placeholder-sections {
+  margin-top: 1rem;
+  max-width: 42rem;
+}
+
+article {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  scroll-margin-top: 1rem;
+}
+
+article p {
+  color: #4b5563;
+  margin: 0 0 0.5rem;
+}
+
+article strong {
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell,
+  .page-header {
+    flex-direction: column;
+  }
+
+  .page-header {
+    align-items: stretch;
+  }
+
+  .main-content {
+    padding: 1.25rem;
+  }
+}
