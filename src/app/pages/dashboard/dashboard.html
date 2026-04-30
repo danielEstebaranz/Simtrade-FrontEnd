@@ -1,0 +1,43 @@
+<div class="app-shell">
+  <app-sidebar />
+
+  <main class="main-content" id="inicio">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Panel principal</p>
+        <h1>Bienvenido, {{ user()?.username }}</h1>
+      </div>
+      <button type="button" (click)="logout()">Cerrar sesion</button>
+    </header>
+
+    <section class="summary" aria-label="Resumen de cuenta">
+      <article id="cartera">
+        <p>Saldo disponible</p>
+        <strong>{{ user()?.saldo }} $</strong>
+      </article>
+      <article id="mercado">
+        <p>Activos en cartera</p>
+        <strong>{{ assetCount() }}</strong>
+      </article>
+    </section>
+
+    <section class="placeholder-sections" aria-label="Secciones del panel">
+      <article id="operaciones">
+        <h2>Operaciones</h2>
+        <p>Aqui ira la gestion de compras y ventas.</p>
+      </article>
+      <article id="alertas">
+        <h2>Alertas</h2>
+        <p>Aqui se mostraran avisos y notificaciones.</p>
+      </article>
+      <article id="ranking">
+        <h2>Ranking</h2>
+        <p>Aqui se vera la clasificacion de usuarios.</p>
+      </article>
+      <article id="configuracion">
+        <h2>Configuracion</h2>
+        <p>Aqui podras ajustar las preferencias de la cuenta.</p>
+      </article>
+    </section>
+  </main>
+</div>
