@@ -1,0 +1,21 @@
+<aside class="sidebar" aria-label="Navegacion principal">
+  <div class="logo-container">
+    <img
+      class="logo"
+      ngSrc="/logo_Simtrade-rounded.png"
+      width="768"
+      height="768"
+      alt="Simtrade"
+      priority
+    >
+  </div>
+
+  <nav class="navigation" aria-label="Secciones de Simtrade">
+    @for (item of menuItems(); track item.label) {
+      <a class="navigation-link" [href]="item.href">
+        <span class="navigation-icon" aria-hidden="true">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</aside>
