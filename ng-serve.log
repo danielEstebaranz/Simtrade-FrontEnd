@@ -1,0 +1,38 @@
+
+> simtrade-front-end@0.0.0 start
+> ng serve --host 127.0.0.1 --port 4200
+
+[33m>[39m Building...
+[32m√[39m Building...
+[35mBrowser bundles[39m     
+[1mInitial chunk files[22m [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mmain.js[39m             [2m | [22m[2mmain[22m            [2m | [22m [36m11.89 kB[39m[2m | [22m
+[32mstyles.css[39m          [2m | [22m[2mstyles[22m          [2m | [22m [36m95 bytes[39m[2m | [22m
+
+[1m [22m                   [2m | [22m[1mInitial total[22m   [2m | [22m [1m11.98 kB[22m
+
+
+[35mServer bundles[39m      
+[1mInitial chunk files[22m [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mmain.server.mjs[39m     [2m | [22m[2mmain.server[22m     [2m | [22m [36m13.15 kB[39m[2m | [22m
+[32mserver.mjs[39m          [2m | [22m[2mserver[22m          [2m | [22m  [36m1.84 kB[39m[2m | [22m
+[32mpolyfills.server.mjs[39m[2m | [22m[2mpolyfills.server[22m[2m | [22m[36m268 bytes[39m[2m | [22m
+
+Application bundle generation complete. [4.735 seconds] - 2026-04-30T20:48:12.148Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4200[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[1m[31mERROR: Bad Request ("http://localhost:4200/").
+URL with hostname "localhost" is not allowed.
+
+For more information, see https://angular.dev/best-practices/security#preventing-server-side-request-forgery-ssrf[39m[22m
+[1m[31mERROR: Bad Request ("http://localhost:4200/").
+URL with hostname "localhost" is not allowed.
+
+For more information, see https://angular.dev/best-practices/security#preventing-server-side-request-forgery-ssrf[39m[22m
+[1m[31mERROR: Bad Request ("http://localhost:4200/").
+URL with hostname "localhost" is not allowed.
+
+For more information, see https://angular.dev/best-practices/security#preventing-server-side-request-forgery-ssrf[39m[22m
