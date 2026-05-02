@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 
 interface SidebarItem {
   label: string;
-  fragment: string;
+  path: string;
   icon: string;
 }
 
@@ -16,12 +18,29 @@ interface SidebarItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar {
+  private readonly router = inject(Router);
+
+  protected readonly activePath = signal(this.getActivePath());
   protected readonly menuItems = signal<SidebarItem[]>([
-    { label: 'Cartera', fragment: 'cartera', icon: 'CA' },
-    { label: 'Mercado', fragment: 'mercado', icon: 'ME' },
-    { label: 'Operaciones', fragment: 'operaciones', icon: 'OP' },
-    { label: 'Alertas', fragment: 'alertas', icon: 'AL' },
-    { label: 'Ranking', fragment: 'ranking', icon: 'RA' },
-    { label: 'Configuracion', fragment: 'configuracion', icon: 'CO' },
+    { label: 'Cartera', path: 'cartera', icon: 'CA' },
+    { label: 'Mercado', path: 'mercado', icon: 'ME' },
+    { label: 'Operaciones', path: 'operaciones', icon: 'OP' },
+    { label: 'Alertas', path: 'alertas', icon: 'AL' },
+    { label: 'Ranking', path: 'ranking', icon: 'RA' },
+    { label: 'Configuracion', path: 'configuracion', icon: 'CO' },
   ]);
+
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.activePath.set(this.getActivePath()));
+  }
+
+  private getActivePath(): string {
+    const primaryRoute = this.router.parseUrl(this.router.url).root.children['primary'];
+    return primaryRoute?.segments[1]?.path ?? 'cartera';
+  }
 }

@@ -54,7 +54,7 @@ export class Login {
     request.subscribe({
       next: () => {
         this.isLoading.set(false);
-        void this.router.navigateByUrl('/panel');
+        void this.router.navigateByUrl('/panel/cartera');
       },
       error: (message: string) => {
         this.isLoading.set(false);

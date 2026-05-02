@@ -43,9 +43,19 @@
   text-decoration: none;
 }
 
-.navigation-link:hover {
+.navigation-link:hover,
+.navigation-link.active {
   background: #1f2937;
   color: #ffffff;
+}
+
+.navigation-link.active {
+  box-shadow: inset 3px 0 0 #38bdf8;
+}
+
+.navigation-link.active .navigation-icon {
+  background: #38bdf8;
+  color: #082f49;
 }
 
 .navigation-link:focus-visible {
