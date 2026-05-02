@@ -13,7 +13,20 @@ Rutas:
 ```ts
 export const routes: Routes = [
   { path: 'login', component: Login },
-  { path: 'panel', component: Dashboard, canActivate: [authGuard] },
+  {
+    path: 'panel',
+    component: Dashboard,
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'cartera' },
+      { path: 'cartera', component: CarteraSection },
+      { path: 'mercado', component: MercadoSection },
+      { path: 'operaciones', component: OperacionesSection },
+      { path: 'alertas', component: AlertasSection },
+      { path: 'ranking', component: RankingSection },
+      { path: 'configuracion', component: ConfiguracionSection },
+    ],
+  },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' },
 ];
@@ -28,6 +41,19 @@ Muestra el formulario de login y registro.
 ### `/panel`
 
 Muestra el dashboard principal. Esta protegida con `authGuard`.
+
+Dentro de `/panel` hay rutas hijas:
+
+```text
+/panel/cartera
+/panel/mercado
+/panel/operaciones
+/panel/alertas
+/panel/ranking
+/panel/configuracion
+```
+
+La ruta `/panel` sin apartado redirige por defecto a `/panel/cartera`.
 
 ### `/`
 
@@ -71,7 +97,7 @@ Parecia correcto, pero con Angular y `<base href="/">`, el navegador podia resol
 
 Y como `/` redirige a `/login`, al pulsar un apartado del sidebar parecia que se cerraba la sesion.
 
-## Solucion aplicada
+## Primera solucion aplicada
 
 Se cambio a navegacion Angular:
 
@@ -89,6 +115,56 @@ Ahora los enlaces quedan asi:
 
 De esta manera Angular permanece en `/panel` y solo cambia el fragmento de la pagina.
 
+## Solucion actual
+
+Despues se cambio otra vez para que cada apartado del sidebar sea una ruta real:
+
+```html
+<a [routerLink]="['/panel', item.path]">
+```
+
+Ahora el sidebar navega a rutas como:
+
+```text
+/panel/cartera
+/panel/operaciones
+/panel/configuracion
+```
+
+Esto es mejor que usar fragmentos porque cada apartado se comporta como una pantalla propia. Tambien permite que el usuario recargue la pagina o copie la URL y siga viendo el mismo apartado.
+
+## Router-outlet del dashboard
+
+El dashboard tiene:
+
+```html
+<router-outlet />
+```
+
+Ese hueco es donde Angular carga el componente hijo que corresponda:
+
+- `/panel/cartera` carga `CarteraSection`.
+- `/panel/mercado` carga `MercadoSection`.
+- `/panel/operaciones` carga `OperacionesSection`.
+- `/panel/alertas` carga `AlertasSection`.
+- `/panel/ranking` carga `RankingSection`.
+- `/panel/configuracion` carga `ConfiguracionSection`.
+
 ## Por que es mejor usar `routerLink`
 
 `routerLink` trabaja con el router de Angular. Evita navegaciones raras del navegador y mantiene la aplicacion dentro del flujo de Angular.
+
+## Opcion activa del sidebar
+
+El sidebar calcula la ruta activa leyendo la URL actual con el `Router`. Asi sabe si estas en `cartera`, `mercado`, `operaciones`, etc.
+
+Con eso aplica:
+
+```html
+[class.active]="activePath() === item.path"
+[attr.aria-current]="activePath() === item.path ? 'page' : null"
+```
+
+`class.active` pinta visualmente la opcion actual.
+
+`aria-current="page"` ayuda a lectores de pantalla a entender que ese enlace representa la pagina actual.
