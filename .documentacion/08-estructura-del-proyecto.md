@@ -1,0 +1,205 @@
+# Estructura del proyecto
+
+Este documento explica la estructura actual del frontend y para que sirve cada parte importante.
+
+## Arbol principal
+
+```text
+Simtrade-FrontEnd/
+  .documentacion/
+  public/
+  src/
+    app/
+      components/
+      guards/
+      pages/
+      services/
+      app.config.ts
+      app.html
+      app.routes.ts
+      app.ts
+    index.html
+    main.ts
+    styles.css
+  angular.json
+  package.json
+  package-lock.json
+  tsconfig.json
+```
+
+## `.documentacion/`
+
+Contiene la documentacion del proyecto. No forma parte de la app que se ejecuta en el navegador, pero ayuda a entender como esta construida.
+
+## `public/`
+
+Contiene archivos estaticos que el navegador puede pedir directamente.
+
+Archivos actuales:
+
+```text
+public/favicon.ico
+public/logo_Simtrade.jpeg
+public/logo_Simtrade-rounded.png
+```
+
+Si un archivo esta en `public/logo_Simtrade-rounded.png`, se puede usar en HTML como:
+
+```html
+<img src="/logo_Simtrade-rounded.png" alt="Simtrade">
+```
+
+## `src/app/`
+
+Es la carpeta principal de la aplicacion Angular.
+
+### `app.ts`
+
+Es el componente raiz de Angular. Ahora es muy simple porque solo carga:
+
+```html
+<router-outlet />
+```
+
+La idea es que las rutas decidan si se muestra login, dashboard u otra pantalla.
+
+### `app.html`
+
+Plantilla del componente raiz. Contiene el `router-outlet` principal.
+
+### `app.routes.ts`
+
+Define las rutas de la aplicacion:
+
+- `/login`
+- `/panel/cartera`
+- `/panel/mercado`
+- `/panel/operaciones`
+- `/panel/alertas`
+- `/panel/ranking`
+- `/panel/configuracion`
+
+### `app.config.ts`
+
+Configura proveedores globales de Angular:
+
+- Router.
+- HttpClient.
+- Hidratacion del cliente.
+- Manejadores globales de errores.
+
+## `src/app/components/`
+
+Contiene componentes reutilizables.
+
+Actualmente:
+
+```text
+components/sidebar/
+```
+
+El sidebar se considera reutilizable porque no pertenece a una seccion concreta. Lo usa el dashboard para navegar entre apartados.
+
+## `src/app/guards/`
+
+Contiene guards de rutas.
+
+Actualmente:
+
+```text
+guards/auth-guard.ts
+```
+
+Este guard impide entrar al panel si el usuario no ha iniciado sesion.
+
+## `src/app/pages/`
+
+Contiene pantallas completas.
+
+Actualmente:
+
+```text
+pages/login/
+pages/dashboard/
+```
+
+### `pages/login/`
+
+Pantalla de login y registro.
+
+Archivos:
+
+```text
+login.ts
+login.html
+login.css
+```
+
+### `pages/dashboard/`
+
+Pantalla principal despues de iniciar sesion. Contiene el sidebar, la cabecera y un `router-outlet` para cargar las secciones hijas.
+
+Archivos:
+
+```text
+dashboard.ts
+dashboard.html
+dashboard.css
+```
+
+## Componentes internos del dashboard
+
+Estan en:
+
+```text
+src/app/pages/dashboard/components/
+```
+
+Componentes actuales:
+
+```text
+alertas-section/
+cartera-section/
+configuracion-section/
+mercado-section/
+operaciones-section/
+ranking-section/
+```
+
+Cada carpeta contiene el componente de una seccion del sidebar.
+
+La razon de separarlos es que cada apartado pueda crecer por separado. Por ejemplo, `operaciones` podra tener formularios de compra/venta sin mezclar su codigo con `ranking` o `configuracion`.
+
+## `src/app/services/`
+
+Contiene servicios compartidos.
+
+Actualmente:
+
+```text
+services/auth.ts
+```
+
+`AuthService` centraliza login, registro, cierre de sesion y almacenamiento del usuario.
+
+## Archivos de configuracion
+
+### `angular.json`
+
+Configuracion general de Angular CLI: build, serve, assets, estilos y SSR.
+
+### `package.json`
+
+Define scripts y dependencias.
+
+Scripts importantes:
+
+```json
+"start": "ng serve",
+"build": "ng build",
+"test": "ng test"
+```
+
+### `tsconfig.json`
+
+Configuracion de TypeScript.

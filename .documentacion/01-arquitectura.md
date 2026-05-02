@@ -26,6 +26,13 @@ src/app/
     auth-guard.ts
   pages/
     dashboard/
+      components/
+        alertas-section/
+        cartera-section/
+        configuracion-section/
+        mercado-section/
+        operaciones-section/
+        ranking-section/
     login/
   services/
     auth.ts
@@ -45,7 +52,7 @@ Se eligio separar `components`, `pages`, `services` y `guards` porque cada carpe
 - `services`: logica que no pertenece a una pantalla concreta, como llamar al backend.
 - `guards`: reglas para permitir o bloquear navegacion.
 
-Esto evita que todo acabe mezclado en `app.ts` o `app.html`. Tambien facilita seguir creciendo el proyecto: mercado, cartera, ranking y configuracion pueden convertirse luego en nuevas paginas o componentes.
+Esto evita que todo acabe mezclado en `app.ts` o `app.html`. Tambien facilita seguir creciendo el proyecto: mercado, cartera, ranking y configuracion ya estan separados como componentes propios.
 
 ## App principal
 
@@ -55,6 +62,27 @@ Antes, `app.html` contenia directamente el layout con sidebar y contenido. Despu
 <router-outlet />
 ```
 
-`router-outlet` es el hueco donde Angular pinta la pantalla activa. Si la URL es `/login`, pinta el componente de login. Si la URL es `/panel`, pinta el dashboard.
+`router-outlet` es el hueco donde Angular pinta la pantalla activa. Si la URL es `/login`, pinta el componente de login. Si la URL empieza por `/panel`, pinta el dashboard.
 
 Esto es mejor porque el login no debe mostrar el sidebar. El sidebar solo pertenece al panel cuando el usuario ya ha iniciado sesion.
+
+## Router-outlet dentro del dashboard
+
+El dashboard tambien tiene otro `router-outlet`:
+
+```html
+<router-outlet />
+```
+
+Ese segundo `router-outlet` sirve para cargar las rutas hijas del panel:
+
+```text
+/panel/cartera
+/panel/mercado
+/panel/operaciones
+/panel/alertas
+/panel/ranking
+/panel/configuracion
+```
+
+Asi el dashboard mantiene el sidebar y la cabecera fijos, pero el contenido central cambia segun el link pulsado.
