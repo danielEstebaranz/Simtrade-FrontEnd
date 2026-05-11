@@ -19,13 +19,13 @@ Sirve para comprobar que Angular compila correctamente.
 ## Arrancar frontend
 
 ```powershell
-npm.cmd start -- --host 127.0.0.1 --port 4200
+npm.cmd start -- --host localhost --port 4200
 ```
 
 URL:
 
 ```text
-http://127.0.0.1:4200/login
+http://localhost:4200/login
 ```
 
 ## Arrancar backend API
@@ -56,11 +56,46 @@ Debe devolver un error controlado parecido a:
 
 Eso indica que la API esta viva.
 
+## Probar grafica real de mercado
+
+Con el backend arrancado:
+
+```powershell
+curl.exe -s -i "http://127.0.0.1:8000/market/AAPL/trend?range=1d"
+```
+
+Debe devolver:
+
+```text
+HTTP/1.1 200 OK
+```
+
+Y dentro del JSON debe aparecer:
+
+```json
+"source": "yfinance"
+```
+
+Si devuelve `404`, puede ser que el ticker no tenga historico o que siga arrancado un backend antiguo.
+
+## Ver que proceso usa un puerto
+
+```powershell
+netstat -ano | Select-String ":8000"
+netstat -ano | Select-String ":4200"
+```
+
+Si hay que parar un proceso viejo:
+
+```powershell
+Stop-Process -Id <PID> -Force
+```
+
 ## URLs principales
 
 ```text
-http://127.0.0.1:4200/login
-http://127.0.0.1:4200/panel
+http://localhost:4200/login
+http://localhost:4200/panel/cartera
 ```
 
 `/panel` esta protegido por el guard. Si no hay sesion, vuelve a `/login`.

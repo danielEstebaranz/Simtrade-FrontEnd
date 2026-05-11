@@ -199,8 +199,126 @@ Los enlaces eran `href="#cartera"`. Con Angular podian resolverse como `/#carter
 Se cambio a:
 
 ```html
-routerLink="/panel"
-[fragment]="item.fragment"
+[routerLink]="['/panel', item.path]"
 ```
 
-Asi los enlaces se quedan en `/panel#seccion`.
+Asi los enlaces navegan a rutas reales como `/panel/cartera` o `/panel/operaciones`.
+
+## 11. Los apartados del sidebar no funcionaban como link
+
+### Error
+
+Al pulsar en `Cartera`, `Operaciones`, `Configuracion`, etc., no se cargaba un componente distinto.
+
+### Causa
+
+Al principio se estaba usando una navegacion por fragmentos o anclas. Eso sirve para saltar dentro de la misma pagina, pero no para cargar componentes independientes.
+
+### Solucion
+
+Se crearon rutas hijas dentro de `/panel`:
+
+```text
+/panel/cartera
+/panel/mercado
+/panel/operaciones
+/panel/alertas
+/panel/ranking
+/panel/configuracion
+```
+
+Y cada opcion del sidebar usa `routerLink`.
+
+## 12. La grafica se veia vacia
+
+### Error
+
+La tarjeta de cartera mostraba el hueco de la grafica, pero no aparecia la linea.
+
+### Causa
+
+Chart.js pinta dentro de un `canvas`. Si Angular crea el canvas con `@if` justo cuando llegan los datos, puede ocurrir que Chart.js intente pintar antes de que el elemento este listo.
+
+### Solucion
+
+Se dejo el `canvas` montado cuando hay una accion seleccionada y se usan overlays para estados de carga/error:
+
+```html
+<canvas #trendCanvas class="trend-chart"></canvas>
+```
+
+Despues se programa el pintado con:
+
+```ts
+window.requestAnimationFrame(() => this.renderChart(points, ticker));
+```
+
+Asi el navegador ya ha preparado el DOM antes de dibujar.
+
+## 13. La grafica no era real
+
+### Error
+
+La grafica parecia funcionar, pero podia estar usando datos generados en el frontend.
+
+### Causa
+
+`MarketService` tenia un fallback `createDemoTrend(...)`. Si el backend fallaba, Angular inventaba puntos de precio para que la grafica no quedara vacia.
+
+Eso era comodo para probar el diseno, pero peligroso para entender la app, porque el usuario podia pensar que estaba viendo mercado real.
+
+### Solucion
+
+Se elimino el fallback demo. Ahora:
+
+- `MarketService` solo pide datos al backend.
+- Si el backend devuelve datos, se pinta la grafica.
+- Si el backend falla, se muestra error.
+- El backend usa `yfinance` para obtener historico real.
+
+## 14. Backend antiguo seguia respondiendo
+
+### Error
+
+Despues de cambiar el backend, el endpoint seguia devolviendo `404` para la tendencia aunque la prueba directa con Python devolvia puntos reales.
+
+### Causa
+
+Habia un proceso viejo ocupando el puerto `8000`. El frontend llamaba a ese servidor antiguo, no al backend actualizado.
+
+### Solucion
+
+Se localizo el proceso del puerto `8000`, se paro y se arranco el backend nuevo. Despues:
+
+```text
+GET /market/AAPL/trend?range=1d
+```
+
+devolvio `200 OK`, `source: "yfinance"` y puntos reales.
+
+## 15. `finnhub` bloqueaba el backend aunque la grafica usaba `yfinance`
+
+### Error
+
+Al probar `ApiHandler`, Python fallaba con:
+
+```text
+ModuleNotFoundError: No module named 'finnhub'
+```
+
+### Causa
+
+`Api_Handler.py` importaba `finnhub` al inicio del archivo. Aunque la grafica real ya usaba `yfinance`, el import de Finnhub podia romper todo antes de ejecutar nada.
+
+### Solucion
+
+Se dejo `finnhub` como import opcional:
+
+```py
+try:
+    import finnhub
+except ImportError:
+    finnhub = None
+```
+
+Asi el historico con `yfinance` puede funcionar aunque Finnhub no este instalado o no haya API key configurada.

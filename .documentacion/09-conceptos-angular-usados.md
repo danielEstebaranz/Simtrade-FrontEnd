@@ -226,6 +226,86 @@ http://127.0.0.1:8000/auth/login
 http://127.0.0.1:8000/auth/register
 ```
 
+Tambien se usa en `MarketService` para obtener la grafica real:
+
+```ts
+this.http.get<TrendResponse>(url, { params })
+```
+
+`params` se usa para mandar el rango:
+
+```text
+range=1d
+range=1w
+range=1y
+```
+
+## Observable y subscribe
+
+Las peticiones HTTP de Angular devuelven un `Observable`. Un `Observable` representa algo que todavia no ha llegado.
+
+En cartera se usa:
+
+```ts
+this.marketService.getTrend(ticker, range).subscribe({
+  next: (trend) => { ... },
+  error: () => { ... },
+});
+```
+
+- `next`: entra cuando el backend devuelve datos correctos.
+- `error`: entra cuando el backend responde con error o no se puede conectar.
+
+Se usa `takeUntilDestroyed(this.destroyRef)` para que Angular limpie la suscripcion cuando el componente desaparece.
+
+## ViewChild y canvas
+
+Chart.js necesita un elemento HTML `canvas` real para poder dibujar.
+
+En `CarteraSection` se usa:
+
+```ts
+@ViewChild('trendCanvas')
+private readonly trendCanvas?: ElementRef<HTMLCanvasElement>;
+```
+
+Esto permite acceder al canvas definido en el HTML:
+
+```html
+<canvas #trendCanvas></canvas>
+```
+
+Importante: el canvas se deja montado mientras hay una accion seleccionada. Antes estaba dentro de condiciones y podia aparecer demasiado tarde, dejando la grafica vacia.
+
+## effect
+
+`effect()` ejecuta codigo cuando cambian las signals que se leen dentro.
+
+En cartera se usa para:
+
+- pedir nuevos datos cuando cambia el ticker o el rango.
+- repintar la grafica cuando llegan nuevos puntos.
+
+Esto evita tener que llamar manualmente a varios metodos desde muchos sitios.
+
+## Chart.js
+
+Chart.js no es de Angular, es una libreria JavaScript para graficas.
+
+En el componente se registra lo necesario:
+
+```ts
+Chart.register(CategoryScale, LineController, LineElement, LinearScale, PointElement, Tooltip);
+```
+
+Luego se crea una grafica:
+
+```ts
+this.chart = new Chart(canvas, config);
+```
+
+Si ya existe una grafica, se actualizan datos y opciones en vez de crear otra encima. Asi se evita acumular graficas y memoria.
+
 ## LocalStorage
 
 `localStorage` guarda datos en el navegador.
