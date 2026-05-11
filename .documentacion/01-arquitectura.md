@@ -36,6 +36,7 @@ src/app/
     login/
   services/
     auth.ts
+    market.ts
 
 public/
   logo_Simtrade.jpeg
@@ -51,6 +52,7 @@ Se eligio separar `components`, `pages`, `services` y `guards` porque cada carpe
 - `pages`: pantallas completas, como login o panel.
 - `services`: logica que no pertenece a una pantalla concreta, como llamar al backend.
 - `guards`: reglas para permitir o bloquear navegacion.
+- `services/market.ts`: llamadas al backend para obtener datos reales de mercado.
 
 Esto evita que todo acabe mezclado en `app.ts` o `app.html`. Tambien facilita seguir creciendo el proyecto: mercado, cartera, ranking y configuracion ya estan separados como componentes propios.
 
@@ -86,3 +88,17 @@ Ese segundo `router-outlet` sirve para cargar las rutas hijas del panel:
 ```
 
 Asi el dashboard mantiene el sidebar y la cabecera fijos, pero el contenido central cambia segun el link pulsado.
+
+## Flujo de cartera y grafica
+
+La pestaña de cartera no pinta una grafica inventada en el navegador. El flujo actual es:
+
+```text
+CarteraSection -> MarketService -> FastAPI -> ApiHandler -> yfinance -> datos reales -> Chart.js
+```
+
+`CarteraSection` lee la cartera del usuario desde `AuthService`, muestra una fila por cada activo y, cuando hay un activo seleccionado, pide al backend la tendencia del ticker.
+
+La grafica se pinta con Chart.js porque ya resuelve bien escalas, ejes, tooltips y lineas. Angular se queda como responsable de la interfaz y el estado, mientras Chart.js se encarga de dibujar en el `canvas`.
+
+Si el backend no devuelve datos reales, el frontend muestra un error. Se elimino el fallback de datos demo porque podia confundir: parecia una grafica real aunque estuviera inventada.

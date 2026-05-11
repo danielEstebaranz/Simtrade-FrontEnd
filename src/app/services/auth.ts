@@ -92,6 +92,10 @@ export class AuthService {
       return error.error.message;
     }
 
+    if (typeof error.error?.detail === 'string') {
+      return error.error.detail;
+    }
+
     if (error.status === 0) {
       return 'No se puede conectar con el backend. Arranca la API en el puerto 8000.';
     }

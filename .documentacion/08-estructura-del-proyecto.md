@@ -178,9 +178,34 @@ Actualmente:
 
 ```text
 services/auth.ts
+services/market.ts
 ```
 
 `AuthService` centraliza login, registro, cierre de sesion y almacenamiento del usuario.
+
+`MarketService` centraliza las llamadas de mercado. Ahora mismo se usa para pedir al backend la tendencia real de un activo:
+
+```text
+GET http://127.0.0.1:8000/market/{ticker}/trend?range=1d
+GET http://127.0.0.1:8000/market/{ticker}/trend?range=1w
+GET http://127.0.0.1:8000/market/{ticker}/trend?range=1y
+```
+
+Se separa de `AuthService` porque autenticacion y mercado son responsabilidades distintas. Asi, si mas adelante se anaden precios, busqueda de activos o detalles de empresa, pueden crecer en `MarketService` sin mezclarlo con login.
+
+## Dependencias relevantes del frontend
+
+### Angular
+
+Framework principal del frontend. Gestiona componentes, rutas, formularios, servicios HTTP, signals e hidratacion.
+
+### Chart.js
+
+Libreria usada para pintar la grafica de tendencia de cartera. Se instalo porque evita hacer a mano ejes, escalas, tooltip, linea y area bajo la curva.
+
+### RxJS
+
+Angular usa RxJS para las llamadas HTTP. `MarketService.getTrend(...)` devuelve un `Observable` y `CarteraSection` se suscribe a el para actualizar el estado cuando llega la respuesta.
 
 ## Archivos de configuracion
 

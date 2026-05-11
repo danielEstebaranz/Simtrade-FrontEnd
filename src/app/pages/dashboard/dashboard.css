@@ -55,7 +55,7 @@ button:focus-visible {
 .dashboard-sections {
   display: grid;
   gap: 1rem;
-  max-width: 42rem;
+  width: 100%;
 }
 
 @media (max-width: 720px) {

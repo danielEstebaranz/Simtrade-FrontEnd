@@ -13,6 +13,8 @@ Esta carpeta recoge una explicacion detallada de la aplicacion, las decisiones t
 - [07-comandos.md](./07-comandos.md): comandos utiles para arrancar y comprobar la aplicacion.
 - [08-estructura-del-proyecto.md](./08-estructura-del-proyecto.md): arbol de carpetas y para que sirve cada archivo importante.
 - [09-conceptos-angular-usados.md](./09-conceptos-angular-usados.md): conceptos como `router-outlet`, `routerLink`, guards, signals y formularios reactivos.
+- [10-cartera-y-graficas.md](./10-cartera-y-graficas.md): acciones del usuario, grafica real, Chart.js, rangos 1 dia/semana/ano y conexion con mercado.
+- [11-librerias-metodologia-y-faq.md](./11-librerias-metodologia-y-faq.md): librerias usadas, metodologia seguida, puntos debiles y preguntas tipicas.
 
 ## Resumen rapido
 
@@ -24,5 +26,6 @@ La aplicacion es un frontend Angular moderno que tiene:
 - Un sidebar reutilizable con navegacion interna.
 - Rutas hijas reales dentro del panel: cartera, mercado, operaciones, alertas, ranking y configuracion.
 - Una conexion HTTP con una API Python que reutiliza el backend existente de consola y Firestore.
+- Una vista de cartera con acciones del usuario y grafica de tendencia real usando datos del backend.
 
 El backend original funcionaba por consola. Para que el navegador pudiera usarlo, se creo una API HTTP pequena en el repositorio backend, porque un navegador no puede llamar directamente a funciones Python de consola.
