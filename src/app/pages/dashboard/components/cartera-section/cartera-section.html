@@ -8,6 +8,30 @@
     <p>Activos en cartera</p>
     <strong>{{ assetCount() }}</strong>
   </article>
+
+  <article class="summary-card gain-card">
+    <p>Ganancias totales</p>
+    @if (portfolioGains().hasCostBasis || assetCount() === 0) {
+      <strong
+        [class.positive]="portfolioGains().totalGain > 0"
+        [class.negative]="portfolioGains().totalGain < 0"
+      >
+        {{ signedMoney(portfolioGains().totalGain) }}
+      </strong>
+    } @else {
+      <strong class="muted">Sin coste</strong>
+    }
+  </article>
+
+  <article class="summary-card gain-card">
+    <p>Ganancias diarias</p>
+    <strong
+      [class.positive]="portfolioGains().dailyGain > 0"
+      [class.negative]="portfolioGains().dailyGain < 0"
+    >
+      {{ signedMoney(portfolioGains().dailyGain) }}
+    </strong>
+  </article>
 </section>
 
 <section class="portfolio-workspace" aria-label="Acciones de la cartera">

@@ -78,6 +78,20 @@ Y dentro del JSON debe aparecer:
 
 Si devuelve `404`, puede ser que el ticker no tenga historico o que siga arrancado un backend antiguo.
 
+## Probar endpoint protegido de ganancias
+
+Este endpoint necesita un token real recibido al iniciar sesion:
+
+```powershell
+curl.exe -s -i "http://127.0.0.1:8000/users/me/portfolio/gains" -H "Authorization: Bearer <idToken>"
+```
+
+Sin token debe devolver `401`, y eso es correcto:
+
+```json
+{"detail":"Falta cabecera Authorization."}
+```
+
 ## Ver que proceso usa un puerto
 
 ```powershell

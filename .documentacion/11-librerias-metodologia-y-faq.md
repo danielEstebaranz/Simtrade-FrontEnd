@@ -124,6 +124,15 @@ Para depurar la grafica se comprobo:
 
 Esto permite saber si el fallo esta en Angular, en FastAPI, en Python o en el proceso arrancado.
 
+### 5. Priorizar dato real y usar fallback solo si hace falta
+
+Para `Ganancias totales`, el criterio final es:
+
+1. usar historial real de transacciones si existe
+2. si no existe o no es suficiente, estimar con `1000 - saldo actual`
+
+Esto evita mostrar `Sin coste` cuando se puede dar una estimacion razonable, pero sigue priorizando el dato real.
+
 ## Errores corregidos importantes
 
 ### La grafica se veia vacia
@@ -146,16 +155,30 @@ Se dejo como import opcional para que el historico con `yfinance` no dependa de 
 
 Se permitio `localhost:4200` porque el navegador estaba usando esa URL y no solo `127.0.0.1`.
 
+### `FIREBASE_WEB_API_KEY` faltaba en el entorno
+
+El backend necesita esa clave para llamar a Firebase Authentication con `signInWithPassword`. Debe estar en el `.env` del backend.
+
+### Ganancias totales salia como `Sin coste`
+
+El backend no encontraba historial de compras. Se cambio la consulta de transacciones y se anadio fallback con `1000 - saldo actual`.
+
+### Ganancia total positiva y diaria negativa
+
+Se aclaro que no es un error: la total compara contra la compra; la diaria compara contra el inicio del dia.
+
 ## Puntos debiles actuales
 
 - No hay JWT ni sesion segura real. Se guarda usuario en `localStorage`, suficiente para aprendizaje, no para produccion.
 - Las contrasenas usan SHA-256 simple. Mejoraria con `bcrypt` o `argon2`.
 - La API no tiene endpoints completos para comprar/vender desde frontend.
 - No hay cache de historicos de mercado.
+- No hay cache de calculo de ganancias.
 - No hay tests automatizados todavia.
 - `Chart.js` sube el tamano del bundle y Angular avisa de presupuesto.
 - Si Yahoo Finance no reconoce un ticker, no hay grafica para ese activo.
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
+- Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
 
 ## Preguntas tipicas cubiertas
 
@@ -209,3 +232,11 @@ Actualmente apuntan a:
 ```text
 http://127.0.0.1:8000
 ```
+
+### Por que puede haber ganancia total positiva y ganancia diaria negativa
+
+Porque no miden lo mismo. La total mide desde la compra o coste invertido; la diaria mide solo el movimiento del dia.
+
+### Por que aparece `FIREBASE_WEB_API_KEY`
+
+Porque el login usa Firebase Authentication desde el backend. Esa clave web es necesaria para llamar a `signInWithPassword`. Debe estar en el `.env` del backend y no hardcodeada en el codigo.

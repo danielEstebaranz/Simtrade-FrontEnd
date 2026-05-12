@@ -189,6 +189,7 @@ services/market.ts
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1d
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1w
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1y
+GET http://127.0.0.1:8000/users/me/portfolio/gains
 ```
 
 Se separa de `AuthService` porque autenticacion y mercado son responsabilidades distintas. Asi, si mas adelante se anaden precios, busqueda de activos o detalles de empresa, pueden crecer en `MarketService` sin mezclarlo con login.

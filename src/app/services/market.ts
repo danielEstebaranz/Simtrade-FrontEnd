@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -17,6 +17,16 @@ export interface TrendResponse {
   source: TrendSource;
 }
 
+export interface PortfolioGains {
+  costBasisSource: 'history' | 'balance_estimate' | 'none';
+  dailyGain: number;
+  hasCostBasis: boolean;
+  investedCost: number;
+  source: TrendSource;
+  totalGain: number;
+  totalValue: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -29,5 +39,13 @@ export class MarketService {
     const url = `${this.apiUrl}/market/${encodeURIComponent(ticker)}/trend`;
 
     return this.http.get<TrendResponse>(url, { params });
+  }
+
+  getPortfolioGains(token: string): Observable<PortfolioGains> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get<PortfolioGains>(`${this.apiUrl}/users/me/portfolio/gains`, { headers });
   }
 }
