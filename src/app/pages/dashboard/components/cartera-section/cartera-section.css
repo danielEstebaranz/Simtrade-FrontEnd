@@ -9,7 +9,7 @@
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  max-width: 42rem;
+  width: 100%;
 }
 
 .summary-card,
@@ -39,6 +39,19 @@
 .summary-card strong {
   color: #111827;
   font-size: 1.8rem;
+}
+
+.summary-card strong.positive {
+  color: #047857;
+}
+
+.summary-card strong.negative {
+  color: #b91c1c;
+}
+
+.summary-card strong.muted {
+  color: #6b7280;
+  font-size: 1.35rem;
 }
 
 .portfolio-workspace {

@@ -322,3 +322,158 @@ except ImportError:
 ```
 
 Asi el historico con `yfinance` puede funcionar aunque Finnhub no este instalado o no haya API key configurada.
+
+## 16. El puerto 8000 ya estaba ocupado
+
+### Error
+
+Al arrancar el backend aparecio:
+
+```text
+[WinError 10048] solo se permite un uso de cada direccion de socket
+```
+
+### Causa
+
+Ya habia un proceso de backend escuchando en:
+
+```text
+127.0.0.1:8000
+```
+
+Windows no permite dos procesos usando el mismo host y puerto.
+
+### Solucion
+
+Se busco el proceso:
+
+```powershell
+netstat -ano | Select-String ":8000"
+```
+
+Y se paro el PID que estaba en `LISTENING`:
+
+```powershell
+Stop-Process -Id <PID> -Force
+```
+
+Despues se pudo arrancar el backend de nuevo.
+
+## 17. `FIREBASE_WEB_API_KEY` no estaba configurada
+
+### Error
+
+En el login aparecio:
+
+```text
+Falta configurar FIREBASE_WEB_API_KEY en el entorno.
+```
+
+### Causa
+
+El archivo `.env` del backend tenia `FINNHUB_API_KEY` y `FIREBASE_JSON_PATH`, pero faltaba `FIREBASE_WEB_API_KEY`.
+
+Esa clave es necesaria para que el backend pueda iniciar sesion contra Firebase Authentication usando `signInWithPassword`.
+
+### Solucion
+
+Anadir al `.env` del backend:
+
+```env
+FIREBASE_WEB_API_KEY=tu_api_key_de_firebase
+```
+
+La clave se obtiene en Firebase Console:
+
+```text
+Configuracion del proyecto -> General -> App web -> apiKey
+```
+
+Despues hay que reiniciar el backend para que lea el `.env` actualizado.
+
+## 18. Firestore se conectaba dos veces al arrancar el backend
+
+### Error
+
+Al ejecutar `api_server.py` salia dos veces:
+
+```text
+Conexion establecida con Firebase Firestore.
+```
+
+### Causa
+
+El script arrancaba Uvicorn con:
+
+```py
+uvicorn.run('api_server:app', ...)
+```
+
+Cuando se ejecuta el archivo directamente, eso puede provocar una segunda importacion del modulo.
+
+### Solucion
+
+Se cambio a:
+
+```py
+uvicorn.run(app, host=HOST, port=PORT, reload=False)
+```
+
+Asi Uvicorn usa la instancia `app` ya creada y no reimporta el archivo.
+
+## 19. `Ganancias totales` aparecia como `Sin coste`
+
+### Error
+
+La tarjeta de cartera mostraba:
+
+```text
+Ganancias totales: Sin coste
+```
+
+### Causa
+
+El backend no encontraba historial de transacciones para calcular el dinero invertido real.
+
+Ademas, la consulta a Firestore intentaba ordenar por `fecha` directamente en la query, lo que puede requerir indice o fallar segun la estructura.
+
+### Solucion
+
+Se cambio la lectura de transacciones para:
+
+1. consultar por usuario
+2. ordenar en Python
+3. calcular el coste abierto por compras y ventas
+4. si no hay historial valido, estimar con `1000 - saldo actual`
+
+## 20. Ganancia total positiva y ganancia diaria negativa parecia contradictorio
+
+### Duda
+
+El usuario vio algo como:
+
+```text
+Ganancia total: +0,02 $
+Ganancia diaria: -0,06 $
+```
+
+### Explicacion
+
+No es contradictorio:
+
+- la total compara contra el precio de compra o coste invertido
+- la diaria compara contra el inicio del dia
+
+Ejemplo:
+
+```text
+Compraste por:        10,00 $
+Ahora vale:           10,02 $
+Ganancia total:       +0,02 $
+
+Al empezar el dia:    10,08 $
+Ahora vale:           10,02 $
+Ganancia diaria:      -0,06 $
+```
+
+La cartera sigue ganando respecto a la compra, aunque hoy haya bajado.

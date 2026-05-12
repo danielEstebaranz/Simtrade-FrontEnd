@@ -27,7 +27,13 @@ import {
   Tooltip,
 } from 'chart.js';
 import { AuthService } from '../../../../services/auth';
-import { MarketService, TrendPoint, TrendRange, TrendSource } from '../../../../services/market';
+import {
+  MarketService,
+  PortfolioGains,
+  TrendPoint,
+  TrendRange,
+  TrendSource,
+} from '../../../../services/market';
 
 interface PortfolioPosition {
   ticker: string;
@@ -50,6 +56,11 @@ interface TrendSummary {
   min: number;
 }
 
+interface PortfolioGainsState extends PortfolioGains {
+  errorMessage: string;
+  status: 'idle' | 'loading' | 'loaded' | 'error';
+}
+
 @Component({
   selector: 'app-cartera-section',
   templateUrl: './cartera-section.html',
@@ -68,11 +79,24 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private chart: Chart<'line'> | null = null;
   private readonly chartReady = signal(false);
+  private gainsRequestId = 0;
   private requestId = 0;
 
   protected readonly user = this.authService.user;
+  protected readonly idToken = this.authService.idToken;
   protected readonly selectedTicker = signal<string | null>(null);
   protected readonly selectedRange = signal<TrendRange>('1d');
+  protected readonly portfolioGains = signal<PortfolioGainsState>({
+    costBasisSource: 'none',
+    dailyGain: 0,
+    errorMessage: '',
+    hasCostBasis: false,
+    investedCost: 0,
+    source: 'yfinance',
+    status: 'idle',
+    totalGain: 0,
+    totalValue: 0,
+  });
   protected readonly trendState = signal<TrendState>({
     errorMessage: '',
     points: [],
@@ -150,6 +174,13 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
     });
 
     effect(() => {
+      const token = this.idToken();
+      const positions = this.positions();
+
+      this.loadPortfolioGains(token, positions.length);
+    });
+
+    effect(() => {
       if (!this.chartReady()) {
         return;
       }
@@ -183,6 +214,11 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
       maximumFractionDigits,
       minimumFractionDigits: 0,
     }).format(value ?? 0);
+  }
+
+  protected signedMoney(value: number): string {
+    const sign = value > 0 ? '+' : '';
+    return `${sign}${this.formatNumber(value, 2)} $`;
   }
 
   private loadTrend(ticker: string | null, range: TrendRange): void {
@@ -233,6 +269,60 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
             source: null,
             status: 'error',
           });
+        },
+      });
+  }
+
+  private loadPortfolioGains(token: string | null, positionCount: number): void {
+    const requestId = this.gainsRequestId + 1;
+    this.gainsRequestId = requestId;
+
+    if (!token || positionCount === 0) {
+      this.portfolioGains.set({
+        costBasisSource: 'none',
+        dailyGain: 0,
+        errorMessage: '',
+        hasCostBasis: false,
+        investedCost: 0,
+        source: 'yfinance',
+        status: 'idle',
+        totalGain: 0,
+        totalValue: 0,
+      });
+      return;
+    }
+
+    this.portfolioGains.update((state) => ({
+      ...state,
+      errorMessage: '',
+      status: 'loading',
+    }));
+
+    this.marketService
+      .getPortfolioGains(token)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (gains) => {
+          if (requestId !== this.gainsRequestId) {
+            return;
+          }
+
+          this.portfolioGains.set({
+            ...gains,
+            errorMessage: '',
+            status: 'loaded',
+          });
+        },
+        error: () => {
+          if (requestId !== this.gainsRequestId) {
+            return;
+          }
+
+          this.portfolioGains.update((state) => ({
+            ...state,
+            errorMessage: 'No se pudieron cargar las ganancias.',
+            status: 'error',
+          }));
         },
       });
   }
