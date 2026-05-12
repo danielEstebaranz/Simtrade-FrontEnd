@@ -6,6 +6,7 @@ import { catchError, map, Observable, throwError, tap } from 'rxjs';
 export interface AuthUser {
   id: string;
   username: string;
+  email?: string;
   saldo: number;
   cartera: Record<string, number>;
 }
@@ -13,6 +14,8 @@ export interface AuthUser {
 interface AuthResponse {
   message: string;
   user: AuthUser;
+  idToken?: string;
+  refreshToken?: string;
 }
 
 interface AuthPayload {
@@ -28,9 +31,11 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly apiUrl = 'http://127.0.0.1:8000';
   private readonly userState = signal<AuthUser | null>(this.readStoredUser());
+  private readonly tokenState = signal<string | null>(this.readStoredToken());
 
   readonly user = this.userState.asReadonly();
   readonly isAuthenticated = computed(() => this.userState() !== null);
+  readonly idToken = this.tokenState.asReadonly();
 
   login(payload: AuthPayload): Observable<AuthUser> {
     return this.sendAuthRequest('/auth/login', payload);
@@ -42,25 +47,33 @@ export class AuthService {
 
   logout(): void {
     this.userState.set(null);
+    this.tokenState.set(null);
 
     if (this.isBrowser()) {
       localStorage.removeItem('simtrade_user');
+      localStorage.removeItem('simtrade_token');
     }
   }
 
   private sendAuthRequest(path: string, payload: AuthPayload): Observable<AuthUser> {
     return this.http.post<AuthResponse>(`${this.apiUrl}${path}`, payload).pipe(
+      tap((response) => this.storeSession(response.user, response.idToken)),
       map((response) => response.user),
-      tap((user) => this.storeUser(user)),
       catchError((error: HttpErrorResponse) => throwError(() => this.getErrorMessage(error))),
     );
   }
 
-  private storeUser(user: AuthUser): void {
+  private storeSession(user: AuthUser, token?: string): void {
     this.userState.set(user);
+    this.tokenState.set(token ?? null);
 
     if (this.isBrowser()) {
       localStorage.setItem('simtrade_user', JSON.stringify(user));
+      if (token) {
+        localStorage.setItem('simtrade_token', token);
+      } else {
+        localStorage.removeItem('simtrade_token');
+      }
     }
   }
 
@@ -81,6 +94,14 @@ export class AuthService {
       localStorage.removeItem('simtrade_user');
       return null;
     }
+  }
+
+  private readStoredToken(): string | null {
+    if (!this.isBrowser()) {
+      return null;
+    }
+
+    return localStorage.getItem('simtrade_token');
   }
 
   private isBrowser(): boolean {

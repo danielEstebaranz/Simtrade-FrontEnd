@@ -26,17 +26,17 @@
     </div>
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <label for="username">Usuario</label>
+      <label for="username">Email</label>
       <input
         id="username"
-        type="text"
+        type="email"
         formControlName="username"
-        autocomplete="username"
+        autocomplete="email"
         [attr.aria-invalid]="form.controls.username.invalid && form.controls.username.touched"
         aria-describedby="username-error"
       >
       @if (form.controls.username.invalid && form.controls.username.touched) {
-        <p class="field-error" id="username-error">Escribe al menos 3 caracteres.</p>
+        <p class="field-error" id="username-error">Escribe un email valido.</p>
       }
 
       <label for="password">Contrasena</label>
@@ -49,7 +49,7 @@
         aria-describedby="password-error"
       >
       @if (form.controls.password.invalid && form.controls.password.touched) {
-        <p class="field-error" id="password-error">Escribe al menos 4 caracteres.</p>
+        <p class="field-error" id="password-error">Escribe al menos 6 caracteres.</p>
       }
 
       @if (errorMessage()) {
