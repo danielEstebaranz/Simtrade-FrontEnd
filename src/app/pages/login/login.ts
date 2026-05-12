@@ -28,8 +28,8 @@ export class Login {
   );
 
   protected readonly form = this.formBuilder.group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    password: ['', [Validators.required, Validators.minLength(4)]],
+    username: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   protected setMode(mode: AuthMode): void {
