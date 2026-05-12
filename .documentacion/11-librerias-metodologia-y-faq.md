@@ -92,6 +92,7 @@ Cada pieza tiene un trabajo claro:
 
 - `AuthService`: login, registro y sesion.
 - `MarketService`: datos de mercado.
+- `MercadoSection`: consulta de activos y compra por importe.
 - `CarteraSection`: interfaz y estado de cartera.
 - `ApiHandler`: proveedor de mercado.
 - `DbHandler`: Firestore.
@@ -167,11 +168,19 @@ El backend no encontraba historial de compras. Se cambio la consulta de transacc
 
 Se aclaro que no es un error: la total compara contra la compra; la diaria compara contra el inicio del dia.
 
+### Compra en mercado devolvia `Not Found`
+
+El backend que estaba arrancado era antiguo y no tenia el endpoint `POST /users/me/portfolio/buy`. Se reinicio el backend.
+
+### Popup de compra desbordado
+
+El input sobresalia del modal. Se corrigio con `box-sizing: border-box`.
+
 ## Puntos debiles actuales
 
 - No hay JWT ni sesion segura real. Se guarda usuario en `localStorage`, suficiente para aprendizaje, no para produccion.
 - Las contrasenas usan SHA-256 simple. Mejoraria con `bcrypt` o `argon2`.
-- La API no tiene endpoints completos para comprar/vender desde frontend.
+- La API ya permite comprar desde mercado, pero todavia no hay venta desde frontend.
 - No hay cache de historicos de mercado.
 - No hay cache de calculo de ganancias.
 - No hay tests automatizados todavia.
@@ -209,6 +218,14 @@ Porque Chart.js ya resuelve bien el problema y reduce codigo propio.
 ### Por que algunas graficas no salen
 
 Porque el ticker puede no existir en el proveedor, no tener historico o estar en un formato distinto.
+
+### Por que se compra desde Mercado y no desde Operaciones
+
+Porque mercado es donde el usuario consulta el activo, su precio y su tendencia. Comprar desde ahi reduce pasos y evita una pestaña separada para una sola accion.
+
+### Por que la compra pide dinero y no acciones
+
+Porque para el usuario es mas natural decir cuanto dinero quiere invertir. El backend convierte ese importe a unidades usando el precio real actual.
 
 ### Que significan `1d`, `1w` y `1y`
 

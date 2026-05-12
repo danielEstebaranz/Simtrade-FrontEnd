@@ -21,7 +21,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'cartera' },
       { path: 'cartera', component: CarteraSection },
       { path: 'mercado', component: MercadoSection },
-      { path: 'operaciones', component: OperacionesSection },
+      { path: 'operaciones', redirectTo: 'mercado' },
       { path: 'alertas', component: AlertasSection },
       { path: 'ranking', component: RankingSection },
       { path: 'configuracion', component: ConfiguracionSection },
@@ -47,13 +47,14 @@ Dentro de `/panel` hay rutas hijas:
 ```text
 /panel/cartera
 /panel/mercado
-/panel/operaciones
 /panel/alertas
 /panel/ranking
 /panel/configuracion
 ```
 
 La ruta `/panel` sin apartado redirige por defecto a `/panel/cartera`.
+
+La ruta antigua `/panel/operaciones` se conserva solo como redireccion a `/panel/mercado`, porque las compras se hacen ahora desde mercado.
 
 ### `/`
 
@@ -110,7 +111,6 @@ Ahora los enlaces quedan asi:
 ```text
 /panel#cartera
 /panel#mercado
-/panel#operaciones
 ```
 
 De esta manera Angular permanece en `/panel` y solo cambia el fragmento de la pagina.
@@ -127,7 +127,7 @@ Ahora el sidebar navega a rutas como:
 
 ```text
 /panel/cartera
-/panel/operaciones
+/panel/mercado
 /panel/configuracion
 ```
 
@@ -145,7 +145,7 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 
 - `/panel/cartera` carga `CarteraSection`.
 - `/panel/mercado` carga `MercadoSection`.
-- `/panel/operaciones` carga `OperacionesSection`.
+- `/panel/operaciones` redirige a `MercadoSection`.
 - `/panel/alertas` carga `AlertasSection`.
 - `/panel/ranking` carga `RankingSection`.
 - `/panel/configuracion` carga `ConfiguracionSection`.
@@ -156,7 +156,7 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 
 ## Opcion activa del sidebar
 
-El sidebar calcula la ruta activa leyendo la URL actual con el `Router`. Asi sabe si estas en `cartera`, `mercado`, `operaciones`, etc.
+El sidebar calcula la ruta activa leyendo la URL actual con el `Router`. Asi sabe si estas en `cartera`, `mercado`, `alertas`, etc.
 
 Con eso aplica:
 

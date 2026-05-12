@@ -32,17 +32,21 @@
           <p class="asset-detail">{{ asset.name }}</p>
         </div>
 
-        <div class="range-switch" aria-label="Rango de la grafica">
-          @for (range of rangeOptions; track range.value) {
-            <button
-              type="button"
-              [class.active]="selectedRange() === range.value"
-              [attr.aria-pressed]="selectedRange() === range.value"
-              (click)="selectRange(range.value)"
-            >
-              {{ range.label }}
-            </button>
-          }
+        <div class="trend-actions">
+          <div class="range-switch" aria-label="Rango de la grafica">
+            @for (range of rangeOptions; track range.value) {
+              <button
+                type="button"
+                [class.active]="selectedRange() === range.value"
+                [attr.aria-pressed]="selectedRange() === range.value"
+                (click)="selectRange(range.value)"
+              >
+                {{ range.label }}
+              </button>
+            }
+          </div>
+
+          <button class="buy-button" type="button" (click)="openBuyDialog()">Comprar</button>
         </div>
       </div>
 
@@ -89,3 +93,60 @@
     }
   </div>
 </section>
+
+@if (buyDialogOpen()) {
+  <div class="modal-backdrop" role="presentation" (click)="closeBuyDialog()">
+    <section
+      class="buy-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="buy-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Compra</p>
+          <h2 id="buy-dialog-title">{{ selectedAsset().ticker }}</h2>
+        </div>
+        <button class="icon-button" type="button" aria-label="Cerrar compra" (click)="closeBuyDialog()">×</button>
+      </div>
+
+      <label class="field-label" for="buy-amount">Dinero a invertir</label>
+      <input
+        id="buy-amount"
+        class="amount-input"
+        type="number"
+        min="0"
+        step="0.01"
+        inputmode="decimal"
+        [value]="buyState().amount"
+        [disabled]="buyState().status === 'saving'"
+        (input)="updateBuyAmountFromEvent($event)"
+      >
+
+      @if (trendSummary(); as summary) {
+        <p class="buy-preview">
+          Precio aprox. {{ formatNumber(summary.last, 2) }} $ por unidad
+        </p>
+      }
+
+      @if (buyState().status === 'error') {
+        <p class="dialog-message error" role="alert">{{ buyState().errorMessage }}</p>
+      } @else if (buyState().status === 'success') {
+        <p class="dialog-message success" role="status">{{ buyState().successMessage }}</p>
+      }
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" (click)="closeBuyDialog()">Cancelar</button>
+        <button
+          class="primary-button"
+          type="button"
+          [disabled]="buyState().status === 'saving'"
+          (click)="buySelectedAsset()"
+        >
+          {{ buyState().status === 'saving' ? 'Comprando...' : 'Confirmar compra' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

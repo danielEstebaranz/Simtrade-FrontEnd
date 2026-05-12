@@ -31,7 +31,6 @@ src/app/
         cartera-section/
         configuracion-section/
         mercado-section/
-        operaciones-section/
         ranking-section/
     login/
   services/
@@ -81,11 +80,12 @@ Ese segundo `router-outlet` sirve para cargar las rutas hijas del panel:
 ```text
 /panel/cartera
 /panel/mercado
-/panel/operaciones
 /panel/alertas
 /panel/ranking
 /panel/configuracion
 ```
+
+La ruta antigua `/panel/operaciones` redirige a `/panel/mercado`. La compra de acciones se integro en mercado.
 
 Asi el dashboard mantiene el sidebar y la cabecera fijos, pero el contenido central cambia segun el link pulsado.
 

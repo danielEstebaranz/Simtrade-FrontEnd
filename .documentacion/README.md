@@ -24,7 +24,8 @@ La aplicacion es un frontend Angular moderno que tiene:
 - Un servicio de autenticacion que llama al backend.
 - Un panel principal protegido por sesion.
 - Un sidebar reutilizable con navegacion interna.
-- Rutas hijas reales dentro del panel: cartera, mercado, operaciones, alertas, ranking y configuracion.
+- Rutas hijas reales dentro del panel: cartera, mercado, alertas, ranking y configuracion.
+- Compra de acciones desde mercado mediante un popup de importe a invertir.
 - Una conexion HTTP con una API Python que reutiliza el backend existente de consola y Firestore.
 - Una vista de cartera con acciones del usuario y grafica de tendencia real usando datos del backend.
 

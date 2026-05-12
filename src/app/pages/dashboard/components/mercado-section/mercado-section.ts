@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -26,6 +27,7 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
+import { AuthService } from '../../../../services/auth';
 import { MarketService, TrendPoint, TrendRange, TrendSource } from '../../../../services/market';
 
 interface MarketAsset {
@@ -49,6 +51,13 @@ interface TrendSummary {
   min: number;
 }
 
+interface BuyState {
+  amount: string;
+  errorMessage: string;
+  status: 'idle' | 'saving' | 'success' | 'error';
+  successMessage: string;
+}
+
 @Component({
   selector: 'app-mercado-section',
   templateUrl: './mercado-section.html',
@@ -61,6 +70,7 @@ interface TrendSummary {
 export class MercadoSection implements AfterViewInit, OnDestroy {
   @ViewChild('trendCanvas') private readonly trendCanvas?: ElementRef<HTMLCanvasElement>;
 
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly marketService = inject(MarketService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -68,6 +78,7 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
   private readonly chartReady = signal(false);
   private requestId = 0;
 
+  protected readonly idToken = this.authService.idToken;
   protected readonly assets: MarketAsset[] = [
     { ticker: 'AAPL', name: 'Apple' },
     { ticker: 'TSLA', name: 'Tesla' },
@@ -77,6 +88,13 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
   ];
   protected readonly selectedTicker = signal(this.assets[0].ticker);
   protected readonly selectedRange = signal<TrendRange>('1d');
+  protected readonly buyDialogOpen = signal(false);
+  protected readonly buyState = signal<BuyState>({
+    amount: '',
+    errorMessage: '',
+    status: 'idle',
+    successMessage: '',
+  });
   protected readonly trendState = signal<TrendState>({
     errorMessage: '',
     points: [],
@@ -157,11 +175,109 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
     this.selectedRange.set(range);
   }
 
+  protected openBuyDialog(): void {
+    this.buyState.set({
+      amount: '',
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+    this.buyDialogOpen.set(true);
+  }
+
+  protected closeBuyDialog(): void {
+    if (this.buyState().status === 'saving') {
+      return;
+    }
+
+    this.buyDialogOpen.set(false);
+  }
+
+  protected updateBuyAmount(amount: string): void {
+    this.buyState.update((state) => ({
+      ...state,
+      amount,
+      errorMessage: '',
+      status: state.status === 'success' ? 'idle' : state.status,
+      successMessage: '',
+    }));
+  }
+
+  protected updateBuyAmountFromEvent(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.updateBuyAmount(input?.value ?? '');
+  }
+
+  protected buySelectedAsset(): void {
+    const token = this.idToken();
+    const amount = Number(this.buyState().amount.replace(',', '.'));
+    const asset = this.selectedAsset();
+
+    if (!token) {
+      this.buyState.update((state) => ({
+        ...state,
+        errorMessage: 'Debes iniciar sesion para comprar.',
+        status: 'error',
+      }));
+      return;
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      this.buyState.update((state) => ({
+        ...state,
+        errorMessage: 'Introduce un importe mayor que 0.',
+        status: 'error',
+      }));
+      return;
+    }
+
+    this.buyState.update((state) => ({
+      ...state,
+      errorMessage: '',
+      status: 'saving',
+      successMessage: '',
+    }));
+
+    this.marketService
+      .buyAsset(token, asset.ticker, amount)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.authService.updateUser(response.user);
+          this.buyState.set({
+            amount: '',
+            errorMessage: '',
+            status: 'success',
+            successMessage: `Compra realizada por ${this.formatNumber(response.operation.total, 2)} $.`,
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.buyState.update((state) => ({
+            ...state,
+            errorMessage: this.getBuyErrorMessage(error),
+            status: 'error',
+          }));
+        },
+      });
+  }
+
   protected formatNumber(value: number | undefined, maximumFractionDigits = 2): string {
     return new Intl.NumberFormat('es-ES', {
       maximumFractionDigits,
       minimumFractionDigits: 0,
     }).format(value ?? 0);
+  }
+
+  private getBuyErrorMessage(error: HttpErrorResponse): string {
+    if (typeof error.error?.detail === 'string') {
+      return error.error.detail;
+    }
+
+    if (error.status === 0) {
+      return 'No se puede conectar con el backend.';
+    }
+
+    return 'No se pudo realizar la compra.';
   }
 
   private loadTrend(ticker: string, range: TrendRange): void {

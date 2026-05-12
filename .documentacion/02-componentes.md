@@ -38,7 +38,9 @@ sidebar.css
 El sidebar muestra:
 
 - Logo de Simtrade centrado arriba.
-- Enlaces de navegacion: Cartera, Mercado, Operaciones, Alertas, Ranking y Configuracion.
+- Enlaces de navegacion: Cartera, Mercado, Alertas, Ranking y Configuracion.
+
+La antigua pestaña `Operaciones` se elimino del sidebar. La compra de acciones vive ahora dentro de `Mercado`.
 
 ### Por que se hizo como componente
 

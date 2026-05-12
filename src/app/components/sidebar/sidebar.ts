@@ -24,7 +24,6 @@ export class Sidebar {
   protected readonly menuItems = signal<SidebarItem[]>([
     { label: 'Cartera', path: 'cartera', icon: 'CA' },
     { label: 'Mercado', path: 'mercado', icon: 'ME' },
-    { label: 'Operaciones', path: 'operaciones', icon: 'OP' },
     { label: 'Alertas', path: 'alertas', icon: 'AL' },
     { label: 'Ranking', path: 'ranking', icon: 'RA' },
     { label: 'Configuracion', path: 'configuracion', icon: 'CO' },

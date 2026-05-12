@@ -229,6 +229,8 @@ Se crearon rutas hijas dentro de `/panel`:
 
 Y cada opcion del sidebar usa `routerLink`.
 
+Mas adelante se elimino la pestaña visual `Operaciones`. La ruta `/panel/operaciones` se conserva como redireccion a `/panel/mercado`.
+
 ## 12. La grafica se veia vacia
 
 ### Error
@@ -477,3 +479,75 @@ Ganancia diaria:      -0,06 $
 ```
 
 La cartera sigue ganando respecto a la compra, aunque hoy haya bajado.
+
+## 21. Compra desde mercado devolvia `Not Found`
+
+### Error
+
+Al pulsar `Comprar` en mercado, el popup mostraba:
+
+```text
+Not Found
+```
+
+### Causa
+
+El frontend ya intentaba llamar al endpoint de compra, pero el backend arrancado en el puerto `8000` era una version anterior que todavia no tenia:
+
+```text
+POST /users/me/portfolio/buy
+```
+
+### Solucion
+
+Se reinicio el backend para cargar el endpoint actualizado.
+
+## 22. La compra pedia acciones en vez de dinero
+
+### Error
+
+El popup pedia `Cantidad`, lo que se interpretaba como numero de acciones o unidades.
+
+### Causa
+
+La primera version enviaba `quantity` al backend.
+
+### Solucion
+
+Se cambio el flujo para pedir dinero a invertir:
+
+```json
+{
+  "ticker": "AAPL",
+  "amount": 10
+}
+```
+
+El backend obtiene el ultimo precio real y calcula:
+
+```text
+unidades compradas = dinero invertido / precio actual
+```
+
+## 23. El input del popup sobresalia del modal
+
+### Error
+
+El campo editable del popup de compra se salia horizontalmente del contenedor.
+
+### Causa
+
+El input tenia `width: 100%`, padding y borde, pero sin `box-sizing: border-box`.
+
+### Solucion
+
+Se anadio:
+
+```css
+.buy-dialog,
+.buy-dialog * {
+  box-sizing: border-box;
+}
+```
+
+Asi el ancho incluye padding y borde, y el input queda centrado dentro del popup.
