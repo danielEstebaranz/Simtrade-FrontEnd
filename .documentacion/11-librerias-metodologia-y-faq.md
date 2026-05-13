@@ -92,7 +92,8 @@ Cada pieza tiene un trabajo claro:
 
 - `AuthService`: login, registro y sesion.
 - `MarketService`: datos de mercado.
-- `CarteraSection`: interfaz y estado de cartera.
+- `MercadoSection`: consulta de activos y compra por importe.
+- `CarteraSection`: interfaz, estado de cartera, grafica, valor actual y ventas.
 - `ApiHandler`: proveedor de mercado.
 - `DbHandler`: Firestore.
 - `api_server.py`: capa HTTP.
@@ -163,15 +164,38 @@ El backend necesita esa clave para llamar a Firebase Authentication con `signInW
 
 El backend no encontraba historial de compras. Se cambio la consulta de transacciones y se anadio fallback con `1000 - saldo actual`.
 
+### Venta desde cartera
+
+Se anadio venta por porcentaje desde la propia cartera:
+
+- 25 %
+- 50 %
+- 75 %
+- porcentaje personalizado con popup
+
+La venta se ejecuta contra el backend con precio real actual. Por eso el importe puede variar ligeramente respecto al valor que se estaba viendo en pantalla.
+
+### Sidebar no llegaba hasta abajo
+
+Se corrigio usando `position: sticky` en el sidebar y fondo oscuro en `.app-shell`. El contenido principal pinta su propio fondo claro, evitando cortes al hacer scroll.
+
 ### Ganancia total positiva y diaria negativa
 
 Se aclaro que no es un error: la total compara contra la compra; la diaria compara contra el inicio del dia.
+
+### Compra en mercado devolvia `Not Found`
+
+El backend que estaba arrancado era antiguo y no tenia el endpoint `POST /users/me/portfolio/buy`. Se reinicio el backend.
+
+### Popup de compra desbordado
+
+El input sobresalia del modal. Se corrigio con `box-sizing: border-box`.
 
 ## Puntos debiles actuales
 
 - No hay JWT ni sesion segura real. Se guarda usuario en `localStorage`, suficiente para aprendizaje, no para produccion.
 - Las contrasenas usan SHA-256 simple. Mejoraria con `bcrypt` o `argon2`.
-- La API no tiene endpoints completos para comprar/vender desde frontend.
+- La API ya permite comprar desde mercado y vender desde cartera.
 - No hay cache de historicos de mercado.
 - No hay cache de calculo de ganancias.
 - No hay tests automatizados todavia.
@@ -179,6 +203,7 @@ Se aclaro que no es un error: la total compara contra la compra; la diaria compa
 - Si Yahoo Finance no reconoce un ticker, no hay grafica para ese activo.
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
 - Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
+- El valor actual mostrado y el importe vendido pueden diferir si el precio cambia entre la carga de la grafica y la ejecucion de la venta.
 
 ## Preguntas tipicas cubiertas
 
@@ -209,6 +234,28 @@ Porque Chart.js ya resuelve bien el problema y reduce codigo propio.
 ### Por que algunas graficas no salen
 
 Porque el ticker puede no existir en el proveedor, no tener historico o estar en un formato distinto.
+
+### Por que se compra desde Mercado y no desde Operaciones
+
+Porque mercado es donde el usuario consulta el activo, su precio y su tendencia. Comprar desde ahi reduce pasos y evita una pestaña separada para una sola accion.
+
+### Por que la compra pide dinero y no acciones
+
+Porque para el usuario es mas natural decir cuanto dinero quiere invertir. El backend convierte ese importe a unidades usando el precio real actual.
+
+### Por que la venta pide porcentaje y no dinero
+
+Porque en cartera el usuario ya tiene una posicion abierta. Vender el 25 %, 50 % o 75 % permite reducir una posicion sin calcular manualmente unidades.
+
+### Por que se muestra `Valor actual` en cartera
+
+Porque al vender interesa saber cuanto vale la posicion ahora mismo:
+
+```text
+valor actual = unidades * ultimo precio real
+```
+
+Antes se mostro `Dinero invertido`, pero ese dato sirve mas para analisis de rentabilidad que para decidir una venta inmediata.
 
 ### Que significan `1d`, `1w` y `1y`
 

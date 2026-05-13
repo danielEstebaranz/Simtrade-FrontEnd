@@ -55,6 +55,14 @@ export class AuthService {
     }
   }
 
+  updateUser(user: AuthUser): void {
+    this.userState.set(user);
+
+    if (this.isBrowser()) {
+      localStorage.setItem('simtrade_user', JSON.stringify(user));
+    }
+  }
+
   private sendAuthRequest(path: string, payload: AuthPayload): Observable<AuthUser> {
     return this.http.post<AuthResponse>(`${this.apiUrl}${path}`, payload).pipe(
       tap((response) => this.storeSession(response.user, response.idToken)),

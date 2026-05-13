@@ -74,10 +74,11 @@ Define las rutas de la aplicacion:
 - `/login`
 - `/panel/cartera`
 - `/panel/mercado`
-- `/panel/operaciones`
 - `/panel/alertas`
 - `/panel/ranking`
 - `/panel/configuracion`
+
+`/panel/operaciones` queda como redireccion a `/panel/mercado`.
 
 ### `app.config.ts`
 
@@ -162,13 +163,12 @@ alertas-section/
 cartera-section/
 configuracion-section/
 mercado-section/
-operaciones-section/
 ranking-section/
 ```
 
 Cada carpeta contiene el componente de una seccion del sidebar.
 
-La razon de separarlos es que cada apartado pueda crecer por separado. Por ejemplo, `operaciones` podra tener formularios de compra/venta sin mezclar su codigo con `ranking` o `configuracion`.
+La razon de separarlos es que cada apartado pueda crecer por separado. La compra de activos se integro en `mercado-section`, asi el usuario consulta el activo y compra desde la misma pantalla.
 
 ## `src/app/services/`
 
@@ -190,6 +190,7 @@ GET http://127.0.0.1:8000/market/{ticker}/trend?range=1d
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1w
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1y
 GET http://127.0.0.1:8000/users/me/portfolio/gains
+POST http://127.0.0.1:8000/users/me/portfolio/buy
 ```
 
 Se separa de `AuthService` porque autenticacion y mercado son responsabilidades distintas. Asi, si mas adelante se anaden precios, busqueda de activos o detalles de empresa, pueden crecer en `MarketService` sin mezclarlo con login.

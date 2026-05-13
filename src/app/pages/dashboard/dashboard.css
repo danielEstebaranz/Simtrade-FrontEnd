@@ -4,6 +4,7 @@
 }
 
 .app-shell {
+  background: #111827;
   display: flex;
   min-height: 100dvh;
 }
@@ -12,6 +13,7 @@
   background: #f8fafc;
   color: #111827;
   flex: 1;
+  min-width: 0;
   padding: 2rem;
 }
 
@@ -62,6 +64,10 @@ button:focus-visible {
   .app-shell,
   .page-header {
     flex-direction: column;
+  }
+
+  .app-shell {
+    background: #f8fafc;
   }
 
   .page-header {

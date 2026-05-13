@@ -80,8 +80,9 @@ Ese es el `router-outlet` de rutas hijas. Ahi se carga:
 
 - `CarteraSection` si estas en `/panel/cartera`.
 - `MercadoSection` si estas en `/panel/mercado`.
-- `OperacionesSection` si estas en `/panel/operaciones`.
 - etc.
+
+La ruta antigua `/panel/operaciones` redirige a mercado porque las compras se hacen ahora desde esa pantalla.
 
 Esto permite que el dashboard mantenga sidebar y cabecera fijos mientras cambia solo el contenido central.
 
@@ -98,6 +99,7 @@ Ejemplo:
   children: [
     { path: 'cartera', component: CarteraSection },
     { path: 'mercado', component: MercadoSection },
+    { path: 'operaciones', redirectTo: 'mercado' },
   ],
 }
 ```
