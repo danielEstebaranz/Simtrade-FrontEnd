@@ -657,3 +657,43 @@ x
 ```
 
 Es mas simple y evita problemas de codificacion.
+
+## 28. Usuario recien registrado no podia comprar
+
+### Error
+
+Un usuario se registraba correctamente, entraba al panel, pero al intentar comprar aparecia:
+
+```text
+Debes iniciar sesion para comprar.
+```
+
+### Causa
+
+El backend devolvia `user` tras el registro, pero no devolvia `idToken`.
+
+Angular guardaba el usuario en `AuthService`, por eso parecia que habia sesion, pero `idToken()` estaba vacio. Las compras necesitan ese token para llamar a:
+
+```text
+POST /users/me/portfolio/buy
+```
+
+### Solucion
+
+El backend ahora, despues de crear el usuario en Firebase Authentication, inicia sesion automaticamente con Firebase y devuelve:
+
+```json
+{
+  "user": {},
+  "idToken": "...",
+  "refreshToken": "..."
+}
+```
+
+Ademas, el frontend considera autenticada una sesion solo si existen usuario y token:
+
+```ts
+readonly isAuthenticated = computed(() => this.userState() !== null && this.tokenState() !== null);
+```
+
+Asi no se puede entrar al panel con un usuario guardado pero sin token valido.

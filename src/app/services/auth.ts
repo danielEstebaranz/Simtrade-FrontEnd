@@ -34,7 +34,7 @@ export class AuthService {
   private readonly tokenState = signal<string | null>(this.readStoredToken());
 
   readonly user = this.userState.asReadonly();
-  readonly isAuthenticated = computed(() => this.userState() !== null);
+  readonly isAuthenticated = computed(() => this.userState() !== null && this.tokenState() !== null);
   readonly idToken = this.tokenState.asReadonly();
 
   login(payload: AuthPayload): Observable<AuthUser> {
