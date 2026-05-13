@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
-import { AlertasSection } from './pages/dashboard/components/alertas-section/alertas-section';
 import { CarteraSection } from './pages/dashboard/components/cartera-section/cartera-section';
 import { ConfiguracionSection } from './pages/dashboard/components/configuracion-section/configuracion-section';
+import { HistorialSection } from './pages/dashboard/components/historial-section/historial-section';
 import { MercadoSection } from './pages/dashboard/components/mercado-section/mercado-section';
 import { RankingSection } from './pages/dashboard/components/ranking-section/ranking-section';
 import { Dashboard } from './pages/dashboard/dashboard';
@@ -19,7 +19,8 @@ export const routes: Routes = [
       { path: 'cartera', component: CarteraSection },
       { path: 'mercado', component: MercadoSection },
       { path: 'operaciones', redirectTo: 'mercado' },
-      { path: 'alertas', component: AlertasSection },
+      { path: 'alertas', redirectTo: 'historial' },
+      { path: 'historial', component: HistorialSection },
       { path: 'ranking', component: RankingSection },
       { path: 'configuracion', component: ConfiguracionSection },
     ],
