@@ -22,7 +22,8 @@ export const routes: Routes = [
       { path: 'cartera', component: CarteraSection },
       { path: 'mercado', component: MercadoSection },
       { path: 'operaciones', redirectTo: 'mercado' },
-      { path: 'alertas', component: AlertasSection },
+      { path: 'alertas', redirectTo: 'historial' },
+      { path: 'historial', component: HistorialSection },
       { path: 'ranking', component: RankingSection },
       { path: 'configuracion', component: ConfiguracionSection },
     ],
@@ -47,7 +48,7 @@ Dentro de `/panel` hay rutas hijas:
 ```text
 /panel/cartera
 /panel/mercado
-/panel/alertas
+/panel/historial
 /panel/ranking
 /panel/configuracion
 ```
@@ -55,6 +56,7 @@ Dentro de `/panel` hay rutas hijas:
 La ruta `/panel` sin apartado redirige por defecto a `/panel/cartera`.
 
 La ruta antigua `/panel/operaciones` se conserva solo como redireccion a `/panel/mercado`, porque las compras se hacen ahora desde mercado.
+La ruta antigua `/panel/alertas` se conserva como redireccion a `/panel/historial`.
 
 ### `/`
 
@@ -146,7 +148,8 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 - `/panel/cartera` carga `CarteraSection`.
 - `/panel/mercado` carga `MercadoSection`.
 - `/panel/operaciones` redirige a `MercadoSection`.
-- `/panel/alertas` carga `AlertasSection`.
+- `/panel/alertas` redirige a `HistorialSection`.
+- `/panel/historial` carga `HistorialSection`.
 - `/panel/ranking` carga `RankingSection`.
 - `/panel/configuracion` carga `ConfiguracionSection`.
 
@@ -156,7 +159,7 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 
 ## Opcion activa del sidebar
 
-El sidebar calcula la ruta activa leyendo la URL actual con el `Router`. Asi sabe si estas en `cartera`, `mercado`, `alertas`, etc.
+El sidebar calcula la ruta activa leyendo la URL actual con el `Router`. Asi sabe si estas en `cartera`, `mercado`, `historial`, etc.
 
 Con eso aplica:
 

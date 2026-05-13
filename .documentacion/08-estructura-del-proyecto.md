@@ -74,11 +74,12 @@ Define las rutas de la aplicacion:
 - `/login`
 - `/panel/cartera`
 - `/panel/mercado`
-- `/panel/alertas`
+- `/panel/historial`
 - `/panel/ranking`
 - `/panel/configuracion`
 
 `/panel/operaciones` queda como redireccion a `/panel/mercado`.
+`/panel/alertas` queda como redireccion a `/panel/historial`.
 
 ### `app.config.ts`
 
@@ -159,9 +160,9 @@ src/app/pages/dashboard/components/
 Componentes actuales:
 
 ```text
-alertas-section/
 cartera-section/
 configuracion-section/
+historial-section/
 mercado-section/
 ranking-section/
 ```
@@ -169,6 +170,7 @@ ranking-section/
 Cada carpeta contiene el componente de una seccion del sidebar.
 
 La razon de separarlos es que cada apartado pueda crecer por separado. La compra de activos se integro en `mercado-section`, asi el usuario consulta el activo y compra desde la misma pantalla.
+El historial de compras y ventas se integro en `historial-section`.
 
 ## `src/app/services/`
 

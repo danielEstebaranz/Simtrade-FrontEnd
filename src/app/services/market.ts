@@ -63,6 +63,20 @@ export interface SellAssetResponse {
   user: AuthUser;
 }
 
+export interface HistoryResponse {
+  items: HistoryItem[];
+}
+
+export interface HistoryItem {
+  date: string | null;
+  id: string;
+  price: number;
+  quantity: number;
+  ticker: string;
+  total: number;
+  type: 'compra' | 'venta' | string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -107,5 +121,13 @@ export class MarketService {
       { percentage, ticker },
       { headers },
     );
+  }
+
+  getHistory(token: string): Observable<HistoryResponse> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get<HistoryResponse>(`${this.apiUrl}/users/me/history`, { headers });
   }
 }

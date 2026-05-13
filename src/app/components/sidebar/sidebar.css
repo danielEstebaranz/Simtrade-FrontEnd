@@ -96,4 +96,5 @@
   .navigation {
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   }
+
 }
