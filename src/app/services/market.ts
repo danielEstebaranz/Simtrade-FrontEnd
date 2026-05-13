@@ -23,7 +23,17 @@ export interface PortfolioGains {
   dailyGain: number;
   hasCostBasis: boolean;
   investedCost: number;
+  positions: Record<string, PortfolioPositionGains>;
   source: TrendSource;
+  totalGain: number;
+  totalValue: number;
+}
+
+export interface PortfolioPositionGains {
+  costBasisSource: 'history' | 'balance_estimate' | 'none';
+  dailyGain: number;
+  hasCostBasis: boolean;
+  investedCost: number;
   totalGain: number;
   totalValue: number;
 }
@@ -32,6 +42,19 @@ export interface BuyAssetResponse {
   message: string;
   operation: {
     balance: number;
+    price: number;
+    quantity: number;
+    ticker: string;
+    total: number;
+  };
+  user: AuthUser;
+}
+
+export interface SellAssetResponse {
+  message: string;
+  operation: {
+    balance: number;
+    percentage: number;
     price: number;
     quantity: number;
     ticker: string;
@@ -70,6 +93,18 @@ export class MarketService {
     return this.http.post<BuyAssetResponse>(
       `${this.apiUrl}/users/me/portfolio/buy`,
       { amount, ticker },
+      { headers },
+    );
+  }
+
+  sellAsset(token: string, ticker: string, percentage: number): Observable<SellAssetResponse> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.post<SellAssetResponse>(
+      `${this.apiUrl}/users/me/portfolio/sell`,
+      { percentage, ticker },
       { headers },
     );
   }

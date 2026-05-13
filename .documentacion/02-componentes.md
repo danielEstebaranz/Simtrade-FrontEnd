@@ -42,6 +42,37 @@ El sidebar muestra:
 
 La antigua pestaña `Operaciones` se elimino del sidebar. La compra de acciones vive ahora dentro de `Mercado`.
 
+### Altura y scroll
+
+El sidebar se dejo como elemento pegado al viewport:
+
+```css
+:host {
+  position: sticky;
+  top: 0;
+}
+
+.sidebar {
+  height: 100dvh;
+}
+```
+
+Esto corrige el problema de que, al hacer scroll hacia abajo en pantallas largas como cartera, la barra lateral dejara de cubrir toda la altura visible.
+
+El fondo oscuro continuo no depende solo del sidebar. Tambien se pinta desde el layout del dashboard:
+
+```css
+.app-shell {
+  background: #111827;
+}
+
+.main-content {
+  background: #f8fafc;
+}
+```
+
+Asi no aparecen cortes blancos debajo del menu ni franjas mal alineadas.
+
 ### Por que se hizo como componente
 
 El sidebar es una pieza que no deberia mezclarse con el dashboard. Separarlo permite:

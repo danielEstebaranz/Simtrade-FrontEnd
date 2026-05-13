@@ -551,3 +551,109 @@ Se anadio:
 ```
 
 Asi el ancho incluye padding y borde, y el input queda centrado dentro del popup.
+
+## 24. Venta desde cartera: el importe no parecia exacto
+
+### Duda
+
+Al vender el 25 % de una posicion que visualmente rondaba los 100 $, el resultado fue aproximadamente:
+
+```text
+24,66 $
+```
+
+### Causa
+
+La pantalla muestra el valor con el ultimo precio consultado para la tendencia. Al vender, el backend vuelve a pedir el precio real actual antes de ejecutar la operacion.
+
+Si el precio cambia entre la visualizacion y la venta, el importe final cambia tambien.
+
+### Solucion
+
+Se cambio la metrica de la tendencia:
+
+```text
+Dinero invertido -> Valor actual
+```
+
+Asi el usuario ve el valor de mercado de esa posicion en ese momento, que es el dato mas util antes de vender.
+
+## 25. El sidebar no llegaba hasta abajo al hacer scroll
+
+### Error
+
+Al bajar por la pantalla, el lateral oscuro terminaba antes que el contenido y se veia fondo blanco debajo.
+
+### Causa
+
+El sidebar tenia:
+
+```css
+min-height: 100dvh;
+```
+
+Eso cubre solo la altura visible inicial, no necesariamente todo el documento cuando el contenido es mas largo.
+
+### Solucion
+
+Se hizo que el sidebar se comporte como elemento pegado al viewport:
+
+```css
+:host {
+  position: sticky;
+  top: 0;
+}
+
+.sidebar {
+  height: 100dvh;
+}
+```
+
+En movil se desactiva para que el menu no quede fijo arriba ocupando demasiado espacio.
+
+## 26. La solucion inicial del sidebar dejaba un corte raro
+
+### Error
+
+Despues de intentar pintar una franja oscura fija detras del sidebar, aparecio un corte visual porque la franja no coincidia exactamente con el ancho real del sidebar.
+
+### Causa
+
+Se uso un `linear-gradient` con una medida fija. Si el ancho real, el zoom del navegador o el layout variaban, quedaba un escalon.
+
+### Solucion
+
+Se sustituyo por una solucion mas robusta:
+
+```css
+.app-shell {
+  background: #111827;
+}
+
+.main-content {
+  background: #f8fafc;
+  min-width: 0;
+}
+```
+
+El contenedor completo tiene fondo oscuro y el contenido principal pinta encima su zona clara. Asi el lateral queda oscuro hasta abajo sin depender de calculos de ancho.
+
+## 27. Caracter raro en el cierre del popup de venta
+
+### Error
+
+El boton de cerrar del popup de venta mostro un caracter mal codificado.
+
+### Causa
+
+Se uso un caracter especial para la cruz de cierre y el archivo termino mostrando mojibake.
+
+### Solucion
+
+Se sustituyo por texto ASCII:
+
+```html
+x
+```
+
+Es mas simple y evita problemas de codificacion.

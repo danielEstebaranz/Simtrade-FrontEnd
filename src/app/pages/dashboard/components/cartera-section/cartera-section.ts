@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -61,6 +62,13 @@ interface PortfolioGainsState extends PortfolioGains {
   status: 'idle' | 'loading' | 'loaded' | 'error';
 }
 
+interface SellState {
+  customPercentage: string;
+  errorMessage: string;
+  status: 'idle' | 'saving' | 'success' | 'error';
+  successMessage: string;
+}
+
 @Component({
   selector: 'app-cartera-section',
   templateUrl: './cartera-section.html',
@@ -86,12 +94,14 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
   protected readonly idToken = this.authService.idToken;
   protected readonly selectedTicker = signal<string | null>(null);
   protected readonly selectedRange = signal<TrendRange>('1d');
+  protected readonly customSellDialogOpen = signal(false);
   protected readonly portfolioGains = signal<PortfolioGainsState>({
     costBasisSource: 'none',
     dailyGain: 0,
     errorMessage: '',
     hasCostBasis: false,
     investedCost: 0,
+    positions: {},
     source: 'yfinance',
     status: 'idle',
     totalGain: 0,
@@ -102,6 +112,12 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
     points: [],
     source: null,
     status: 'idle',
+  });
+  protected readonly sellState = signal<SellState>({
+    customPercentage: '',
+    errorMessage: '',
+    status: 'idle',
+    successMessage: '',
   });
   protected readonly rangeOptions: { label: string; value: TrendRange }[] = [
     { label: '1 dia', value: '1d' },
@@ -132,6 +148,15 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
   protected readonly selectedPosition = computed(() => {
     const currentTicker = this.currentTicker();
     return this.positions().find((position) => position.ticker === currentTicker) ?? null;
+  });
+  protected readonly selectedPositionGains = computed(() => {
+    const ticker = this.currentTicker();
+
+    if (!ticker) {
+      return null;
+    }
+
+    return this.portfolioGains().positions[ticker.toUpperCase()] ?? null;
   });
   protected readonly trendSummary = computed<TrendSummary | null>(() => {
     const prices = this.trendState().points.map((point) => point.price);
@@ -209,6 +234,54 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
     this.selectedRange.set(range);
   }
 
+  protected sellQuickPercentage(percentage: number): void {
+    this.sellSelectedPosition(percentage);
+  }
+
+  protected openCustomSellDialog(): void {
+    this.sellState.set({
+      customPercentage: '',
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+    this.customSellDialogOpen.set(true);
+  }
+
+  protected closeCustomSellDialog(): void {
+    if (this.sellState().status === 'saving') {
+      return;
+    }
+
+    this.customSellDialogOpen.set(false);
+  }
+
+  protected updateCustomSellPercentageFromEvent(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.sellState.update((state) => ({
+      ...state,
+      customPercentage: input?.value ?? '',
+      errorMessage: '',
+      status: state.status === 'success' ? 'idle' : state.status,
+      successMessage: '',
+    }));
+  }
+
+  protected sellCustomPercentage(): void {
+    const percentage = Number(this.sellState().customPercentage.replace(',', '.'));
+
+    if (!Number.isFinite(percentage)) {
+      this.sellState.update((state) => ({
+        ...state,
+        errorMessage: 'Introduce un porcentaje valido.',
+        status: 'error',
+      }));
+      return;
+    }
+
+    this.sellSelectedPosition(percentage);
+  }
+
   protected formatNumber(value: number | undefined, maximumFractionDigits = 2): string {
     return new Intl.NumberFormat('es-ES', {
       maximumFractionDigits,
@@ -219,6 +292,71 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
   protected signedMoney(value: number): string {
     const sign = value > 0 ? '+' : '';
     return `${sign}${this.formatNumber(value, 2)} $`;
+  }
+
+  private sellSelectedPosition(percentage: number): void {
+    const token = this.idToken();
+    const position = this.selectedPosition();
+
+    if (!token || !position) {
+      this.sellState.update((state) => ({
+        ...state,
+        errorMessage: 'Debes iniciar sesion y seleccionar un activo.',
+        status: 'error',
+      }));
+      return;
+    }
+
+    if (percentage <= 0 || percentage > 100) {
+      this.sellState.update((state) => ({
+        ...state,
+        errorMessage: 'El porcentaje debe estar entre 0 y 100.',
+        status: 'error',
+      }));
+      return;
+    }
+
+    this.sellState.update((state) => ({
+      ...state,
+      errorMessage: '',
+      status: 'saving',
+      successMessage: '',
+    }));
+
+    this.marketService
+      .sellAsset(token, position.ticker, percentage)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.authService.updateUser(response.user);
+          this.sellState.set({
+            customPercentage: '',
+            errorMessage: '',
+            status: 'success',
+            successMessage: `Venta realizada por ${this.formatNumber(response.operation.total, 2)} $.`,
+          });
+          this.customSellDialogOpen.set(false);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.sellState.update((state) => ({
+            ...state,
+            errorMessage: this.getSellErrorMessage(error),
+            status: 'error',
+          }));
+        },
+      });
+  }
+
+  private getSellErrorMessage(error: HttpErrorResponse): string {
+    if (typeof error.error?.detail === 'string') {
+      return error.error.detail;
+    }
+
+    if (error.status === 0) {
+      return 'No se puede conectar con el backend.';
+    }
+
+    return 'No se pudo realizar la venta.';
   }
 
   private loadTrend(ticker: string | null, range: TrendRange): void {
@@ -284,6 +422,7 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
         errorMessage: '',
         hasCostBasis: false,
         investedCost: 0,
+        positions: {},
         source: 'yfinance',
         status: 'idle',
         totalGain: 0,
