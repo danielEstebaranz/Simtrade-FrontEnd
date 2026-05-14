@@ -1,28 +1,54 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
-import { CarteraSection } from './pages/dashboard/components/cartera-section/cartera-section';
-import { ConfiguracionSection } from './pages/dashboard/components/configuracion-section/configuracion-section';
-import { HistorialSection } from './pages/dashboard/components/historial-section/historial-section';
-import { MercadoSection } from './pages/dashboard/components/mercado-section/mercado-section';
-import { RankingSection } from './pages/dashboard/components/ranking-section/ranking-section';
-import { Dashboard } from './pages/dashboard/dashboard';
-import { Login } from './pages/login/login';
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then((component) => component.Login),
+  },
   {
     path: 'panel',
-    component: Dashboard,
+    loadComponent: () => import('./pages/dashboard/dashboard').then((component) => component.Dashboard),
     canActivate: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'cartera' },
-      { path: 'cartera', component: CarteraSection },
-      { path: 'mercado', component: MercadoSection },
+      {
+        path: 'cartera',
+        loadComponent: () =>
+          import('./pages/dashboard/components/cartera-section/cartera-section').then(
+            (component) => component.CarteraSection,
+          ),
+      },
+      {
+        path: 'mercado',
+        loadComponent: () =>
+          import('./pages/dashboard/components/mercado-section/mercado-section').then(
+            (component) => component.MercadoSection,
+          ),
+      },
       { path: 'operaciones', redirectTo: 'mercado' },
       { path: 'alertas', redirectTo: 'historial' },
-      { path: 'historial', component: HistorialSection },
-      { path: 'ranking', component: RankingSection },
-      { path: 'configuracion', component: ConfiguracionSection },
+      {
+        path: 'historial',
+        loadComponent: () =>
+          import('./pages/dashboard/components/historial-section/historial-section').then(
+            (component) => component.HistorialSection,
+          ),
+      },
+      {
+        path: 'ranking',
+        loadComponent: () =>
+          import('./pages/dashboard/components/ranking-section/ranking-section').then(
+            (component) => component.RankingSection,
+          ),
+      },
+      {
+        path: 'configuracion',
+        loadComponent: () =>
+          import('./pages/dashboard/components/configuracion-section/configuracion-section').then(
+            (component) => component.ConfiguracionSection,
+          ),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },

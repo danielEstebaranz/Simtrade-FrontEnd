@@ -47,13 +47,24 @@ En este proyecto las rutas estan en:
 src/app/app.routes.ts
 ```
 
-Ejemplo:
+Ejemplo antiguo con carga directa:
 
 ```ts
 { path: 'login', component: Login }
 ```
 
-Significa: cuando la URL sea `/login`, Angular carga el componente `Login`.
+Significaba: cuando la URL era `/login`, Angular cargaba el componente `Login`.
+
+En la version actual se usa `loadComponent`:
+
+```ts
+{
+  path: 'login',
+  loadComponent: () => import('./pages/login/login').then((component) => component.Login),
+}
+```
+
+Esto carga el componente cuando la ruta se visita.
 
 ## Router-outlet
 
@@ -95,10 +106,10 @@ Ejemplo:
 ```ts
 {
   path: 'panel',
-  component: Dashboard,
+  loadComponent: () => import('./pages/dashboard/dashboard').then((component) => component.Dashboard),
   children: [
-    { path: 'cartera', component: CarteraSection },
-    { path: 'mercado', component: MercadoSection },
+    { path: 'cartera', loadComponent: () => import('./pages/dashboard/components/cartera-section/cartera-section').then((component) => component.CarteraSection) },
+    { path: 'mercado', loadComponent: () => import('./pages/dashboard/components/mercado-section/mercado-section').then((component) => component.MercadoSection) },
     { path: 'operaciones', redirectTo: 'mercado' },
   ],
 }
@@ -134,10 +145,10 @@ Archivo:
 src/app/guards/auth-guard.ts
 ```
 
-Uso:
+Uso conceptual:
 
 ```ts
-{ path: 'panel', component: Dashboard, canActivate: [authGuard] }
+{ path: 'panel', loadComponent: ..., canActivate: [authGuard] }
 ```
 
 Si el usuario esta autenticado, permite entrar.
@@ -195,7 +206,7 @@ Se usa en vez de constructor injection porque es una forma moderna y clara en An
 
 ## Reactive Forms
 
-El login usa formularios reactivos:
+El login y la pantalla de configuracion usan formularios reactivos:
 
 ```ts
 protected readonly form = this.formBuilder.group({
@@ -210,6 +221,12 @@ Ventajas:
 - Facil comprobar si el formulario es invalido.
 - Facil mostrar errores.
 - Mejor para formularios que creceran.
+
+En configuracion se usa para validar la cantidad de fondos:
+
+```ts
+amount: ['', [Validators.required, Validators.min(0.01), Validators.max(100000)]]
+```
 
 ## HttpClient
 
@@ -240,6 +257,15 @@ this.http.get<TrendResponse>(url, { params })
 range=1d
 range=1w
 range=1y
+```
+
+Tambien se usa en `AccountService` para:
+
+```text
+GET http://127.0.0.1:8000/users/me/settings
+PATCH http://127.0.0.1:8000/users/me/settings
+POST http://127.0.0.1:8000/users/me/funds
+DELETE http://127.0.0.1:8000/users/me
 ```
 
 ## Observable y subscribe
@@ -312,7 +338,7 @@ Si ya existe una grafica, se actualizan datos y opciones en vez de crear otra en
 
 `localStorage` guarda datos en el navegador.
 
-Se usa para conservar la sesion si se recarga la pagina.
+Se usa para conservar la sesion y el tema visual si se recarga la pagina.
 
 Como el proyecto usa SSR/prerender, antes de usarlo se comprueba que estamos en navegador:
 
@@ -321,6 +347,33 @@ isPlatformBrowser(this.platformId)
 ```
 
 Esto evita errores durante la build.
+
+## Tema global
+
+El tema visual se gestiona en `ThemeService`.
+
+La idea es:
+
+```text
+ThemeService -> document.documentElement.dataset.theme -> CSS global
+```
+
+Cuando el tema es oscuro, el HTML queda con:
+
+```html
+<html data-theme="dark">
+```
+
+Los estilos globales leen esa marca:
+
+```css
+:root[data-theme='dark'] {
+  --color-bg: #111315;
+  --color-surface: #1a1d1f;
+}
+```
+
+Asi no hace falta duplicar logica en cada componente. Los componentes siguen usando clases normales y el tema cambia mediante variables CSS.
 
 ## NgOptimizedImage
 

@@ -12,20 +12,23 @@ Rutas:
 
 ```ts
 export const routes: Routes = [
-  { path: 'login', component: Login },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then((component) => component.Login),
+  },
   {
     path: 'panel',
-    component: Dashboard,
+    loadComponent: () => import('./pages/dashboard/dashboard').then((component) => component.Dashboard),
     canActivate: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'cartera' },
-      { path: 'cartera', component: CarteraSection },
-      { path: 'mercado', component: MercadoSection },
+      { path: 'cartera', loadComponent: () => import('./pages/dashboard/components/cartera-section/cartera-section').then((component) => component.CarteraSection) },
+      { path: 'mercado', loadComponent: () => import('./pages/dashboard/components/mercado-section/mercado-section').then((component) => component.MercadoSection) },
       { path: 'operaciones', redirectTo: 'mercado' },
       { path: 'alertas', redirectTo: 'historial' },
-      { path: 'historial', component: HistorialSection },
-      { path: 'ranking', component: RankingSection },
-      { path: 'configuracion', component: ConfiguracionSection },
+      { path: 'historial', loadComponent: () => import('./pages/dashboard/components/historial-section/historial-section').then((component) => component.HistorialSection) },
+      { path: 'ranking', loadComponent: () => import('./pages/dashboard/components/ranking-section/ranking-section').then((component) => component.RankingSection) },
+      { path: 'configuracion', loadComponent: () => import('./pages/dashboard/components/configuracion-section/configuracion-section').then((component) => component.ConfiguracionSection) },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -34,6 +37,8 @@ export const routes: Routes = [
 ```
 
 ## Que significa cada ruta
+
+Las rutas usan `loadComponent`. Eso significa que Angular carga cada pantalla cuando se necesita, en lugar de meter todos los componentes del panel en el bloque inicial.
 
 ### `/login`
 
@@ -152,6 +157,28 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 - `/panel/historial` carga `HistorialSection`.
 - `/panel/ranking` carga `RankingSection`.
 - `/panel/configuracion` carga `ConfiguracionSection`.
+
+## Lazy loading con `loadComponent`
+
+El proyecto usa componentes standalone. Por eso no hace falta crear modulos de feature para tener carga diferida.
+
+Ejemplo:
+
+```ts
+{
+  path: 'configuracion',
+  loadComponent: () =>
+    import('./pages/dashboard/components/configuracion-section/configuracion-section').then(
+      (component) => component.ConfiguracionSection,
+    ),
+}
+```
+
+Ventajas:
+
+- el bundle inicial baja
+- cada apartado del panel queda separado
+- el codigo sigue alineado con Angular moderno
 
 ## Por que es mejor usar `routerLink`
 

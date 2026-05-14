@@ -29,6 +29,7 @@ import {
 } from 'chart.js';
 import { AuthService } from '../../../../services/auth';
 import { MarketService, TrendPoint, TrendRange, TrendSource } from '../../../../services/market';
+import { ThemeService } from '../../../../services/theme';
 
 interface MarketAsset {
   name: string;
@@ -74,6 +75,7 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly marketService = inject(MarketService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly themeService = inject(ThemeService);
   private chart: Chart<'line'> | null = null;
   private readonly chartReady = signal(false);
   private requestId = 0;
@@ -151,6 +153,7 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
         return;
       }
 
+      this.themeService.theme();
       this.scheduleChartRender(this.trendState().points, this.selectedTicker());
     });
   }
@@ -344,6 +347,10 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
     );
     const values = points.map((point) => point.price);
     const lineColor = values.at(-1)! >= values[0] ? '#047857' : '#b91c1c';
+    const isDarkTheme = this.themeService.theme() === 'dark';
+    const axisColor = isDarkTheme ? '#c2c7c4' : '#4b5563';
+    const gridColor = isDarkTheme ? '#383f42' : '#e5e7eb';
+    const fillColor = isDarkTheme ? 'rgba(15, 159, 154, 0.16)' : 'rgba(2, 132, 199, 0.12)';
     const config: ChartConfiguration<'line'> = {
       type: 'line',
       data: {
@@ -353,7 +360,7 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
             label: ticker,
             data: values,
             borderColor: lineColor,
-            backgroundColor: 'rgba(2, 132, 199, 0.12)',
+            backgroundColor: fillColor,
             borderWidth: 3,
             fill: true,
             pointRadius: 0,
@@ -369,22 +376,38 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
             display: false,
           },
           tooltip: {
+            backgroundColor: isDarkTheme ? '#1a1d1f' : '#ffffff',
+            bodyColor: isDarkTheme ? '#f3f4f0' : '#111827',
+            borderColor: gridColor,
+            borderWidth: 1,
             intersect: false,
             mode: 'index',
+            titleColor: isDarkTheme ? '#f3f4f0' : '#111827',
           },
         },
         scales: {
           x: {
+            border: {
+              color: gridColor,
+            },
             grid: {
               display: false,
             },
             ticks: {
+              color: axisColor,
               maxTicksLimit: 6,
             },
           },
           y: {
             beginAtZero: false,
+            border: {
+              color: gridColor,
+            },
+            grid: {
+              color: gridColor,
+            },
             ticks: {
+              color: axisColor,
               callback: (value) => `${this.formatNumber(Number(value), 2)} $`,
             },
           },

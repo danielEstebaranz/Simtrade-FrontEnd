@@ -2,6 +2,11 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { catchError, map, Observable, throwError, tap } from 'rxjs';
+import { AppTheme, ThemeService } from './theme';
+
+export interface UserSettings {
+  theme: AppTheme;
+}
 
 export interface AuthUser {
   id: string;
@@ -9,6 +14,7 @@ export interface AuthUser {
   email?: string;
   saldo: number;
   cartera: Record<string, number>;
+  settings?: UserSettings;
 }
 
 interface AuthResponse {
@@ -29,6 +35,7 @@ interface AuthPayload {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly themeService = inject(ThemeService);
   private readonly apiUrl = 'http://127.0.0.1:8000';
   private readonly userState = signal<AuthUser | null>(this.readStoredUser());
   private readonly tokenState = signal<string | null>(this.readStoredToken());
@@ -36,6 +43,14 @@ export class AuthService {
   readonly user = this.userState.asReadonly();
   readonly isAuthenticated = computed(() => this.userState() !== null && this.tokenState() !== null);
   readonly idToken = this.tokenState.asReadonly();
+
+  constructor() {
+    const storedTheme = this.userState()?.settings?.theme;
+
+    if (storedTheme) {
+      this.themeService.setTheme(storedTheme);
+    }
+  }
 
   login(payload: AuthPayload): Observable<AuthUser> {
     return this.sendAuthRequest('/auth/login', payload);
@@ -57,6 +72,7 @@ export class AuthService {
 
   updateUser(user: AuthUser): void {
     this.userState.set(user);
+    this.syncUserTheme(user);
 
     if (this.isBrowser()) {
       localStorage.setItem('simtrade_user', JSON.stringify(user));
@@ -74,6 +90,7 @@ export class AuthService {
   private storeSession(user: AuthUser, token?: string): void {
     this.userState.set(user);
     this.tokenState.set(token ?? null);
+    this.syncUserTheme(user);
 
     if (this.isBrowser()) {
       localStorage.setItem('simtrade_user', JSON.stringify(user));
@@ -114,6 +131,14 @@ export class AuthService {
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
+  }
+
+  private syncUserTheme(user: AuthUser): void {
+    const theme = user.settings?.theme;
+
+    if (theme) {
+      this.themeService.setTheme(theme);
+    }
   }
 
   private getErrorMessage(error: HttpErrorResponse): string {

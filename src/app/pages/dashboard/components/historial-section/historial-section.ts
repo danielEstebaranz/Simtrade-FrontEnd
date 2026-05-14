@@ -26,8 +26,12 @@ interface HistoryState {
         <ol class="history-list" aria-label="Ultimos movimientos de la cuenta">
           @for (item of notifications(); track item.id) {
             <li class="history-item">
-              <span class="operation-badge" [class.sale]="item.type === 'venta'">
-                {{ item.type === 'venta' ? 'Venta' : 'Compra' }}
+              <span
+                class="operation-badge"
+                [class.sale]="item.type === 'venta'"
+                [class.deposit]="item.type === 'deposito'"
+              >
+                {{ getOperationLabel(item) }}
               </span>
 
               <div class="history-content">
@@ -106,6 +110,11 @@ interface HistoryState {
       color: #991b1b;
     }
 
+    .operation-badge.deposit {
+      background: #e0f2fe;
+      color: #075985;
+    }
+
     .history-content {
       display: grid;
       gap: 0.25rem;
@@ -172,8 +181,20 @@ export class HistorialSection {
   }
 
   protected buildMessage(item: HistoryItem): string {
+    if (item.type === 'deposito') {
+      return `Has anadido ${this.formatNumber(item.total, 2)} $ al saldo.`;
+    }
+
     const verb = item.type === 'venta' ? 'Has vendido' : 'Has comprado';
     return `${verb} ${this.formatNumber(item.quantity, 4)} acciones de ${item.ticker} a ${this.formatNumber(item.price, 2)} $ por ${this.formatNumber(item.total, 2)} $.`;
+  }
+
+  protected getOperationLabel(item: HistoryItem): string {
+    if (item.type === 'deposito') {
+      return 'Deposito';
+    }
+
+    return item.type === 'venta' ? 'Venta' : 'Compra';
   }
 
   protected formatDate(date: string | null): string {

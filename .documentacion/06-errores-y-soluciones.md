@@ -697,3 +697,105 @@ readonly isAuthenticated = computed(() => this.userState() !== null && this.toke
 ```
 
 Asi no se puede entrar al panel con un usuario guardado pero sin token valido.
+
+## 29. Configuracion existia como ruta pero no como funcionalidad real
+
+### Problema
+
+La ruta `/panel/configuracion` y el enlace del sidebar ya existian, pero el componente solo mostraba:
+
+```text
+Aqui podras ajustar las preferencias de la cuenta.
+```
+
+No permitia probar el modo oscuro/claro, anadir fondos ni borrar cuenta desde el frontend.
+
+### Solucion
+
+Se creo una pantalla completa de configuracion con:
+
+- selector de tema claro/oscuro
+- formulario de anadir fondos con validacion
+- botones rapidos de 100 $, 500 $ y 1000 $
+- borrado de cuenta con confirmacion `BORRAR`
+- mensajes de carga, exito y error
+
+La logica HTTP se separo en:
+
+```text
+src/app/services/account.ts
+```
+
+Y el tema global en:
+
+```text
+src/app/services/theme.ts
+```
+
+## 30. Los depositos se veian como compras en historial
+
+### Error
+
+Despues de anadir fondos, el backend registra una transaccion con:
+
+```text
+type = deposito
+ticker = CASH
+```
+
+El frontend del historial solo distinguia venta frente a cualquier otra cosa. Por eso un deposito podia mostrarse como compra.
+
+### Solucion
+
+`HistorialSection` ahora distingue:
+
+```text
+compra
+venta
+deposito
+```
+
+Y muestra para depositos:
+
+```text
+Has anadido 250 $ al saldo.
+```
+
+## 31. El modo oscuro no afectaba a las graficas
+
+### Error
+
+Las tarjetas y fondos podian cambiar con CSS, pero los ejes, grids y tooltips de Chart.js seguian usando colores pensados para modo claro.
+
+### Causa
+
+Chart.js pinta dentro de un `canvas`. El contenido del canvas no se actualiza automaticamente con variables CSS.
+
+### Solucion
+
+`CarteraSection` y `MercadoSection` leen `ThemeService.theme()` en el `effect()` que repinta la grafica y pasan colores claros u oscuros a la configuracion de Chart.js.
+
+## 32. Build de Angular fallaba dentro del sandbox
+
+### Error
+
+Durante la comprobacion podia aparecer:
+
+```text
+Cannot read directory "../../..": Access is denied.
+Could not resolve "@angular/ssr"
+```
+
+### Causa
+
+El sandbox del entorno bloqueaba accesos que Angular necesita para resolver archivos, estilos y dependencias.
+
+### Solucion
+
+Se ejecuto la compilacion fuera del sandbox. La app compilo correctamente con:
+
+```powershell
+npm run build
+```
+
+La build solo mantuvo warnings ya existentes de presupuesto CSS en `cartera-section.css` y `mercado-section.css`.

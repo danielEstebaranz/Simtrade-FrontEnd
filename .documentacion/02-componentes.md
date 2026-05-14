@@ -87,7 +87,7 @@ En `sidebar.ts` el menu esta en un `signal`:
 
 ```ts
 protected readonly menuItems = signal<SidebarItem[]>([
-  { label: 'Cartera', fragment: 'cartera', icon: 'CA' },
+  { label: 'Cartera', path: 'cartera', icon: 'CA' },
   ...
 ]);
 ```
@@ -162,11 +162,66 @@ El dashboard es la pantalla que se muestra despues del login. Contiene:
 
 - Sidebar.
 - Saludo con el nombre de usuario.
-- Saldo disponible.
-- Numero de activos en cartera.
-- Secciones placeholder para futuras funciones.
+- Un `router-outlet` donde se cargan Cartera, Mercado, Historial, Ranking o Configuracion.
 - Boton de cerrar sesion.
 
 ### Por que el sidebar esta aqui y no en App
 
 Porque el sidebar solo debe aparecer cuando el usuario ya esta dentro. Si estuviera en `app.html`, tambien apareceria en login, que no es deseado.
+
+## Configuracion
+
+Ruta:
+
+```text
+src/app/pages/dashboard/components/configuracion-section/
+```
+
+Archivos:
+
+```text
+configuracion-section.ts
+configuracion-section.html
+configuracion-section.css
+```
+
+### Que hace
+
+`ConfiguracionSection` muestra una pantalla real de ajustes de cuenta:
+
+- resumen del perfil, email, saldo y numero de activos
+- selector de tema claro/oscuro
+- formulario reactivo para anadir fondos
+- botones rapidos de 100 $, 500 $ y 1000 $
+- zona de borrado de cuenta con confirmacion escribiendo `BORRAR`
+
+### Servicios usados
+
+Usa:
+
+- `AuthService` para leer y actualizar el usuario actual
+- `AccountService` para llamar a los endpoints de configuracion, fondos y borrado
+- `ThemeService` para aplicar el tema de forma global
+- `Router` para volver a `/login` despues de borrar la cuenta
+
+### Por que usa Reactive Forms
+
+El formulario de fondos usa `ReactiveFormsModule` con validadores:
+
+```ts
+amount: ['', [Validators.required, Validators.min(0.01), Validators.max(100000)]]
+```
+
+Asi el frontend valida antes de llamar al backend, aunque la validacion importante sigue estando tambien en la API.
+
+### Accesibilidad
+
+La pantalla usa:
+
+- `aria-labelledby` para nombrar secciones
+- `role="group"` en los grupos de botones
+- `aria-pressed` en el selector claro/oscuro
+- mensajes con `role="alert"` y `role="status"`
+- foco visible en botones e inputs
+
+El boton de borrado permanece deshabilitado hasta que el usuario escribe `BORRAR`.
