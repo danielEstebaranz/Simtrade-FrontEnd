@@ -92,6 +92,38 @@ Sin token debe devolver `401`, y eso es correcto:
 {"detail":"Falta cabecera Authorization."}
 ```
 
+## Probar configuracion del usuario
+
+Hace falta un `idToken` real recibido al iniciar sesion:
+
+```powershell
+curl.exe -s -i "http://127.0.0.1:8000/users/me/settings" -H "Authorization: Bearer <idToken>"
+```
+
+Para cambiar a modo oscuro:
+
+```powershell
+curl.exe -s -i -X PATCH "http://127.0.0.1:8000/users/me/settings" -H "Authorization: Bearer <idToken>" -H "Content-Type: application/json" -d "{\"theme\":\"dark\"}"
+```
+
+## Probar anadir fondos
+
+```powershell
+curl.exe -s -i -X POST "http://127.0.0.1:8000/users/me/funds" -H "Authorization: Bearer <idToken>" -H "Content-Type: application/json" -d "{\"amount\":250}"
+```
+
+Debe devolver `user` actualizado y una operacion con `amount` y `balance`.
+
+## Probar borrado de cuenta
+
+Usar solo con una cuenta de prueba:
+
+```powershell
+curl.exe -s -i -X DELETE "http://127.0.0.1:8000/users/me" -H "Authorization: Bearer <idToken>"
+```
+
+Debe borrar el usuario de Firebase Authentication, el perfil de Firestore y sus transacciones.
+
 ## Ver que proceso usa un puerto
 
 ```powershell
@@ -110,6 +142,7 @@ Stop-Process -Id <PID> -Force
 ```text
 http://localhost:4200/login
 http://localhost:4200/panel/cartera
+http://localhost:4200/panel/configuracion
 ```
 
 `/panel` esta protegido por el guard. Si no hay sesion, vuelve a `/login`.

@@ -78,6 +78,8 @@ Define las rutas de la aplicacion:
 - `/panel/ranking`
 - `/panel/configuracion`
 
+Las rutas principales y las rutas hijas usan `loadComponent`, asi que cada pantalla se carga bajo demanda.
+
 `/panel/operaciones` queda como redireccion a `/panel/mercado`.
 `/panel/alertas` queda como redireccion a `/panel/historial`.
 
@@ -179,8 +181,10 @@ Contiene servicios compartidos.
 Actualmente:
 
 ```text
+services/account.ts
 services/auth.ts
 services/market.ts
+services/theme.ts
 ```
 
 `AuthService` centraliza login, registro, cierre de sesion y almacenamiento del usuario.
@@ -193,9 +197,23 @@ GET http://127.0.0.1:8000/market/{ticker}/trend?range=1w
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1y
 GET http://127.0.0.1:8000/users/me/portfolio/gains
 POST http://127.0.0.1:8000/users/me/portfolio/buy
+POST http://127.0.0.1:8000/users/me/portfolio/sell
 ```
 
 Se separa de `AuthService` porque autenticacion y mercado son responsabilidades distintas. Asi, si mas adelante se anaden precios, busqueda de activos o detalles de empresa, pueden crecer en `MarketService` sin mezclarlo con login.
+
+`AccountService` centraliza las llamadas de cuenta y configuracion:
+
+```text
+GET http://127.0.0.1:8000/users/me/settings
+PATCH http://127.0.0.1:8000/users/me/settings
+POST http://127.0.0.1:8000/users/me/funds
+DELETE http://127.0.0.1:8000/users/me
+```
+
+Se separa de `MarketService` porque anadir fondos, cambiar tema o borrar cuenta no son operaciones de mercado.
+
+`ThemeService` guarda el tema actual como signal, lo aplica al documento HTML y lo persiste en `localStorage`.
 
 ## Dependencias relevantes del frontend
 
@@ -210,6 +228,12 @@ Libreria usada para pintar la grafica de tendencia de cartera. Se instalo porque
 ### RxJS
 
 Angular usa RxJS para las llamadas HTTP. `MarketService.getTrend(...)` devuelve un `Observable` y `CarteraSection` se suscribe a el para actualizar el estado cuando llega la respuesta.
+
+`AccountService` tambien devuelve `Observable` en sus operaciones. `ConfiguracionSection` usa `takeUntilDestroyed(...)` para limpiar suscripciones al salir de la pantalla.
+
+### Reactive Forms
+
+Angular Forms se usa en login y en el formulario de fondos de configuracion. Permite validar la cantidad antes de llamar al backend.
 
 ## Archivos de configuracion
 

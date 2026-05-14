@@ -1,0 +1,158 @@
+<section class="settings-page" aria-labelledby="settings-title">
+  <div class="section-heading">
+    <p class="eyebrow">Configuracion</p>
+    <h2 id="settings-title">Preferencias de cuenta</h2>
+  </div>
+
+  <div class="settings-grid">
+    <article class="settings-card profile-card" aria-labelledby="profile-title">
+      <div>
+        <p class="eyebrow">Perfil</p>
+        <h3 id="profile-title">{{ user()?.username }}</h3>
+      </div>
+
+      <dl class="profile-list">
+        <div>
+          <dt>Email</dt>
+          <dd>{{ user()?.email || user()?.username }}</dd>
+        </div>
+        <div>
+          <dt>Saldo disponible</dt>
+          <dd>{{ formatNumber(user()?.saldo, 2) }} $</dd>
+        </div>
+        <div>
+          <dt>Activos</dt>
+          <dd>{{ assetCount() }}</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="settings-card" aria-labelledby="theme-title">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Apariencia</p>
+          <h3 id="theme-title">Tema visual</h3>
+        </div>
+        @if (settingsState().status === 'loading' || settingsState().status === 'saving') {
+          <span class="state-pill" role="status">
+            {{ settingsState().status === 'loading' ? 'Cargando' : 'Guardando' }}
+          </span>
+        }
+      </div>
+
+      <div class="theme-switch" role="group" aria-label="Seleccion de tema">
+        @for (option of themeOptions; track option.value) {
+          <button
+            type="button"
+            [class.active]="theme() === option.value"
+            [attr.aria-pressed]="theme() === option.value"
+            [disabled]="settingsState().status === 'saving'"
+            (click)="selectTheme(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        }
+      </div>
+
+      @if (settingsState().status === 'error') {
+        <p class="action-message error" role="alert">{{ settingsState().errorMessage }}</p>
+      } @else if (settingsState().successMessage) {
+        <p class="action-message success" role="status">{{ settingsState().successMessage }}</p>
+      }
+    </article>
+
+    <article class="settings-card funds-card" aria-labelledby="funds-title">
+      <div>
+        <p class="eyebrow">Fondos</p>
+        <h3 id="funds-title">Anadir saldo</h3>
+      </div>
+
+      <form class="funds-form" [formGroup]="fundsForm" (ngSubmit)="addFunds()">
+        <label class="field-label" for="funds-amount">Cantidad</label>
+        <div class="amount-field">
+          <span aria-hidden="true">$</span>
+          <input
+            id="funds-amount"
+            type="number"
+            min="0.01"
+            max="100000"
+            step="0.01"
+            inputmode="decimal"
+            formControlName="amount"
+            aria-describedby="funds-limit funds-message"
+            [attr.aria-invalid]="fundsForm.controls.amount.invalid && fundsForm.controls.amount.touched"
+          >
+        </div>
+        <p id="funds-limit" class="field-help">Maximo 100000 $ por ingreso.</p>
+
+        <div class="quick-funds" role="group" aria-label="Cantidades rapidas">
+          @for (amount of quickFundAmounts; track amount) {
+            <button type="button" (click)="setQuickFundAmount(amount)">
+              {{ formatNumber(amount, 0) }} $
+            </button>
+          }
+        </div>
+
+        @if (fundsState().status === 'error') {
+          <p id="funds-message" class="action-message error" role="alert">
+            {{ fundsState().errorMessage }}
+          </p>
+        } @else if (fundsState().status === 'success') {
+          <p id="funds-message" class="action-message success" role="status">
+            {{ fundsState().successMessage }}
+          </p>
+        } @else {
+          <span id="funds-message" class="sr-only">Introduce una cantidad valida.</span>
+        }
+
+        <button
+          class="primary-button"
+          type="submit"
+          [disabled]="fundsState().status === 'saving'"
+        >
+          {{ fundsState().status === 'saving' ? 'Anadiendo...' : 'Anadir fondos' }}
+        </button>
+      </form>
+    </article>
+
+    <article class="settings-card danger-card" aria-labelledby="danger-title">
+      <div>
+        <p class="eyebrow danger">Zona de riesgo</p>
+        <h3 id="danger-title">Borrar cuenta</h3>
+      </div>
+
+      <p class="danger-copy">
+        Se eliminara el perfil, la cartera y el historial asociado a esta cuenta.
+      </p>
+
+      <label class="field-label" for="delete-confirmation">Confirmacion</label>
+      <input
+        id="delete-confirmation"
+        class="danger-input"
+        type="text"
+        autocomplete="off"
+        [value]="deleteConfirmation()"
+        aria-describedby="delete-help delete-message"
+        (input)="updateDeleteConfirmationFromEvent($event)"
+      >
+      <p id="delete-help" class="field-help">Escribe BORRAR para activar el borrado.</p>
+
+      @if (deleteState().status === 'error') {
+        <p id="delete-message" class="action-message error" role="alert">
+          {{ deleteState().errorMessage }}
+        </p>
+      } @else {
+        <span id="delete-message" class="sr-only">Confirmacion de borrado de cuenta.</span>
+      }
+
+      <button
+        class="danger-button"
+        type="button"
+        [disabled]="!canDeleteAccount() || deleteState().status === 'saving'"
+        (click)="deleteAccount()"
+      >
+        {{ deleteState().status === 'saving' ? 'Borrando...' : 'Borrar cuenta' }}
+      </button>
+    </article>
+  </div>
+</section>

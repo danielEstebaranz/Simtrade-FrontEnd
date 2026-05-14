@@ -63,6 +63,10 @@ Permite acceder a Firestore desde Python.
 
 Se usa para usuarios, saldo, cartera, mercado e historial.
 
+### requests
+
+Se usa en `api_server.py` para llamar al endpoint oficial de Firebase Authentication `signInWithPassword`.
+
 ### python-dotenv
 
 Carga variables desde `.env`, por ejemplo:
@@ -92,8 +96,11 @@ Cada pieza tiene un trabajo claro:
 
 - `AuthService`: login, registro y sesion.
 - `MarketService`: datos de mercado.
+- `AccountService`: configuracion, fondos y borrado de cuenta.
+- `ThemeService`: tema claro/oscuro y persistencia local.
 - `MercadoSection`: consulta de activos y compra por importe.
 - `CarteraSection`: interfaz, estado de cartera, grafica, valor actual y ventas.
+- `ConfiguracionSection`: preferencias de cuenta, anadir fondos y borrado.
 - `ApiHandler`: proveedor de mercado.
 - `DbHandler`: Firestore.
 - `api_server.py`: capa HTTP.
@@ -191,19 +198,61 @@ El backend que estaba arrancado era antiguo y no tenia el endpoint `POST /users/
 
 El input sobresalia del modal. Se corrigio con `box-sizing: border-box`.
 
+### Configuracion seguia siendo un placeholder
+
+La ruta `/panel/configuracion` existia y el sidebar enlazaba correctamente, pero el componente solo mostraba texto estatico.
+
+Se sustituyo por una pantalla funcional conectada al backend:
+
+- `GET /users/me/settings`
+- `PATCH /users/me/settings`
+- `POST /users/me/funds`
+- `DELETE /users/me`
+
+Ademas se separo la logica en `AccountService` y `ThemeService`.
+
+### Depositos aparecian como compras en historial
+
+Al anadir fondos, el backend registra una transaccion `DEPOSITO`. El historial del frontend trataba cualquier movimiento que no fuera `venta` como compra.
+
+Se anadio una etiqueta y mensaje especifico:
+
+```text
+Deposito -> Has anadido 250 $ al saldo.
+```
+
+### Canvas de Chart.js no cambiaba automaticamente con el tema
+
+El CSS global cambia tarjetas y textos, pero los ejes y tooltips de Chart.js se dibujan dentro de un `canvas`.
+
+Se hizo que `CarteraSection` y `MercadoSection` lean `ThemeService.theme()` dentro del `effect()` que repinta la grafica. Asi Chart.js recibe colores distintos en claro y oscuro.
+
+### `ng build` fallaba dentro del sandbox
+
+En el entorno de trabajo, Angular podia mostrar errores como:
+
+```text
+Cannot read directory "../../..": Access is denied.
+Could not resolve "@angular/ssr"
+```
+
+No era un fallo del codigo de la app, sino del sandbox al resolver archivos y dependencias. La build se ejecuto fuera del sandbox y compilo correctamente.
+
 ## Puntos debiles actuales
 
-- No hay JWT ni sesion segura real. Se guarda usuario en `localStorage`, suficiente para aprendizaje, no para produccion.
-- Las contrasenas usan SHA-256 simple. Mejoraria con `bcrypt` o `argon2`.
+- La sesion del frontend se guarda en `localStorage`. Para produccion seria mejor usar una estrategia mas robusta, por ejemplo cookies seguras o renovacion controlada de tokens.
+- La autenticacion ya vive en Firebase Authentication; Firestore no debe volver a guardar contrasenas.
 - La API ya permite comprar desde mercado y vender desde cartera.
 - No hay cache de historicos de mercado.
 - No hay cache de calculo de ganancias.
 - No hay tests automatizados todavia.
 - `Chart.js` sube el tamano del bundle y Angular avisa de presupuesto.
+- El tema oscuro esta implementado con variables CSS y overrides globales; si se crean nuevos componentes, deben usar esas variables o anadir sus propios estados de tema.
 - Si Yahoo Finance no reconoce un ticker, no hay grafica para ese activo.
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
 - Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
 - El valor actual mostrado y el importe vendido pueden diferir si el precio cambia entre la carga de la grafica y la ejecucion de la venta.
+- Borrar cuenta es irreversible. En el frontend se exige escribir `BORRAR`, pero la proteccion definitiva es que el backend exige token valido.
 
 ## Preguntas tipicas cubiertas
 
@@ -272,6 +321,7 @@ En:
 ```text
 src/app/services/auth.ts
 src/app/services/market.ts
+src/app/services/account.ts
 ```
 
 Actualmente apuntan a:
@@ -287,3 +337,22 @@ Porque no miden lo mismo. La total mide desde la compra o coste invertido; la di
 ### Por que aparece `FIREBASE_WEB_API_KEY`
 
 Porque el login usa Firebase Authentication desde el backend. Esa clave web es necesaria para llamar a `signInWithPassword`. Debe estar en el `.env` del backend y no hardcodeada en el codigo.
+
+### Como se guarda el modo oscuro
+
+El frontend guarda el tema en:
+
+```text
+localStorage -> simtrade_theme
+Firestore -> usuarios/{uid}.settings.theme
+```
+
+`localStorage` permite aplicar el tema al recargar. Firestore permite recuperar la preferencia del perfil cuando el backend responde.
+
+### Por que anadir fondos esta en Configuracion
+
+Porque no es una operacion de mercado sobre un activo, sino una operacion de cuenta. Por eso vive junto a preferencias y acciones sensibles como borrar cuenta.
+
+### Por que borrar cuenta pide escribir BORRAR
+
+Porque es una accion destructiva. El boton queda deshabilitado hasta que el usuario escribe la palabra exacta, reduciendo clics accidentales.

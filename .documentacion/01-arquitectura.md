@@ -34,8 +34,10 @@ src/app/
         ranking-section/
     login/
   services/
+    account.ts
     auth.ts
     market.ts
+    theme.ts
 
 public/
   logo_Simtrade.jpeg
@@ -52,6 +54,8 @@ Se eligio separar `components`, `pages`, `services` y `guards` porque cada carpe
 - `services`: logica que no pertenece a una pantalla concreta, como llamar al backend.
 - `guards`: reglas para permitir o bloquear navegacion.
 - `services/market.ts`: llamadas al backend para obtener datos reales de mercado.
+- `services/account.ts`: llamadas al backend para configuracion, fondos y borrado de cuenta.
+- `services/theme.ts`: estado global del tema visual y persistencia en navegador.
 
 Esto evita que todo acabe mezclado en `app.ts` o `app.html`. Tambien facilita seguir creciendo el proyecto: mercado, cartera, ranking y configuracion ya estan separados como componentes propios.
 
@@ -103,3 +107,26 @@ CarteraSection -> MarketService -> FastAPI -> ApiHandler -> yfinance -> datos re
 La grafica se pinta con Chart.js porque ya resuelve bien escalas, ejes, tooltips y lineas. Angular se queda como responsable de la interfaz y el estado, mientras Chart.js se encarga de dibujar en el `canvas`.
 
 Si el backend no devuelve datos reales, el frontend muestra un error. Se elimino el fallback de datos demo porque podia confundir: parecia una grafica real aunque estuviera inventada.
+
+## Flujo de configuracion
+
+La pestaña de configuracion ya no es un placeholder. El flujo actual es:
+
+```text
+ConfiguracionSection -> AccountService -> FastAPI -> DbHandler -> Firestore
+```
+
+Desde esa pantalla el usuario puede:
+
+- cambiar entre modo claro y modo oscuro
+- anadir fondos al saldo disponible
+- borrar la cuenta escribiendo una confirmacion
+
+`ThemeService` aplica el tema sobre `document.documentElement` usando `data-theme`. Los estilos globales de `src/styles.css` leen esa marca y cambian colores del dashboard, sidebar, tarjetas, graficas y mensajes.
+
+El tema se guarda en dos sitios:
+
+- `localStorage`, para que se vea bien al recargar antes de recibir respuesta del backend
+- `settings.theme` en Firestore, para que el perfil conserve la preferencia
+
+Cuando se anaden fondos, el backend devuelve el usuario actualizado y `AuthService.updateUser(...)` refresca el saldo en toda la app. Cuando se borra la cuenta, el frontend limpia la sesion y vuelve a `/login`.

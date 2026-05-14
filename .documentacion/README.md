@@ -29,5 +29,8 @@ La aplicacion es un frontend Angular moderno que tiene:
 - Venta de acciones desde cartera mediante porcentajes rapidos o porcentaje personalizado.
 - Una conexion HTTP con una API Python que reutiliza el backend existente de consola y Firestore.
 - Una vista de cartera con acciones del usuario, valor actual por posicion y grafica de tendencia real usando datos del backend.
+- Una vista de configuracion conectada al backend para tema claro/oscuro, anadir fondos y borrar cuenta.
+- Tema visual persistente en `localStorage`, sincronizado con `settings.theme` del perfil del usuario.
+- Historial con compras, ventas y depositos.
 
 El backend original funcionaba por consola. Para que el navegador pudiera usarlo, se creo una API HTTP pequena en el repositorio backend, porque un navegador no puede llamar directamente a funciones Python de consola.
