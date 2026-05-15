@@ -6,7 +6,16 @@
       <div>
         <h1>Bienvenido, {{ user()?.username }}</h1>
       </div>
-      <button type="button" (click)="logout()">Cerrar sesion</button>
+      <div class="header-actions">
+        <a
+          class="profile-link"
+          [routerLink]="['/panel', 'perfil']"
+          aria-label="Abrir perfil"
+        >
+          {{ (user()?.username || 'US').slice(0, 2).toUpperCase() }}
+        </a>
+        <button type="button" (click)="logout()">Cerrar sesion</button>
+      </div>
     </header>
 
     <section class="dashboard-sections" aria-label="Secciones del panel">

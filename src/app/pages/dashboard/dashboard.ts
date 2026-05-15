@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Sidebar, RouterOutlet],
+  imports: [RouterLink, Sidebar, RouterOutlet],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

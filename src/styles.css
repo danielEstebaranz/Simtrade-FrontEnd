@@ -105,7 +105,7 @@ body {
 }
 
 :root[data-theme='dark'] app-sidebar .sidebar {
-  background: var(--color-sidebar-bg);
+  background-color: var(--color-sidebar-bg);
   color: var(--color-sidebar-text);
 }
 

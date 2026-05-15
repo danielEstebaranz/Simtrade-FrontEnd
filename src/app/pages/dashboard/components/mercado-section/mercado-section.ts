@@ -77,8 +77,8 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
   private requestId = 0;
 
   protected readonly idToken = this.authService.idToken;
-  protected readonly assets: MarketAsset[] = MARKET_ASSETS;
-  protected readonly selectedTicker = signal(this.assets[0].ticker);
+  protected readonly assets = signal<MarketAsset[]>(MARKET_ASSETS);
+  protected readonly selectedTicker = signal(MARKET_ASSETS[0].ticker);
   protected readonly selectedRange = signal<TrendRange>('1d');
   protected readonly buyDialogOpen = signal(false);
   protected readonly buyState = signal<BuyState>({
@@ -99,7 +99,8 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
     { label: '1 ano', value: '1y' },
   ];
   protected readonly selectedAsset = computed(() => {
-    return this.assets.find((asset) => asset.ticker === this.selectedTicker()) ?? this.assets[0];
+    const assets = this.assets();
+    return assets.find((asset) => asset.ticker === this.selectedTicker()) ?? assets[0];
   });
   protected readonly trendSummary = computed<TrendSummary | null>(() => {
     const prices = this.trendState().points.map((point) => point.price);
@@ -137,6 +138,8 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
     effect(() => {
       this.loadTrend(this.selectedTicker(), this.selectedRange());
     });
+
+    this.loadAssets();
 
     effect(() => {
       if (!this.chartReady()) {
@@ -206,6 +209,15 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
     const amount = Number(this.buyState().amount.replace(',', '.'));
     const asset = this.selectedAsset();
 
+    if (!asset) {
+      this.buyState.update((state) => ({
+        ...state,
+        errorMessage: 'No hay activos disponibles para comprar.',
+        status: 'error',
+      }));
+      return;
+    }
+
     if (!token) {
       this.buyState.update((state) => ({
         ...state,
@@ -271,6 +283,25 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
     }
 
     return 'No se pudo realizar la compra.';
+  }
+
+  private loadAssets(): void {
+    this.marketService
+      .getAssets()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          if (response.items.length === 0) {
+            return;
+          }
+
+          this.assets.set(response.items);
+
+          if (!response.items.some((asset) => asset.ticker === this.selectedTicker())) {
+            this.selectedTicker.set(response.items[0].ticker);
+          }
+        },
+      });
   }
 
   private loadTrend(ticker: string, range: TrendRange): void {

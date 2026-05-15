@@ -38,7 +38,7 @@ sidebar.css
 El sidebar muestra:
 
 - Logo de Simtrade centrado arriba.
-- Enlaces de navegacion: Cartera, Mercado, Historial, Ranking y Configuracion.
+- Enlaces de navegacion: Cartera, Mercado, Historial, Estadisticas y Configuracion.
 
 La antigua pestaña `Operaciones` se elimino del sidebar. La compra de acciones vive ahora dentro de `Mercado`.
 
@@ -162,12 +162,50 @@ El dashboard es la pantalla que se muestra despues del login. Contiene:
 
 - Sidebar.
 - Saludo con el nombre de usuario.
-- Un `router-outlet` donde se cargan Cartera, Mercado, Historial, Ranking o Configuracion.
+- Un `router-outlet` donde se cargan Cartera, Mercado, Historial, Estadisticas, Configuracion o Perfil.
+- Icono redondo de perfil a la izquierda del boton de cerrar sesion.
 - Boton de cerrar sesion.
 
 ### Por que el sidebar esta aqui y no en App
 
 Porque el sidebar solo debe aparecer cuando el usuario ya esta dentro. Si estuviera en `app.html`, tambien apareceria en login, que no es deseado.
+
+## Perfil
+
+Ruta:
+
+```text
+src/app/pages/dashboard/components/perfil-section/
+```
+
+### Que hace
+
+`PerfilSection` se saco de Configuracion para que los ajustes no mezclen datos de consulta con acciones de cuenta.
+
+Muestra:
+
+- resumen en columna con saldo disponible, numero de activos y tema actual
+- datos de la cuenta
+- cartera actual
+- grafica tipo queso con la distribucion de la cartera por valor actual
+
+La distribucion no usa simplemente unidades, porque `0,1` Bitcoin y `0,1` Apple no representan el mismo dinero. Usa:
+
+```text
+porcentaje = valor actual de la posicion / valor actual total de la cartera
+```
+
+La grafica se pinta con Chart.js usando un grafico `doughnut`.
+
+### Problema corregido
+
+Al principio se veian las leyendas y porcentajes, pero no el queso. Los datos ya existian, pero Angular aun no habia insertado el `canvas` cuando Chart.js intentaba dibujar.
+
+La solucion fue esperar al siguiente frame del navegador:
+
+```ts
+window.requestAnimationFrame(() => this.renderCompositionChart(items));
+```
 
 ## Configuracion
 
@@ -190,15 +228,12 @@ configuracion-section.css
 `ConfiguracionSection` muestra una pantalla real de ajustes de cuenta:
 
 - barra lateral interna de seleccion, parecida a la lista de activos de Mercado
-- apartado `Perfil` con cabecera de usuario, email, saldo, numero de activos, tema actual, datos de cuenta y cartera actual
 - apartado `Apariencia` con selector de tema claro/oscuro
 - apartado `Fondos` con anadir fondos, quitar fondos y reiniciar cartera
 - botones rapidos de 100 $, 500 $ y 1000 $
 - zona de borrado de cuenta con confirmacion escribiendo `BORRAR`
 
 La primera version del redisenio se hizo con un desplegable al pasar el raton. Despues se cambio a una barra lateral porque encaja mejor con el estilo del resto de la aplicacion y aprovecha mejor el ancho: opciones a la izquierda y contenido activo a la derecha.
-
-En el perfil se anadio una lista pequena de cartera actual. Para evitar que con pocos activos la tarjeta quedara centrada verticalmente, los bloques internos usan `align-content: start`. Asi, si solo hay una accion, se queda arriba y no aparece un hueco raro en mitad del panel.
 
 ### Fondos y reinicio de cartera
 
@@ -247,6 +282,34 @@ La pantalla usa:
 El boton de borrado permanece deshabilitado hasta que el usuario escribe `BORRAR`.
 El boton de reinicio permanece deshabilitado hasta que el usuario escribe `REINICIAR`.
 
+## Estadisticas
+
+Ruta:
+
+```text
+src/app/pages/dashboard/components/estadisticas-section/
+```
+
+### Que hace
+
+Sustituye la antigua pestaña de `Ranking`.
+
+Muestra:
+
+- mejor rendimiento diario
+- peor rendimiento diario
+- mejor rendimiento semanal
+- peor rendimiento semanal
+- listados completos diarios y semanales
+
+El frontend recibe los datos ya agregados desde:
+
+```text
+GET /market/statistics
+```
+
+Asi el componente solo se ocupa de presentar la informacion y no repite calculos de mercado.
+
 ## Catalogo de activos
 
 Se anadio:
@@ -255,7 +318,7 @@ Se anadio:
 src/app/services/assets.ts
 ```
 
-Este archivo centraliza los activos disponibles:
+Este archivo mantiene un fallback local de activos legibles:
 
 ```text
 AAPL -> Apple
@@ -263,8 +326,16 @@ TSLA -> Tesla
 AMZN -> Amazon
 MSFT -> Microsoft
 BINANCE:BTCUSDT -> Bitcoin
+HINKF -> HINKF
+GOOGL -> Alphabet
 ```
 
-Antes Mercado tenia esta lista duplicada dentro de su componente y Cartera mostraba directamente el codigo del ticker. Ahora Mercado y Cartera comparten el mismo catalogo. Asi, en la lista de acciones del usuario se ve `Apple`, `Tesla` o `Bitcoin` en vez de codigos como `AAPL`.
+La fuente principal de activos disponibles es ahora el backend:
+
+```text
+GET /market/assets
+```
+
+`assets.ts` se conserva como fallback para que la interfaz tenga nombres legibles aunque el backend no responda. Antes Mercado tenia una lista duplicada dentro del componente y Cartera mostraba directamente el codigo del ticker. Ahora Mercado pregunta al backend y Cartera traduce los tickers a nombres como `Apple`, `Tesla`, `Bitcoin` o `Alphabet`.
 
 Tambien se redujo el tamano del texto en la fila de cartera y se cambio la fila a una cuadricula con dos columnas: nombre flexible a la izquierda y unidades fijas a la derecha. Esto evita que el nombre choque con la cantidad de unidades.

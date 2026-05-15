@@ -13,6 +13,13 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'cartera' },
       {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./pages/dashboard/components/perfil-section/perfil-section').then(
+            (component) => component.PerfilSection,
+          ),
+      },
+      {
         path: 'cartera',
         loadComponent: () =>
           import('./pages/dashboard/components/cartera-section/cartera-section').then(
@@ -36,12 +43,13 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'ranking',
+        path: 'estadisticas',
         loadComponent: () =>
-          import('./pages/dashboard/components/ranking-section/ranking-section').then(
-            (component) => component.RankingSection,
+          import('./pages/dashboard/components/estadisticas-section/estadisticas-section').then(
+            (component) => component.EstadisticasSection,
           ),
       },
+      { path: 'ranking', redirectTo: 'estadisticas' },
       {
         path: 'configuracion',
         loadComponent: () =>

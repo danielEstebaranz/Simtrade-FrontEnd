@@ -9,6 +9,8 @@ export const MARKET_ASSETS: MarketAsset[] = [
   { ticker: 'AMZN', name: 'Amazon' },
   { ticker: 'MSFT', name: 'Microsoft' },
   { ticker: 'BINANCE:BTCUSDT', name: 'Bitcoin' },
+  { ticker: 'HINKF', name: 'HINKF' },
+  { ticker: 'GOOGL', name: 'Alphabet' },
 ];
 
 const assetNames = new Map(MARKET_ASSETS.map((asset) => [asset.ticker.toUpperCase(), asset.name]));

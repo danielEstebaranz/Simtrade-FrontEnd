@@ -6,7 +6,11 @@
 }
 
 .sidebar {
-  background: #111827;
+  background-color: var(--color-sidebar-bg);
+  background-image: var(--sidebar-background-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: #f9fafb;
   display: flex;
   flex-direction: column;
@@ -24,10 +28,10 @@
 }
 
 .logo {
-  border-radius: 0.75rem;
-  height: 4rem;
-  object-fit: cover;
-  width: 4rem;
+  border-radius:15%;
+  height: 6rem;
+  object-fit:contain;
+  width: 6rem;
 }
 
 .navigation {

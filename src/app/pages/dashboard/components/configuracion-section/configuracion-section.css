@@ -114,14 +114,12 @@
 
 h2,
 h3,
-h4,
 p {
   margin: 0;
 }
 
 h2,
 h3,
-h4,
 dt {
   color: var(--color-text);
 }
@@ -129,10 +127,6 @@ dt {
 h2,
 h3 {
   font-size: 1.2rem;
-}
-
-h4 {
-  font-size: 1rem;
 }
 
 .settings-card {
@@ -172,131 +166,6 @@ h4 {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
-}
-
-.profile-hero {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-}
-
-.profile-avatar {
-  align-items: center;
-  background: var(--color-info-bg);
-  border: 1px solid var(--color-accent);
-  border-radius: 0.5rem;
-  color: var(--color-text);
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 1.1rem;
-  font-weight: 900;
-  height: 3.75rem;
-  justify-content: center;
-  width: 3.75rem;
-}
-
-.profile-subtitle {
-  color: var(--color-muted);
-}
-
-.profile-summary {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.profile-summary article {
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  display: grid;
-  gap: 0.35rem;
-  padding: 1rem;
-}
-
-.profile-summary strong {
-  color: var(--color-text);
-  font-size: 1.25rem;
-}
-
-.profile-details {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(18rem, 1fr) minmax(18rem, 1fr);
-}
-
-.profile-details section {
-  align-content: start;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.profile-list {
-  display: grid;
-  gap: 0.75rem;
-  margin: 0;
-}
-
-.profile-list div {
-  align-items: center;
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-  min-height: 3rem;
-  padding: 0.75rem;
-}
-
-dt {
-  font-weight: 800;
-}
-
-dd {
-  color: var(--color-muted);
-  margin: 0;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  text-align: right;
-}
-
-.profile-positions {
-  align-content: start;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.profile-positions div {
-  align-items: center;
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 3.4rem;
-  padding: 0.75rem;
-}
-
-.profile-positions span:first-child {
-  display: grid;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.profile-positions strong {
-  color: var(--color-text);
-  overflow-wrap: anywhere;
-}
-
-.profile-positions small,
-.profile-positions span:last-child {
-  color: var(--color-muted);
-}
-
-.profile-positions span:last-child {
-  white-space: nowrap;
 }
 
 .theme-switch,
@@ -543,8 +412,7 @@ dd {
 
 @media (max-width: 980px) {
   .settings-layout,
-  .funds-grid,
-  .profile-details {
+  .funds-grid {
     grid-template-columns: 1fr;
   }
 
@@ -554,17 +422,8 @@ dd {
 }
 
 @media (max-width: 640px) {
-  .profile-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-list div,
   .card-header {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  dd {
-    text-align: left;
   }
 }
