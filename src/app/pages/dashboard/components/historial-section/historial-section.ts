@@ -30,6 +30,8 @@ interface HistoryState {
                 class="operation-badge"
                 [class.sale]="item.type === 'venta'"
                 [class.deposit]="item.type === 'deposito'"
+                [class.withdrawal]="item.type === 'retirada'"
+                [class.reset]="item.type === 'reinicio'"
               >
                 {{ getOperationLabel(item) }}
               </span>
@@ -115,6 +117,16 @@ interface HistoryState {
       color: #075985;
     }
 
+    .operation-badge.withdrawal {
+      background: #ffedd5;
+      color: #9a3412;
+    }
+
+    .operation-badge.reset {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
     .history-content {
       display: grid;
       gap: 0.25rem;
@@ -185,6 +197,14 @@ export class HistorialSection {
       return `Has anadido ${this.formatNumber(item.total, 2)} $ al saldo.`;
     }
 
+    if (item.type === 'retirada') {
+      return `Has retirado ${this.formatNumber(item.total, 2)} $ del saldo.`;
+    }
+
+    if (item.type === 'reinicio') {
+      return 'Has reiniciado la cartera y el saldo vuelve a 1000 $.';
+    }
+
     const verb = item.type === 'venta' ? 'Has vendido' : 'Has comprado';
     return `${verb} ${this.formatNumber(item.quantity, 4)} acciones de ${item.ticker} a ${this.formatNumber(item.price, 2)} $ por ${this.formatNumber(item.total, 2)} $.`;
   }
@@ -192,6 +212,14 @@ export class HistorialSection {
   protected getOperationLabel(item: HistoryItem): string {
     if (item.type === 'deposito') {
       return 'Deposito';
+    }
+
+    if (item.type === 'retirada') {
+      return 'Retirada';
+    }
+
+    if (item.type === 'reinicio') {
+      return 'Reinicio';
     }
 
     return item.type === 'venta' ? 'Venta' : 'Compra';

@@ -74,7 +74,7 @@ export interface HistoryItem {
   quantity: number;
   ticker: string;
   total: number;
-  type: 'compra' | 'venta' | string;
+  type: 'compra' | 'deposito' | 'reinicio' | 'retirada' | 'venta' | string;
 }
 
 @Injectable({

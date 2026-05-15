@@ -1,15 +1,14 @@
 :host {
+  color-scheme: light;
   display: block;
   min-height: 100dvh;
 }
 
 .login-page {
   align-items: center;
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(3, 7, 18, 0.82)),
-    url('/logo_Simtrade.jpeg');
-  background-position: center;
-  background-size: cover;
+  background: #0f172a;
+  color: #111827;
+  color-scheme: light;
   display: flex;
   justify-content: center;
   min-height: 100dvh;
@@ -21,6 +20,7 @@
   border-radius: 0.5rem;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.35);
   color: #111827;
+  color-scheme: light;
   max-width: 27rem;
   padding: 2rem;
   width: 100%;
@@ -47,6 +47,7 @@
 }
 
 h1 {
+  color: #111827;
   font-size: 1.85rem;
   margin: 0;
 }
@@ -87,15 +88,22 @@ form {
 }
 
 label {
+  color: #111827;
   font-weight: 700;
 }
 
 input {
+  background: #ffffff;
   border: 1px solid #9ca3af;
   border-radius: 0.45rem;
+  color: #111827;
   font: inherit;
   min-height: 2.9rem;
   padding: 0 0.85rem;
+}
+
+input::placeholder {
+  color: #6b7280;
 }
 
 input:focus {

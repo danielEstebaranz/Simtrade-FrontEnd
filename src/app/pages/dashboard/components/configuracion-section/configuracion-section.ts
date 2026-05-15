@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../../../services/account';
+import { getAssetName } from '../../../../services/assets';
 import { AuthService } from '../../../../services/auth';
 import { AppTheme, ThemeService } from '../../../../services/theme';
 
@@ -12,6 +13,15 @@ interface ActionState {
   status: 'idle' | 'loading' | 'saving' | 'success' | 'error';
   successMessage: string;
 }
+
+interface ProfilePosition {
+  name: string;
+  quantity: number;
+  ticker: string;
+}
+
+type SettingsPanel = 'profile' | 'appearance' | 'funds' | 'danger';
+type FundsAction = 'add' | 'withdraw';
 
 @Component({
   selector: 'app-configuracion-section',
@@ -34,14 +44,45 @@ export class ConfiguracionSection {
   protected readonly user = this.authService.user;
   protected readonly theme = this.themeService.theme;
   protected readonly assetCount = computed(() => Object.keys(this.user()?.cartera ?? {}).length);
+  protected readonly activePanel = signal<SettingsPanel>('profile');
+  protected readonly fundsAction = signal<FundsAction>('add');
   protected readonly themeOptions: { label: string; value: AppTheme }[] = [
     { label: 'Claro', value: 'light' },
     { label: 'Oscuro', value: 'dark' },
   ];
+  protected readonly panelOptions: { danger?: boolean; label: string; value: SettingsPanel }[] = [
+    { label: 'Perfil', value: 'profile' },
+    { label: 'Apariencia', value: 'appearance' },
+    { label: 'Fondos', value: 'funds' },
+    { danger: true, label: 'Borrar cuenta', value: 'danger' },
+  ];
+  protected readonly activePanelLabel = computed(() => {
+    return this.panelOptions.find((option) => option.value === this.activePanel())?.label ?? 'Perfil';
+  });
+  protected readonly profilePositions = computed<ProfilePosition[]>(() =>
+    Object.entries(this.user()?.cartera ?? {})
+      .map(([ticker, quantity]) => ({
+        name: getAssetName(ticker),
+        quantity,
+        ticker,
+      }))
+      .sort((left, right) => left.name.localeCompare(right.name)),
+  );
+  protected readonly themeLabel = computed(() => {
+    return this.themeOptions.find((option) => option.value === this.theme())?.label ?? 'Claro';
+  });
   protected readonly quickFundAmounts = [100, 500, 1000];
   protected readonly deleteConfirmation = signal('');
+  protected readonly deleteDialogOpen = signal(false);
+  protected readonly deletePassword = signal('');
+  protected readonly resetConfirmation = signal('');
+  protected readonly resetDialogOpen = signal(false);
+  protected readonly resetPassword = signal('');
   protected readonly canDeleteAccount = computed(() => {
-    return this.deleteConfirmation().trim().toUpperCase() === 'BORRAR';
+    return this.deleteConfirmation().trim() === 'BORRAR';
+  });
+  protected readonly canResetPortfolio = computed(() => {
+    return this.resetConfirmation().trim() === 'REINICIAR';
   });
   protected readonly settingsState = signal<ActionState>({
     errorMessage: '',
@@ -53,13 +94,18 @@ export class ConfiguracionSection {
     status: 'idle',
     successMessage: '',
   });
+  protected readonly resetState = signal<ActionState>({
+    errorMessage: '',
+    status: 'idle',
+    successMessage: '',
+  });
   protected readonly deleteState = signal<ActionState>({
     errorMessage: '',
     status: 'idle',
     successMessage: '',
   });
   protected readonly fundsForm = this.formBuilder.group({
-    amount: ['', [Validators.required, Validators.min(0.01), Validators.max(100000)]],
+    amount: ['', [Validators.required]],
   });
 
   constructor() {
@@ -68,10 +114,12 @@ export class ConfiguracionSection {
 
   protected selectTheme(theme: AppTheme): void {
     const token = this.authService.idToken();
+    const previousTheme = this.theme();
 
     this.themeService.setTheme(theme);
 
     if (!token) {
+      this.themeService.setTheme(previousTheme);
       this.settingsState.set({
         errorMessage: 'Debes iniciar sesion para guardar el tema.',
         status: 'error',
@@ -99,6 +147,7 @@ export class ConfiguracionSection {
           });
         },
         error: (error: HttpErrorResponse) => {
+          this.themeService.setTheme(previousTheme);
           this.settingsState.set({
             errorMessage: this.getErrorMessage(error, 'No se pudo guardar el tema.'),
             status: 'error',
@@ -106,6 +155,19 @@ export class ConfiguracionSection {
           });
         },
       });
+  }
+
+  protected selectPanel(panel: SettingsPanel): void {
+    this.activePanel.set(panel);
+  }
+
+  protected selectFundsAction(action: FundsAction): void {
+    this.fundsAction.set(action);
+    this.fundsState.set({
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
   }
 
   protected setQuickFundAmount(amount: number): void {
@@ -118,12 +180,122 @@ export class ConfiguracionSection {
   }
 
   protected addFunds(): void {
+    this.saveFunds('add');
+  }
+
+  protected withdrawFunds(): void {
+    this.saveFunds('withdraw');
+  }
+
+  protected updateResetConfirmationFromEvent(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.resetConfirmation.set(input?.value ?? '');
+    this.resetState.set({
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+  }
+
+  protected openResetDialog(): void {
+    if (!this.canResetPortfolio()) {
+      this.resetState.set({
+        errorMessage: 'Escribe REINICIAR en mayusculas para confirmar.',
+        status: 'error',
+        successMessage: '',
+      });
+      return;
+    }
+
+    this.resetPassword.set('');
+    this.resetDialogOpen.set(true);
+    this.resetState.set({
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+  }
+
+  protected closeResetDialog(): void {
+    if (this.resetState().status === 'saving') {
+      return;
+    }
+
+    this.resetDialogOpen.set(false);
+    this.resetPassword.set('');
+  }
+
+  protected updateResetPasswordFromEvent(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.resetPassword.set(input?.value ?? '');
+    this.resetState.set({
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+  }
+
+  protected confirmResetPortfolio(): void {
     const token = this.authService.idToken();
-    const amount = Number(this.fundsForm.controls.amount.value.replace(',', '.'));
+    const password = this.resetPassword();
+
+    if (!token) {
+      this.resetState.set({
+        errorMessage: 'Debes iniciar sesion para reiniciar la cartera.',
+        status: 'error',
+        successMessage: '',
+      });
+      return;
+    }
+
+    if (!password) {
+      this.resetState.set({
+        errorMessage: 'Introduce la contrasena de la cuenta.',
+        status: 'error',
+        successMessage: '',
+      });
+      return;
+    }
+
+    this.resetState.set({
+      errorMessage: '',
+      status: 'saving',
+      successMessage: '',
+    });
+
+    this.accountService
+      .resetPortfolio(token, this.resetConfirmation(), password)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.authService.updateUser(response.user);
+          this.resetConfirmation.set('');
+          this.resetPassword.set('');
+          this.resetDialogOpen.set(false);
+          this.resetState.set({
+            errorMessage: '',
+            status: 'success',
+            successMessage: 'Cartera reiniciada correctamente.',
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.resetState.set({
+            errorMessage: this.getErrorMessage(error, 'No se pudo reiniciar la cartera.'),
+            status: 'error',
+            successMessage: '',
+          });
+        },
+      });
+  }
+
+  private saveFunds(action: FundsAction): void {
+    const token = this.authService.idToken();
+    const amountValue = this.fundsForm.controls.amount.value.trim();
+    const amount = Number(amountValue.replace(',', '.'));
 
     if (!token) {
       this.fundsState.set({
-        errorMessage: 'Debes iniciar sesion para anadir fondos.',
+        errorMessage: `Debes iniciar sesion para ${action === 'add' ? 'anadir' : 'quitar'} fondos.`,
         status: 'error',
         successMessage: '',
       });
@@ -146,8 +318,11 @@ export class ConfiguracionSection {
       successMessage: '',
     });
 
-    this.accountService
-      .addFunds(token, amount)
+    const request = action === 'add'
+      ? this.accountService.addFunds(token, amount)
+      : this.accountService.withdrawFunds(token, amount);
+
+    request
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -156,12 +331,17 @@ export class ConfiguracionSection {
           this.fundsState.set({
             errorMessage: '',
             status: 'success',
-            successMessage: `Fondos anadidos: ${this.formatNumber(response.operation.amount, 2)} $.`,
+            successMessage: action === 'add'
+              ? `Fondos anadidos: ${this.formatNumber(response.operation.amount, 2)} $.`
+              : `Fondos retirados: ${this.formatNumber(response.operation.amount, 2)} $.`,
           });
         },
         error: (error: HttpErrorResponse) => {
           this.fundsState.set({
-            errorMessage: this.getErrorMessage(error, 'No se pudieron anadir fondos.'),
+            errorMessage: this.getErrorMessage(
+              error,
+              action === 'add' ? 'No se pudieron anadir fondos.' : 'No se pudieron quitar fondos.',
+            ),
             status: 'error',
             successMessage: '',
           });
@@ -180,7 +360,46 @@ export class ConfiguracionSection {
   }
 
   protected deleteAccount(): void {
+    if (!this.canDeleteAccount()) {
+      this.deleteState.set({
+        errorMessage: 'Escribe BORRAR en mayusculas para confirmar.',
+        status: 'error',
+        successMessage: '',
+      });
+      return;
+    }
+
+    this.deletePassword.set('');
+    this.deleteDialogOpen.set(true);
+    this.deleteState.set({
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+  }
+
+  protected closeDeleteDialog(): void {
+    if (this.deleteState().status === 'saving') {
+      return;
+    }
+
+    this.deleteDialogOpen.set(false);
+    this.deletePassword.set('');
+  }
+
+  protected updateDeletePasswordFromEvent(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.deletePassword.set(input?.value ?? '');
+    this.deleteState.set({
+      errorMessage: '',
+      status: 'idle',
+      successMessage: '',
+    });
+  }
+
+  protected confirmDeleteAccount(): void {
     const token = this.authService.idToken();
+    const password = this.deletePassword();
 
     if (!token) {
       this.deleteState.set({
@@ -191,9 +410,9 @@ export class ConfiguracionSection {
       return;
     }
 
-    if (!this.canDeleteAccount()) {
+    if (!password) {
       this.deleteState.set({
-        errorMessage: 'Escribe BORRAR para confirmar.',
+        errorMessage: 'Introduce la contrasena de la cuenta.',
         status: 'error',
         successMessage: '',
       });
@@ -207,7 +426,7 @@ export class ConfiguracionSection {
     });
 
     this.accountService
-      .deleteAccount(token)
+      .deleteAccount(token, password)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

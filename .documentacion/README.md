@@ -28,9 +28,9 @@ La aplicacion es un frontend Angular moderno que tiene:
 - Compra de acciones desde mercado mediante un popup de importe a invertir.
 - Venta de acciones desde cartera mediante porcentajes rapidos o porcentaje personalizado.
 - Una conexion HTTP con una API Python que reutiliza el backend existente de consola y Firestore.
-- Una vista de cartera con acciones del usuario, valor actual por posicion y grafica de tendencia real usando datos del backend.
-- Una vista de configuracion conectada al backend para tema claro/oscuro, anadir fondos y borrar cuenta.
+- Una vista de cartera con acciones del usuario, nombre legible del activo, valor actual por posicion y grafica de tendencia real usando datos del backend.
+- Una vista de configuracion conectada al backend para tema claro/oscuro, anadir fondos, quitar fondos, reiniciar cartera y borrar cuenta.
 - Tema visual persistente en `localStorage`, sincronizado con `settings.theme` del perfil del usuario.
-- Historial con compras, ventas y depositos.
+- Historial con compras, ventas, depositos, retiradas y reinicios, cada uno con mensaje propio.
 
 El backend original funcionaba por consola. Para que el navegador pudiera usarlo, se creo una API HTTP pequena en el repositorio backend, porque un navegador no puede llamar directamente a funciones Python de consola.

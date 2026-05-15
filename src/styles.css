@@ -148,6 +148,7 @@ body {
 :root[data-theme='dark'] app-cartera-section h2,
 :root[data-theme='dark'] app-cartera-section .summary-card strong,
 :root[data-theme='dark'] app-cartera-section .trend-stats strong,
+:root[data-theme='dark'] app-cartera-section .asset-name,
 :root[data-theme='dark'] app-cartera-section .ticker,
 :root[data-theme='dark'] app-cartera-section .field-label,
 :root[data-theme='dark'] app-mercado-section h2,

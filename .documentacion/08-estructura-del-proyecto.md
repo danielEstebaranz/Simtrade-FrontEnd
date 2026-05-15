@@ -182,6 +182,7 @@ Actualmente:
 
 ```text
 services/account.ts
+services/assets.ts
 services/auth.ts
 services/market.ts
 services/theme.ts
@@ -208,10 +209,19 @@ Se separa de `AuthService` porque autenticacion y mercado son responsabilidades 
 GET http://127.0.0.1:8000/users/me/settings
 PATCH http://127.0.0.1:8000/users/me/settings
 POST http://127.0.0.1:8000/users/me/funds
-DELETE http://127.0.0.1:8000/users/me
+POST http://127.0.0.1:8000/users/me/funds/withdraw
+POST http://127.0.0.1:8000/users/me/portfolio/reset
+POST http://127.0.0.1:8000/users/me/delete
 ```
 
-Se separa de `MarketService` porque anadir fondos, cambiar tema o borrar cuenta no son operaciones de mercado.
+Se separa de `MarketService` porque anadir fondos, quitar fondos, cambiar tema, reiniciar cartera o borrar cuenta no son operaciones de mercado.
+
+`assets.ts` centraliza el catalogo basico de activos que se muestran en Mercado y Cartera. Evita duplicar la lista y permite mostrar nombres legibles en la cartera:
+
+```text
+AAPL -> Apple
+BINANCE:BTCUSDT -> Bitcoin
+```
 
 `ThemeService` guarda el tema actual como signal, lo aplica al documento HTML y lo persiste en `localStorage`.
 

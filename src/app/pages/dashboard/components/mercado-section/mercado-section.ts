@@ -28,13 +28,9 @@ import {
   Tooltip,
 } from 'chart.js';
 import { AuthService } from '../../../../services/auth';
+import { MARKET_ASSETS, MarketAsset } from '../../../../services/assets';
 import { MarketService, TrendPoint, TrendRange, TrendSource } from '../../../../services/market';
 import { ThemeService } from '../../../../services/theme';
-
-interface MarketAsset {
-  name: string;
-  ticker: string;
-}
 
 interface TrendState {
   errorMessage: string;
@@ -81,13 +77,7 @@ export class MercadoSection implements AfterViewInit, OnDestroy {
   private requestId = 0;
 
   protected readonly idToken = this.authService.idToken;
-  protected readonly assets: MarketAsset[] = [
-    { ticker: 'AAPL', name: 'Apple' },
-    { ticker: 'TSLA', name: 'Tesla' },
-    { ticker: 'AMZN', name: 'Amazon' },
-    { ticker: 'MSFT', name: 'Microsoft' },
-    { ticker: 'BINANCE:BTCUSDT', name: 'Bitcoin' },
-  ];
+  protected readonly assets: MarketAsset[] = MARKET_ASSETS;
   protected readonly selectedTicker = signal(this.assets[0].ticker);
   protected readonly selectedRange = signal<TrendRange>('1d');
   protected readonly buyDialogOpen = signal(false);
