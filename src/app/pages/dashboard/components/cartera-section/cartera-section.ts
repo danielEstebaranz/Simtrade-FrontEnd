@@ -28,6 +28,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { AuthService } from '../../../../services/auth';
+import { getAssetName } from '../../../../services/assets';
 import {
   MarketService,
   PortfolioGains,
@@ -235,6 +236,10 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
 
   protected selectRange(range: TrendRange): void {
     this.selectedRange.set(range);
+  }
+
+  protected assetName(ticker: string): string {
+    return getAssetName(ticker);
   }
 
   protected sellQuickPercentage(percentage: number): void {

@@ -753,12 +753,21 @@ El frontend del historial solo distinguia venta frente a cualquier otra cosa. Po
 compra
 venta
 deposito
+retirada
+reinicio
 ```
 
 Y muestra para depositos:
 
 ```text
 Has anadido 250 $ al saldo.
+```
+
+Despues, al anadir `Quitar fondos` y `Reiniciar cartera`, se amplio el historial para mostrar tambien:
+
+```text
+Has retirado 250 $ del saldo.
+Has reiniciado la cartera y el saldo vuelve a 1000 $.
 ```
 
 ## 31. El modo oscuro no afectaba a las graficas
@@ -798,4 +807,196 @@ Se ejecuto la compilacion fuera del sandbox. La app compilo correctamente con:
 npm run build
 ```
 
-La build solo mantuvo warnings ya existentes de presupuesto CSS en `cartera-section.css` y `mercado-section.css`.
+La build solo mantuvo warnings ya existentes de presupuesto CSS en `cartera-section.css`, `mercado-section.css` y `configuracion-section.css`.
+
+## 33. Login heredaba colores del tema oscuro
+
+### Error
+
+Al activar tema oscuro en la aplicacion, la pantalla de login podia verse con colores heredados del tema global. Ademas se notaban letras del logo en el fondo.
+
+### Causa
+
+El login estaba dentro de la misma app Angular y podia recibir variables o estilos pensados para el dashboard.
+
+### Solucion
+
+Se fijaron colores estaticos en `login.css`:
+
+- fondo liso
+- panel claro
+- textos e inputs con colores concretos
+- `color-scheme: light`
+
+Asi el login se ve igual aunque el usuario tenga modo oscuro guardado.
+
+## 34. Anadir fondos manual no aceptaba bien algunos importes
+
+### Error
+
+Los botones rapidos funcionaban, pero si el usuario escribia una cantidad manual podia no anadirse.
+
+### Causa
+
+El input numerico del navegador y la validacion del formulario podian tratar distinto comas, puntos o formatos locales.
+
+### Solucion
+
+El input paso a `type="text"` con `inputmode="decimal"`. En TypeScript se normaliza:
+
+```ts
+Number(valor.replace(',', '.'))
+```
+
+La validacion final sigue estando en frontend y backend.
+
+## 35. Borrar cuenta aceptaba contrasena incorrecta si el backend viejo seguia arrancado
+
+### Error
+
+El usuario podia pensar que la cuenta se borraba aunque la contrasena introducida no fuera correcta.
+
+### Causa
+
+Habia riesgo de estar usando un proceso de backend antiguo en el puerto `8000`, con una version previa del endpoint.
+
+### Solucion
+
+Se cambio el frontend para llamar a:
+
+```text
+POST /users/me/delete
+```
+
+Y el backend verifica la contrasena con Firebase Authentication antes de borrar. Si la contrasena no corresponde al usuario autenticado, devuelve error.
+
+## 36. Configuracion se rediseno primero como desplegable, pero no era la interfaz deseada
+
+### Error
+
+La primera version del redisenio de Configuracion usaba un desplegable al pasar el raton con `Perfil`, `Apariencia`, `Fondos` y `Borrar cuenta`.
+
+### Problema de experiencia
+
+El usuario queria una barra de seleccion lateral como las listas de Mercado/Cartera, no un menu desplegable. Ademas el desplegable no aprovechaba igual de bien el espacio.
+
+### Solucion
+
+Se sustituyo por una estructura de dos columnas:
+
+```text
+barra lateral interna de opciones | panel activo
+```
+
+La barra izquierda contiene botones grandes con abreviatura y nombre. El panel derecho ocupa el resto del ancho disponible. En pantallas pequenas, la estructura pasa a una sola columna.
+
+## 37. Cartera mostraba codigos de ticker demasiado grandes
+
+### Error
+
+En `Acciones del usuario`, textos como `BINANCE:BTCUSDT` podian casi chocar con las unidades. Ademas el usuario preferia ver nombres reales como `Bitcoin`, `Tesla` o `Apple`.
+
+### Solucion
+
+Se creo:
+
+```text
+src/app/services/assets.ts
+```
+
+Ese catalogo permite convertir tickers en nombres:
+
+```text
+AAPL -> Apple
+TSLA -> Tesla
+BINANCE:BTCUSDT -> Bitcoin
+```
+
+Tambien se redujo el tamano de texto y la fila se cambio a grid:
+
+```text
+nombre del activo | unidades
+```
+
+Asi las unidades quedan alineadas a la derecha sin solaparse.
+
+## 38. Nuevas operaciones de fondos necesitaban backend real
+
+### Necesidad
+
+En Configuracion se anadieron:
+
+- quitar fondos
+- reiniciar cartera
+
+### Solucion
+
+Se anadieron endpoints:
+
+```text
+POST /users/me/funds/withdraw
+POST /users/me/portfolio/reset
+```
+
+`/funds/withdraw` resta saldo si el usuario tiene suficiente. `/portfolio/reset` exige token valido, palabra `REINICIAR` y contrasena correcta antes de vaciar cartera y devolver saldo a 1000 $.
+
+En Firestore, `DbHandler` anadio:
+
+```text
+retirar_fondos(...)
+reiniciar_cartera(...)
+```
+
+Ambos registran movimientos en `transacciones` para que el historial pueda reflejar lo ocurrido.
+
+## 39. La cartera actual del perfil quedaba centrada con pocos activos
+
+### Error
+
+En Configuracion -> Perfil, cuando el usuario tenia una sola accion, la seccion `Cartera actual` quedaba visualmente en medio de la columna en vez de arriba. Con varias acciones parecia correcto.
+
+### Causa
+
+El grid de `Datos de la cuenta` y `Cartera actual` igualaba alturas. La columna de cartera tenia poco contenido, asi que su lista podia quedar centrada verticalmente y generaba un hueco innecesario.
+
+### Solucion
+
+Se anadio alineacion al inicio:
+
+```css
+.profile-details section {
+  align-content: start;
+}
+
+.profile-positions {
+  align-content: start;
+}
+```
+
+Con esto, aunque solo haya una accion, la cartera actual empieza arriba.
+
+## 40. Las retiradas no aparecian como notificacion
+
+### Error
+
+Al anadir fondos si aparecia una notificacion en Historial, pero al quitar fondos no aparecia con mensaje propio.
+
+### Causa
+
+El backend registraba `RETIRADA`, pero el frontend solo tenia mensajes especiales para `DEPOSITO`. Cualquier otro tipo podia caer en el mensaje generico de compra.
+
+### Solucion
+
+`HistorialSection` ahora reconoce:
+
+```text
+retirada
+reinicio
+```
+
+Y muestra mensajes especificos. Tambien se anadieron clases visuales propias para diferenciar retirada y reinicio.
+
+Ademas, el backend ajusta los calculos auxiliares:
+
+- `RETIRADA` resta en el calculo de fondos anadidos.
+- `REINICIO` limpia costes abiertos anteriores.

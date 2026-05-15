@@ -129,4 +129,33 @@ El tema se guarda en dos sitios:
 - `localStorage`, para que se vea bien al recargar antes de recibir respuesta del backend
 - `settings.theme` en Firestore, para que el perfil conserve la preferencia
 
-Cuando se anaden fondos, el backend devuelve el usuario actualizado y `AuthService.updateUser(...)` refresca el saldo en toda la app. Cuando se borra la cuenta, el frontend limpia la sesion y vuelve a `/login`.
+Cuando se anaden o quitan fondos, el backend devuelve el usuario actualizado y `AuthService.updateUser(...)` refresca el saldo en toda la app.
+
+El reinicio de cartera sigue el mismo flujo, pero exige mas seguridad:
+
+```text
+ConfiguracionSection -> AccountService -> FastAPI
+FastAPI verifica token + contrasena
+DbHandler vacia cartera y deja saldo en 1000 $
+FastAPI devuelve user actualizado
+AuthService.updateUser(...) refresca la app
+```
+
+Cuando se borra la cuenta, el frontend limpia la sesion y vuelve a `/login`.
+
+## Catalogo de activos
+
+Para no repetir datos entre Mercado y Cartera, se creo:
+
+```text
+src/app/services/assets.ts
+```
+
+`MercadoSection` usa esa lista para mostrar los activos disponibles. `CarteraSection` la usa para convertir el ticker guardado en Firestore a un nombre legible. Por ejemplo:
+
+```text
+AAPL -> Apple
+BINANCE:BTCUSDT -> Bitcoin
+```
+
+Si llega un ticker que no esta en el catalogo, se muestra el ticker como fallback.

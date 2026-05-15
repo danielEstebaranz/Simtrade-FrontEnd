@@ -51,7 +51,7 @@
             [attr.aria-pressed]="currentTicker() === position.ticker"
             (click)="selectPosition(position.ticker)"
           >
-            <span class="ticker">{{ position.ticker }}</span>
+            <span class="asset-name">{{ assetName(position.ticker) }}</span>
             <span class="quantity">{{ formatNumber(position.quantity, 4) }} ud.</span>
           </button>
         }
@@ -66,8 +66,8 @@
       <div class="trend-header">
         <div>
           <p class="eyebrow">Tendencia</p>
-          <h2>{{ position.ticker }}</h2>
-          <p class="position-detail">{{ formatNumber(position.quantity, 4) }} unidades en cartera</p>
+          <h2>{{ assetName(position.ticker) }}</h2>
+          <p class="position-detail">{{ position.ticker }} · {{ formatNumber(position.quantity, 4) }} unidades en cartera</p>
         </div>
 
         <div class="trend-actions">
@@ -131,7 +131,7 @@
         <canvas
           #trendCanvas
           class="trend-chart"
-          [attr.aria-label]="'Grafica real de tendencia de ' + position.ticker"
+          [attr.aria-label]="'Grafica real de tendencia de ' + assetName(position.ticker)"
           role="img"
         ></canvas>
 
@@ -169,7 +169,7 @@
       <div class="dialog-header">
         <div>
           <p class="eyebrow">Venta</p>
-          <h2 id="sell-dialog-title">{{ selectedPosition()?.ticker }}</h2>
+          <h2 id="sell-dialog-title">{{ assetName(selectedPosition()?.ticker ?? '') }}</h2>
         </div>
         <button class="icon-button" type="button" aria-label="Cerrar venta" (click)="closeCustomSellDialog()">x</button>
       </div>

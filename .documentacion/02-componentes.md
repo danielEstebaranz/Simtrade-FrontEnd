@@ -189,18 +189,37 @@ configuracion-section.css
 
 `ConfiguracionSection` muestra una pantalla real de ajustes de cuenta:
 
-- resumen del perfil, email, saldo y numero de activos
-- selector de tema claro/oscuro
-- formulario reactivo para anadir fondos
+- barra lateral interna de seleccion, parecida a la lista de activos de Mercado
+- apartado `Perfil` con cabecera de usuario, email, saldo, numero de activos, tema actual, datos de cuenta y cartera actual
+- apartado `Apariencia` con selector de tema claro/oscuro
+- apartado `Fondos` con anadir fondos, quitar fondos y reiniciar cartera
 - botones rapidos de 100 $, 500 $ y 1000 $
 - zona de borrado de cuenta con confirmacion escribiendo `BORRAR`
+
+La primera version del redisenio se hizo con un desplegable al pasar el raton. Despues se cambio a una barra lateral porque encaja mejor con el estilo del resto de la aplicacion y aprovecha mejor el ancho: opciones a la izquierda y contenido activo a la derecha.
+
+En el perfil se anadio una lista pequena de cartera actual. Para evitar que con pocos activos la tarjeta quedara centrada verticalmente, los bloques internos usan `align-content: start`. Asi, si solo hay una accion, se queda arriba y no aparece un hueco raro en mitad del panel.
+
+### Fondos y reinicio de cartera
+
+En fondos hay dos operaciones normales:
+
+- `Anadir fondos`: suma saldo disponible.
+- `Quitar fondos`: resta saldo disponible, siempre que haya saldo suficiente.
+
+Tambien existe `Reiniciar cartera`. Es una accion sensible porque borra los activos actuales y devuelve el saldo a 1000 $. Por eso exige dos pasos:
+
+1. escribir `REINICIAR` en mayusculas
+2. confirmar la contrasena en un popup
+
+La comprobacion importante se hace en el backend. El frontend solo ayuda a evitar clics accidentales.
 
 ### Servicios usados
 
 Usa:
 
 - `AuthService` para leer y actualizar el usuario actual
-- `AccountService` para llamar a los endpoints de configuracion, fondos y borrado
+- `AccountService` para llamar a los endpoints de configuracion, fondos, reinicio y borrado
 - `ThemeService` para aplicar el tema de forma global
 - `Router` para volver a `/login` despues de borrar la cuenta
 
@@ -209,19 +228,43 @@ Usa:
 El formulario de fondos usa `ReactiveFormsModule` con validadores:
 
 ```ts
-amount: ['', [Validators.required, Validators.min(0.01), Validators.max(100000)]]
+amount: ['', [Validators.required]]
 ```
 
-Asi el frontend valida antes de llamar al backend, aunque la validacion importante sigue estando tambien en la API.
+La cantidad se normaliza despues aceptando coma o punto decimal. Asi se evita que el navegador bloquee ciertos formatos locales. La validacion importante sigue estando tambien en la API.
 
 ### Accesibilidad
 
 La pantalla usa:
 
 - `aria-labelledby` para nombrar secciones
-- `role="group"` en los grupos de botones
+- `role="tablist"` y `role="tab"` en la barra lateral interna
+- `role="group"` en grupos de botones como cantidades rapidas
 - `aria-pressed` en el selector claro/oscuro
 - mensajes con `role="alert"` y `role="status"`
 - foco visible en botones e inputs
 
 El boton de borrado permanece deshabilitado hasta que el usuario escribe `BORRAR`.
+El boton de reinicio permanece deshabilitado hasta que el usuario escribe `REINICIAR`.
+
+## Catalogo de activos
+
+Se anadio:
+
+```text
+src/app/services/assets.ts
+```
+
+Este archivo centraliza los activos disponibles:
+
+```text
+AAPL -> Apple
+TSLA -> Tesla
+AMZN -> Amazon
+MSFT -> Microsoft
+BINANCE:BTCUSDT -> Bitcoin
+```
+
+Antes Mercado tenia esta lista duplicada dentro de su componente y Cartera mostraba directamente el codigo del ticker. Ahora Mercado y Cartera comparten el mismo catalogo. Asi, en la lista de acciones del usuario se ve `Apple`, `Tesla` o `Bitcoin` en vez de codigos como `AAPL`.
+
+Tambien se redujo el tamano del texto en la fila de cartera y se cambio la fila a una cuadricula con dos columnas: nombre flexible a la izquierda y unidades fijas a la derecha. Esto evita que el nombre choque con la cantidad de unidades.

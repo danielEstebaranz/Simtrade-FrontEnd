@@ -207,9 +207,17 @@ Se sustituyo por una pantalla funcional conectada al backend:
 - `GET /users/me/settings`
 - `PATCH /users/me/settings`
 - `POST /users/me/funds`
-- `DELETE /users/me`
+- `POST /users/me/funds/withdraw`
+- `POST /users/me/portfolio/reset`
+- `POST /users/me/delete`
 
 Ademas se separo la logica en `AccountService` y `ThemeService`.
+
+Despues se rediseno la interfaz de Configuracion. Primero se probo un desplegable al pasar el raton, pero se cambio a una barra lateral interna porque el usuario queria una seleccion visual parecida a Mercado y porque aprovecha mejor el espacio:
+
+```text
+Perfil / Apariencia / Fondos / Borrar cuenta  ->  panel activo a la derecha
+```
 
 ### Depositos aparecian como compras en historial
 
@@ -220,6 +228,15 @@ Se anadio una etiqueta y mensaje especifico:
 ```text
 Deposito -> Has anadido 250 $ al saldo.
 ```
+
+Despues se amplio el mismo criterio a:
+
+```text
+Retirada -> Has retirado 250 $ del saldo.
+Reinicio -> Has reiniciado la cartera y el saldo vuelve a 1000 $.
+```
+
+Asi el historial cubre compras, ventas y movimientos de cuenta.
 
 ### Canvas de Chart.js no cambiaba automaticamente con el tema
 
@@ -243,6 +260,7 @@ No era un fallo del codigo de la app, sino del sandbox al resolver archivos y de
 - La sesion del frontend se guarda en `localStorage`. Para produccion seria mejor usar una estrategia mas robusta, por ejemplo cookies seguras o renovacion controlada de tokens.
 - La autenticacion ya vive en Firebase Authentication; Firestore no debe volver a guardar contrasenas.
 - La API ya permite comprar desde mercado y vender desde cartera.
+- La API permite anadir fondos, quitar fondos, reiniciar cartera y borrar cuenta desde Configuracion.
 - No hay cache de historicos de mercado.
 - No hay cache de calculo de ganancias.
 - No hay tests automatizados todavia.
@@ -252,7 +270,8 @@ No era un fallo del codigo de la app, sino del sandbox al resolver archivos y de
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
 - Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
 - El valor actual mostrado y el importe vendido pueden diferir si el precio cambia entre la carga de la grafica y la ejecucion de la venta.
-- Borrar cuenta es irreversible. En el frontend se exige escribir `BORRAR`, pero la proteccion definitiva es que el backend exige token valido.
+- Reiniciar cartera es destructivo para las posiciones abiertas. El frontend exige `REINICIAR`, pero la proteccion real esta en backend: token valido y contrasena correcta.
+- Borrar cuenta es irreversible. El frontend exige escribir `BORRAR`, pero la proteccion real esta en backend: token valido y contrasena correcta.
 
 ## Preguntas tipicas cubiertas
 
@@ -353,6 +372,27 @@ Firestore -> usuarios/{uid}.settings.theme
 
 Porque no es una operacion de mercado sobre un activo, sino una operacion de cuenta. Por eso vive junto a preferencias y acciones sensibles como borrar cuenta.
 
+### Por que quitar fondos esta tambien en Configuracion
+
+Por el mismo motivo: quitar fondos modifica el saldo de la cuenta, no compra ni vende un activo. El backend comprueba que el usuario tenga saldo suficiente antes de aceptar la retirada.
+
+### Por que las retiradas aparecen en Historial
+
+Porque afectan al saldo de la cuenta y conviene que el usuario tenga trazabilidad. El backend registra `RETIRADA` en Firestore y el frontend la transforma en una notificacion legible.
+
+### Por que reiniciar cartera pide REINICIAR y contrasena
+
+Porque elimina las posiciones actuales y devuelve el saldo a 1000 $. Es una accion sensible, asi que se usan dos barreras:
+
+- confirmacion textual exacta `REINICIAR`
+- verificacion de contrasena contra Firebase Authentication en backend
+
 ### Por que borrar cuenta pide escribir BORRAR
 
 Porque es una accion destructiva. El boton queda deshabilitado hasta que el usuario escribe la palabra exacta, reduciendo clics accidentales.
+
+Ademas, el backend vuelve a verificar la contrasena antes de borrar. La palabra `BORRAR` por si sola no basta.
+
+### Por que Cartera muestra Apple o Bitcoin en vez de AAPL
+
+Porque esos nombres son mas faciles de entender para el usuario. Internamente Firestore y el backend siguen usando tickers, pero el frontend tiene un catalogo en `services/assets.ts` para traducirlos a nombres legibles.

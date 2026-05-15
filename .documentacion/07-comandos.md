@@ -36,6 +36,16 @@ Desde el repositorio backend:
 python api_server.py
 ```
 
+## Comprobar sintaxis del backend
+
+Desde el repositorio backend:
+
+```powershell
+python -m py_compile api_server.py services/db_handler.py
+```
+
+Esto no arranca el servidor, solo comprueba que los archivos Python no tengan errores de sintaxis.
+
 URL base:
 
 ```text
