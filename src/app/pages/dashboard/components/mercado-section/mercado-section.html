@@ -6,7 +6,7 @@
     </div>
 
     <div class="assets-list">
-      @for (asset of assets; track asset.ticker) {
+      @for (asset of assets(); track asset.ticker) {
         <button
           class="asset-row"
           type="button"

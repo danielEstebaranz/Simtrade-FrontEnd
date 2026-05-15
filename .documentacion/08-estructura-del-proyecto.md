@@ -41,6 +41,8 @@ Archivos actuales:
 public/favicon.ico
 public/logo_Simtrade.jpeg
 public/logo_Simtrade-rounded.png
+public/LogoSimtradeFondoAzul.png
+public/LogoSimtradeFondoBlanco.png
 ```
 
 Si un archivo esta en `public/logo_Simtrade-rounded.png`, se puede usar en HTML como:
@@ -75,13 +77,15 @@ Define las rutas de la aplicacion:
 - `/panel/cartera`
 - `/panel/mercado`
 - `/panel/historial`
-- `/panel/ranking`
+- `/panel/estadisticas`
 - `/panel/configuracion`
+- `/panel/perfil`
 
 Las rutas principales y las rutas hijas usan `loadComponent`, asi que cada pantalla se carga bajo demanda.
 
 `/panel/operaciones` queda como redireccion a `/panel/mercado`.
 `/panel/alertas` queda como redireccion a `/panel/historial`.
+`/panel/ranking` queda como redireccion a `/panel/estadisticas`.
 
 ### `app.config.ts`
 
@@ -164,12 +168,14 @@ Componentes actuales:
 ```text
 cartera-section/
 configuracion-section/
+estadisticas-section/
 historial-section/
 mercado-section/
+perfil-section/
 ranking-section/
 ```
 
-Cada carpeta contiene el componente de una seccion del sidebar.
+Cada carpeta contiene el componente de una seccion o vista del panel. `ranking-section` queda como resto de la version anterior; la ruta visible actual usa `estadisticas-section`.
 
 La razon de separarlos es que cada apartado pueda crecer por separado. La compra de activos se integro en `mercado-section`, asi el usuario consulta el activo y compra desde la misma pantalla.
 El historial de compras y ventas se integro en `historial-section`.
@@ -196,6 +202,8 @@ services/theme.ts
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1d
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1w
 GET http://127.0.0.1:8000/market/{ticker}/trend?range=1y
+GET http://127.0.0.1:8000/market/assets
+GET http://127.0.0.1:8000/market/statistics
 GET http://127.0.0.1:8000/users/me/portfolio/gains
 POST http://127.0.0.1:8000/users/me/portfolio/buy
 POST http://127.0.0.1:8000/users/me/portfolio/sell
@@ -216,7 +224,7 @@ POST http://127.0.0.1:8000/users/me/delete
 
 Se separa de `MarketService` porque anadir fondos, quitar fondos, cambiar tema, reiniciar cartera o borrar cuenta no son operaciones de mercado.
 
-`assets.ts` centraliza el catalogo basico de activos que se muestran en Mercado y Cartera. Evita duplicar la lista y permite mostrar nombres legibles en la cartera:
+`assets.ts` mantiene un catalogo fallback para nombres legibles. La fuente principal de activos disponibles ya es el backend mediante `/market/assets`:
 
 ```text
 AAPL -> Apple

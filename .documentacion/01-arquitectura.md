@@ -29,12 +29,15 @@ src/app/
       components/
         cartera-section/
         configuracion-section/
+        estadisticas-section/
         historial-section/
         mercado-section/
+        perfil-section/
         ranking-section/
     login/
   services/
     account.ts
+    assets.ts
     auth.ts
     market.ts
     theme.ts
@@ -42,6 +45,8 @@ src/app/
 public/
   logo_Simtrade.jpeg
   logo_Simtrade-rounded.png
+  LogoSimtradeFondoAzul.png
+  LogoSimtradeFondoBlanco.png
   favicon.ico
 ```
 
@@ -57,7 +62,7 @@ Se eligio separar `components`, `pages`, `services` y `guards` porque cada carpe
 - `services/account.ts`: llamadas al backend para configuracion, fondos y borrado de cuenta.
 - `services/theme.ts`: estado global del tema visual y persistencia en navegador.
 
-Esto evita que todo acabe mezclado en `app.ts` o `app.html`. Tambien facilita seguir creciendo el proyecto: mercado, cartera, ranking y configuracion ya estan separados como componentes propios.
+Esto evita que todo acabe mezclado en `app.ts` o `app.html`. Tambien facilita seguir creciendo el proyecto: mercado, cartera, estadisticas, perfil y configuracion ya estan separados como componentes propios.
 
 ## App principal
 
@@ -85,12 +90,14 @@ Ese segundo `router-outlet` sirve para cargar las rutas hijas del panel:
 /panel/cartera
 /panel/mercado
 /panel/historial
-/panel/ranking
+/panel/estadisticas
 /panel/configuracion
+/panel/perfil
 ```
 
 La ruta antigua `/panel/operaciones` redirige a `/panel/mercado`. La compra de acciones se integro en mercado.
 La ruta antigua `/panel/alertas` redirige a `/panel/historial`.
+La ruta antigua `/panel/ranking` redirige a `/panel/estadisticas`.
 
 Asi el dashboard mantiene el sidebar y la cabecera fijos, pero el contenido central cambia segun el link pulsado.
 
@@ -120,7 +127,9 @@ Desde esa pantalla el usuario puede:
 
 - cambiar entre modo claro y modo oscuro
 - anadir fondos al saldo disponible
-- borrar la cuenta escribiendo una confirmacion
+- quitar fondos
+- reiniciar la cartera con confirmacion y contrasena
+- borrar la cuenta escribiendo una confirmacion y la contrasena
 
 `ThemeService` aplica el tema sobre `document.documentElement` usando `data-theme`. Los estilos globales de `src/styles.css` leen esa marca y cambian colores del dashboard, sidebar, tarjetas, graficas y mensajes.
 
@@ -143,6 +152,26 @@ AuthService.updateUser(...) refresca la app
 
 Cuando se borra la cuenta, el frontend limpia la sesion y vuelve a `/login`.
 
+## Flujo de perfil
+
+El perfil se separo de configuracion y vive en una ruta propia:
+
+```text
+PerfilSection -> MarketService -> FastAPI -> calculo de valor actual
+```
+
+Muestra el resumen de cuenta, los datos principales y una grafica circular de distribucion de cartera. La composicion se calcula con valor actual por posicion, no con unidades, porque los activos no tienen el mismo precio.
+
+## Flujo de estadisticas
+
+La antigua pestaña de ranking se sustituyo por una vista de mercado:
+
+```text
+EstadisticasSection -> MarketService -> FastAPI -> historico de mercado
+```
+
+El backend devuelve mejores y peores rendimientos diarios y semanales ya agregados. Asi el frontend no repite calculos.
+
 ## Catalogo de activos
 
 Para no repetir datos entre Mercado y Cartera, se creo:
@@ -151,7 +180,13 @@ Para no repetir datos entre Mercado y Cartera, se creo:
 src/app/services/assets.ts
 ```
 
-`MercadoSection` usa esa lista para mostrar los activos disponibles. `CarteraSection` la usa para convertir el ticker guardado en Firestore a un nombre legible. Por ejemplo:
+`MercadoSection` obtiene la lista principal desde el backend:
+
+```text
+GET /market/assets
+```
+
+`assets.ts` se conserva como fallback local y para convertir el ticker guardado en Firestore a un nombre legible. Por ejemplo:
 
 ```text
 AAPL -> Apple

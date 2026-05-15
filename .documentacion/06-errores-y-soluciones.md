@@ -1000,3 +1000,78 @@ Ademas, el backend ajusta los calculos auxiliares:
 
 - `RETIRADA` resta en el calculo de fondos anadidos.
 - `REINICIO` limpia costes abiertos anteriores.
+
+## 41. El color o fondo del sidebar no cambiaba al editar `sidebar.css`
+
+### Error
+
+Se cambiaban colores en `sidebar.css`, pero visualmente el lateral seguia igual.
+
+### Causa
+
+Habia reglas globales del tema oscuro que tambien pintaban el sidebar. Una regla posterior con `background` podia sobrescribir el fondo completo del componente, incluida la imagen.
+
+### Solucion
+
+Se centralizo la imagen con variables CSS:
+
+```css
+--sidebar-background-image
+```
+
+Y la regla global paso de `background` a `background-color`, para no borrar `background-image`.
+
+## 42. Estadisticas no cargaba y los nuevos activos no aparecian
+
+### Error
+
+La pestaña mostraba:
+
+```text
+No se pudieron cargar las estadisticas de mercado.
+```
+
+Y los activos nuevos del backend no aparecian en Mercado.
+
+### Causas
+
+1. Seguía arrancado un proceso viejo del backend en el puerto `8000`, sin los endpoints nuevos.
+2. Habia listas de activos duplicadas: una en backend y otra en frontend.
+
+### Solucion
+
+Se añadieron endpoints nuevos:
+
+```text
+GET /market/assets
+GET /market/statistics
+```
+
+Se creo un catalogo compartido en backend para que worker y API usen los mismos activos, y Mercado paso a cargar la lista desde `/market/assets` dejando `assets.ts` solo como fallback.
+
+## 43. El grafico de distribucion mostraba porcentajes pero no el queso
+
+### Error
+
+En Perfil se veian:
+
+```text
+Apple 31,12 %
+NVD 68,88 %
+```
+
+pero el grafico circular no aparecia.
+
+### Causa
+
+Los datos ya estaban cargados, pero el `canvas` estaba dentro de un `@if`. Chart.js intentaba dibujar antes de que Angular insertara el elemento en el DOM.
+
+### Solucion
+
+Se programa el render en el siguiente frame:
+
+```ts
+window.requestAnimationFrame(() => this.renderCompositionChart(items));
+```
+
+Tambien se fijo un contenedor cuadrado para que el canvas tenga tamaño estable.

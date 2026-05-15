@@ -27,8 +27,10 @@ export const routes: Routes = [
       { path: 'operaciones', redirectTo: 'mercado' },
       { path: 'alertas', redirectTo: 'historial' },
       { path: 'historial', loadComponent: () => import('./pages/dashboard/components/historial-section/historial-section').then((component) => component.HistorialSection) },
-      { path: 'ranking', loadComponent: () => import('./pages/dashboard/components/ranking-section/ranking-section').then((component) => component.RankingSection) },
+      { path: 'estadisticas', loadComponent: () => import('./pages/dashboard/components/estadisticas-section/estadisticas-section').then((component) => component.EstadisticasSection) },
+      { path: 'ranking', redirectTo: 'estadisticas' },
       { path: 'configuracion', loadComponent: () => import('./pages/dashboard/components/configuracion-section/configuracion-section').then((component) => component.ConfiguracionSection) },
+      { path: 'perfil', loadComponent: () => import('./pages/dashboard/components/perfil-section/perfil-section').then((component) => component.PerfilSection) },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -54,14 +56,16 @@ Dentro de `/panel` hay rutas hijas:
 /panel/cartera
 /panel/mercado
 /panel/historial
-/panel/ranking
+/panel/estadisticas
 /panel/configuracion
+/panel/perfil
 ```
 
 La ruta `/panel` sin apartado redirige por defecto a `/panel/cartera`.
 
 La ruta antigua `/panel/operaciones` se conserva solo como redireccion a `/panel/mercado`, porque las compras se hacen ahora desde mercado.
 La ruta antigua `/panel/alertas` se conserva como redireccion a `/panel/historial`.
+La ruta antigua `/panel/ranking` se conserva como redireccion a `/panel/estadisticas`.
 
 ### `/`
 
@@ -155,8 +159,10 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 - `/panel/operaciones` redirige a `MercadoSection`.
 - `/panel/alertas` redirige a `HistorialSection`.
 - `/panel/historial` carga `HistorialSection`.
-- `/panel/ranking` carga `RankingSection`.
+- `/panel/estadisticas` carga `EstadisticasSection`.
+- `/panel/ranking` redirige a `EstadisticasSection`.
 - `/panel/configuracion` carga `ConfiguracionSection`.
+- `/panel/perfil` carga `PerfilSection`.
 
 ## Lazy loading con `loadComponent`
 

@@ -4,7 +4,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../../../services/account';
-import { getAssetName } from '../../../../services/assets';
 import { AuthService } from '../../../../services/auth';
 import { AppTheme, ThemeService } from '../../../../services/theme';
 
@@ -14,13 +13,7 @@ interface ActionState {
   successMessage: string;
 }
 
-interface ProfilePosition {
-  name: string;
-  quantity: number;
-  ticker: string;
-}
-
-type SettingsPanel = 'profile' | 'appearance' | 'funds' | 'danger';
+type SettingsPanel = 'appearance' | 'funds' | 'danger';
 type FundsAction = 'add' | 'withdraw';
 
 @Component({
@@ -43,34 +36,17 @@ export class ConfiguracionSection {
 
   protected readonly user = this.authService.user;
   protected readonly theme = this.themeService.theme;
-  protected readonly assetCount = computed(() => Object.keys(this.user()?.cartera ?? {}).length);
-  protected readonly activePanel = signal<SettingsPanel>('profile');
+  protected readonly activePanel = signal<SettingsPanel>('appearance');
   protected readonly fundsAction = signal<FundsAction>('add');
   protected readonly themeOptions: { label: string; value: AppTheme }[] = [
     { label: 'Claro', value: 'light' },
     { label: 'Oscuro', value: 'dark' },
   ];
   protected readonly panelOptions: { danger?: boolean; label: string; value: SettingsPanel }[] = [
-    { label: 'Perfil', value: 'profile' },
     { label: 'Apariencia', value: 'appearance' },
     { label: 'Fondos', value: 'funds' },
     { danger: true, label: 'Borrar cuenta', value: 'danger' },
   ];
-  protected readonly activePanelLabel = computed(() => {
-    return this.panelOptions.find((option) => option.value === this.activePanel())?.label ?? 'Perfil';
-  });
-  protected readonly profilePositions = computed<ProfilePosition[]>(() =>
-    Object.entries(this.user()?.cartera ?? {})
-      .map(([ticker, quantity]) => ({
-        name: getAssetName(ticker),
-        quantity,
-        ticker,
-      }))
-      .sort((left, right) => left.name.localeCompare(right.name)),
-  );
-  protected readonly themeLabel = computed(() => {
-    return this.themeOptions.find((option) => option.value === this.theme())?.label ?? 'Claro';
-  });
   protected readonly quickFundAmounts = [100, 500, 1000];
   protected readonly deleteConfirmation = signal('');
   protected readonly deleteDialogOpen = signal(false);

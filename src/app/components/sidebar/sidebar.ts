@@ -25,7 +25,7 @@ export class Sidebar {
     { label: 'Cartera', path: 'cartera', icon: 'CA' },
     { label: 'Mercado', path: 'mercado', icon: 'ME' },
     { label: 'Historial', path: 'historial', icon: 'HI' },
-    { label: 'Ranking', path: 'ranking', icon: 'RA' },
+    { label: 'Estadisticas', path: 'estadisticas', icon: 'ES' },
     { label: 'Configuracion', path: 'configuracion', icon: 'CO' },
   ]);
 

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthUser } from './auth';
+import { MarketAsset } from './assets';
 
 export type TrendRange = '1d' | '1w' | '1y';
 export type TrendSource = 'yfinance' | 'finnhub';
@@ -77,6 +78,30 @@ export interface HistoryItem {
   type: 'compra' | 'deposito' | 'reinicio' | 'retirada' | 'venta' | string;
 }
 
+export interface MarketPerformance {
+  change: number;
+  changePercent: number;
+  lastPrice: number;
+  name: string;
+  ticker: string;
+}
+
+export interface MarketStatisticsRange {
+  best: MarketPerformance | null;
+  items: MarketPerformance[];
+  worst: MarketPerformance | null;
+}
+
+export interface MarketStatisticsResponse {
+  daily: MarketStatisticsRange;
+  source: TrendSource;
+  weekly: MarketStatisticsRange;
+}
+
+export interface MarketAssetsResponse {
+  items: MarketAsset[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -129,5 +154,13 @@ export class MarketService {
     });
 
     return this.http.get<HistoryResponse>(`${this.apiUrl}/users/me/history`, { headers });
+  }
+
+  getStatistics(): Observable<MarketStatisticsResponse> {
+    return this.http.get<MarketStatisticsResponse>(`${this.apiUrl}/market/statistics`);
+  }
+
+  getAssets(): Observable<MarketAssetsResponse> {
+    return this.http.get<MarketAssetsResponse>(`${this.apiUrl}/market/assets`);
   }
 }

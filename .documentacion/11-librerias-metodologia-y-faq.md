@@ -100,7 +100,9 @@ Cada pieza tiene un trabajo claro:
 - `ThemeService`: tema claro/oscuro y persistencia local.
 - `MercadoSection`: consulta de activos y compra por importe.
 - `CarteraSection`: interfaz, estado de cartera, grafica, valor actual y ventas.
-- `ConfiguracionSection`: preferencias de cuenta, anadir fondos y borrado.
+- `ConfiguracionSection`: preferencias de cuenta, fondos, reinicio y borrado.
+- `PerfilSection`: resumen de cuenta y distribucion actual de cartera.
+- `EstadisticasSection`: mejores y peores rendimientos de mercado.
 - `ApiHandler`: proveedor de mercado.
 - `DbHandler`: Firestore.
 - `api_server.py`: capa HTTP.
@@ -216,8 +218,10 @@ Ademas se separo la logica en `AccountService` y `ThemeService`.
 Despues se rediseno la interfaz de Configuracion. Primero se probo un desplegable al pasar el raton, pero se cambio a una barra lateral interna porque el usuario queria una seleccion visual parecida a Mercado y porque aprovecha mejor el espacio:
 
 ```text
-Perfil / Apariencia / Fondos / Borrar cuenta  ->  panel activo a la derecha
+Apariencia / Fondos / Borrar cuenta  ->  panel activo a la derecha
 ```
+
+El perfil se saco a una ruta propia y se abre desde el icono redondo de la cabecera.
 
 ### Depositos aparecian como compras en historial
 
@@ -396,3 +400,23 @@ Ademas, el backend vuelve a verificar la contrasena antes de borrar. La palabra 
 ### Por que Cartera muestra Apple o Bitcoin en vez de AAPL
 
 Porque esos nombres son mas faciles de entender para el usuario. Internamente Firestore y el backend siguen usando tickers, pero el frontend tiene un catalogo en `services/assets.ts` para traducirlos a nombres legibles.
+
+### Por que Estadisticas sustituye a Ranking
+
+Porque la nueva vista ya no ordena usuarios, sino activos del mercado. Muestra que acciones han rendido mejor o peor en el dia y en la semana, que es una ayuda mas directa para tomar decisiones.
+
+### Por que los activos disponibles se piden al backend
+
+Porque si el catalogo vive solo en el frontend, cada alta nueva obliga a tocar dos proyectos. Ahora el backend expone `/market/assets` y Mercado usa esa respuesta como fuente principal. El frontend conserva una lista fallback solo para nombres y tolerancia a fallos.
+
+### Por que el perfil esta fuera de Configuracion
+
+Porque el perfil es una vista de consulta y resumen, mientras que Configuracion contiene acciones y preferencias. Separarlos hace que la pantalla de ajustes quede mas clara y permite dar mas espacio a la distribucion de cartera.
+
+### Por que la grafica de queso usa valor actual y no unidades
+
+Porque las unidades de distintos activos no son comparables entre si. El porcentaje correcto de cartera se calcula con el dinero que vale cada posicion en ese momento.
+
+### Por que el sidebar usa una variable CSS para el fondo
+
+Porque permite cambiar la imagen por tema sin duplicar HTML. El tema claro usa `LogoSimtradeFondoAzul.png` y el oscuro `LogoSimtradeFondoBlanco.png`.

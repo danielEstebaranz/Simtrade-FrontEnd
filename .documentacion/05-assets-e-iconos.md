@@ -9,6 +9,8 @@ Por eso las imagenes que debe cargar el navegador estan aqui:
 ```text
 public/logo_Simtrade.jpeg
 public/logo_Simtrade-rounded.png
+public/LogoSimtradeFondoAzul.png
+public/LogoSimtradeFondoBlanco.png
 public/favicon.ico
 ```
 
@@ -81,3 +83,34 @@ En un momento la imagen estaba escrita asi:
 Eso no funciona porque las imagenes usan `src`, no `href`.
 
 En Angular con `NgOptimizedImage`, la propiedad correcta es `ngSrc`.
+
+## Fondos del sidebar por tema
+
+El sidebar usa dos imagenes distintas:
+
+```text
+LogoSimtradeFondoAzul.png   -> tema claro
+LogoSimtradeFondoBlanco.png -> tema oscuro
+```
+
+La regla se hace con variables CSS globales:
+
+```css
+:root {
+  --sidebar-background-image: url('/LogoSimtradeFondoAzul.png');
+}
+
+:root[data-theme='dark'] {
+  --sidebar-background-image: url('/LogoSimtradeFondoBlanco.png');
+}
+```
+
+Y el componente aplica la variable:
+
+```css
+.sidebar {
+  background-image: var(--sidebar-background-image);
+}
+```
+
+Asi no hace falta duplicar HTML ni cambiar la plantilla cuando el usuario cambia de tema.
