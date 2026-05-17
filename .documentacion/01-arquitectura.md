@@ -33,12 +33,14 @@ src/app/
         historial-section/
         mercado-section/
         perfil-section/
+        ayuda-section/
         ranking-section/
     login/
   services/
     account.ts
     assets.ts
     auth.ts
+    chat.ts
     market.ts
     theme.ts
 
@@ -93,6 +95,7 @@ Ese segundo `router-outlet` sirve para cargar las rutas hijas del panel:
 /panel/estadisticas
 /panel/configuracion
 /panel/perfil
+/panel/ayuda
 ```
 
 La ruta antigua `/panel/operaciones` redirige a `/panel/mercado`. La compra de acciones se integro en mercado.
@@ -100,6 +103,18 @@ La ruta antigua `/panel/alertas` redirige a `/panel/historial`.
 La ruta antigua `/panel/ranking` redirige a `/panel/estadisticas`.
 
 Asi el dashboard mantiene el sidebar y la cabecera fijos, pero el contenido central cambia segun el link pulsado.
+
+## Flujo de ayuda y asistente IA
+
+La ruta de ayuda combina FAQ y soporte conversacional:
+
+```text
+AyudaSection -> ChatService -> n8n Chat Trigger -> AI Agent -> OpenAI Chat Model
+```
+
+El acceso visual esta en la cabecera del dashboard como boton `?`, junto al perfil. No aparece en el sidebar porque se considera una utilidad transversal, no una seccion operativa principal.
+
+`ChatService` envia `chatInput` y `sessionId` al workflow de n8n para conservar memoria entre mensajes. El agente se restringe por prompt al dominio funcional de SIMTRADE.
 
 ## Flujo de cartera y grafica
 

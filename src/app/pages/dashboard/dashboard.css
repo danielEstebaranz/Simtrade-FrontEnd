@@ -44,6 +44,19 @@
   width: 2.75rem;
 }
 
+.help-link {
+  align-items: center;
+  background: #111827;
+  border-radius: 999px;
+  color: #7dd3fc;
+  display: inline-flex;
+  font-weight: 900;
+  height: 2.75rem;
+  justify-content: center;
+  text-decoration: none;
+  width: 2.75rem;
+}
+
 .eyebrow {
   color: #0369a1;
   font-weight: 700;
@@ -73,7 +86,8 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-.profile-link:focus-visible {
+.profile-link:focus-visible,
+.help-link:focus-visible {
   outline: 3px solid #7dd3fc;
   outline-offset: 3px;
 }

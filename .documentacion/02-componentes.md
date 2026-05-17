@@ -164,7 +164,33 @@ El dashboard es la pantalla que se muestra despues del login. Contiene:
 - Saludo con el nombre de usuario.
 - Un `router-outlet` donde se cargan Cartera, Mercado, Historial, Estadisticas, Configuracion o Perfil.
 - Icono redondo de perfil a la izquierda del boton de cerrar sesion.
+- Boton circular de ayuda con `?` junto al perfil.
 - Boton de cerrar sesion.
+
+## Ayuda
+
+Ruta:
+
+```text
+src/app/pages/dashboard/components/ayuda-section/
+```
+
+### Que hace
+
+`AyudaSection` muestra:
+
+- FAQ desplegable
+- tarjeta de soporte inteligente
+- modal de chat con SIMTRADE
+
+El chat usa `ChatService` para llamar a n8n y no permite usar al asistente como IA generalista: el workflow esta configurado para responder solo sobre el proyecto.
+
+### Detalles de interfaz
+
+- El compositor permanece visible mientras se desplaza solo el historial.
+- Los mensajes del usuario y del asistente tienen estilos diferenciados.
+- El historial hace autoscroll al ultimo mensaje.
+- La respuesta asincrona muestra `Escribiendo...` y errores con `role="alert"`.
 
 ### Por que el sidebar esta aqui y no en App
 

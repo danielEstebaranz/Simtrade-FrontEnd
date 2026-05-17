@@ -116,3 +116,28 @@ http://127.0.0.1:8000
 ```
 
 Como son puertos distintos, el navegador lo considera origen distinto. Por eso `api_server.py` incluye cabeceras CORS para permitir peticiones desde el frontend.
+
+## Segunda integracion HTTP: n8n
+
+Ademas del backend FastAPI, el frontend se comunica con n8n para el asistente virtual de soporte:
+
+```text
+Angular -> ChatService -> n8n Chat Trigger -> AI Agent
+```
+
+La llamada se centraliza en:
+
+```text
+src/app/services/chat.ts
+```
+
+El workflow recibe:
+
+```json
+{
+  "chatInput": "pregunta",
+  "sessionId": "simtrade-user-<id>"
+}
+```
+
+`sessionId` es necesario porque la memoria del agente depende de el. Igual que FastAPI, n8n debe permitir CORS desde `http://localhost:4200`.

@@ -1,6 +1,32 @@
-# SIMTRADEFrontEnd
+# SIMTRADE FrontEnd
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+Frontend Angular del TFG Simtrade. Incluye autenticacion, panel protegido, cartera, mercado, historial, estadisticas, perfil, configuracion y centro de ayuda con asistente virtual conectado a n8n.
+
+## Funcionalidades principales
+
+- Login y registro contra el backend FastAPI.
+- Operativa de compra y venta de activos.
+- Graficas reales con Chart.js.
+- Gestion de fondos, reinicio de cartera y borrado de cuenta.
+- Tema claro/oscuro persistente.
+- FAQ y chat de soporte de SIMTRADE en `/panel/ayuda`.
+- Integracion con n8n para el asistente IA mediante `src/app/services/chat.ts`.
+
+## Servicios locales necesarios
+
+```text
+Frontend Angular: http://localhost:4200
+Backend FastAPI:  http://127.0.0.1:8000
+n8n:              http://localhost:5678
+```
+
+El chat usa el workflow publicado de n8n:
+
+```text
+POST /webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat
+```
+
+La peticion envia `chatInput` y `sessionId`; el `sessionId` permite que la memoria del agente conserve el contexto de la conversacion.
 
 ## Development server
 

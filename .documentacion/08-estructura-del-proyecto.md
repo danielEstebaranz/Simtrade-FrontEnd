@@ -79,6 +79,7 @@ Define las rutas de la aplicacion:
 - `/panel/historial`
 - `/panel/estadisticas`
 - `/panel/configuracion`
+- `/panel/ayuda`
 - `/panel/perfil`
 
 Las rutas principales y las rutas hijas usan `loadComponent`, asi que cada pantalla se carga bajo demanda.
@@ -171,6 +172,7 @@ configuracion-section/
 estadisticas-section/
 historial-section/
 mercado-section/
+ayuda-section/
 perfil-section/
 ranking-section/
 ```
@@ -190,6 +192,7 @@ Actualmente:
 services/account.ts
 services/assets.ts
 services/auth.ts
+services/chat.ts
 services/market.ts
 services/theme.ts
 ```
@@ -232,6 +235,8 @@ BINANCE:BTCUSDT -> Bitcoin
 ```
 
 `ThemeService` guarda el tema actual como signal, lo aplica al documento HTML y lo persiste en `localStorage`.
+
+`ChatService` encapsula la llamada al workflow de n8n del asistente virtual. Envia `chatInput` y un `sessionId` estable para que la memoria del agente funcione entre mensajes.
 
 ## Dependencias relevantes del frontend
 

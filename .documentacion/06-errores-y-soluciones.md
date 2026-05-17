@@ -1075,3 +1075,50 @@ window.requestAnimationFrame(() => this.renderCompositionChart(items));
 ```
 
 Tambien se fijo un contenedor cuadrado para que el canvas tenga tamaño estable.
+
+## 44. El chat IA fallaba si faltaba `sessionId`
+
+### Error
+
+El endpoint de n8n respondia con error cuando el frontend enviaba solo `chatInput`.
+
+### Causa
+
+El workflow usa `Simple Memory`, y esa memoria necesita un identificador de sesion.
+
+### Solucion
+
+Se creo `ChatService`, que siempre envia:
+
+```json
+{
+  "chatInput": "texto",
+  "sessionId": "simtrade-user-<id>"
+}
+```
+
+Si no hay usuario autenticado, genera una sesion local persistente.
+
+## 45. El asistente respondia preguntas ajenas a SIMTRADE
+
+### Error
+
+El agente respondia preguntas generales como una IA abierta.
+
+### Solucion
+
+Se anadio un `systemMessage` al AI Agent de n8n para limitarlo al dominio funcional del proyecto y redirigir preguntas fuera de alcance.
+
+## 46. La respuesta del chat solo aparecia al volver a hacer clic
+
+### Error
+
+La IA ya habia respondido, pero el usuario solo veia el nuevo mensaje despues de volver a enfocar el textarea.
+
+### Solucion
+
+Se reforzo la actualizacion visual del modal y se hizo autoscroll explicito al ultimo mensaje tras:
+
+- enviar una pregunta
+- recibir una respuesta
+- recibir un error

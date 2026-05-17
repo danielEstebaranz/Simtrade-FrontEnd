@@ -99,6 +99,11 @@ body {
   color: var(--color-text);
 }
 
+:root[data-theme='dark'] app-dashboard .help-link {
+  background: #111827;
+  color: var(--color-focus);
+}
+
 :root[data-theme='dark'] app-dashboard .page-header > button {
   background: var(--color-surface-muted);
   color: var(--color-text);

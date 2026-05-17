@@ -153,9 +153,22 @@ Stop-Process -Id <PID> -Force
 http://localhost:4200/login
 http://localhost:4200/panel/cartera
 http://localhost:4200/panel/configuracion
+http://localhost:4200/panel/ayuda
 ```
 
 `/panel` esta protegido por el guard. Si no hay sesion, vuelve a `/login`.
+
+## Comprobar el chat IA
+
+Con n8n arrancado en Docker y el workflow activo:
+
+```powershell
+curl.exe -s -X POST "http://localhost:5678/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat" `
+  -H "Content-Type: application/json" `
+  -d "{\"chatInput\":\"Como compro un activo?\",\"sessionId\":\"prueba-local\"}"
+```
+
+La respuesta correcta devuelve un JSON con `output`.
 
 ## Si no ves cambios
 

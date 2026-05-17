@@ -91,6 +91,7 @@ Ese es el `router-outlet` de rutas hijas. Ahi se carga:
 
 - `CarteraSection` si estas en `/panel/cartera`.
 - `MercadoSection` si estas en `/panel/mercado`.
+- `AyudaSection` si estas en `/panel/ayuda`.
 - etc.
 
 La ruta antigua `/panel/operaciones` redirige a mercado porque las compras se hacen ahora desde esa pantalla.
@@ -267,6 +268,14 @@ PATCH http://127.0.0.1:8000/users/me/settings
 POST http://127.0.0.1:8000/users/me/funds
 DELETE http://127.0.0.1:8000/users/me
 ```
+
+Y en `ChatService` para integrar el asistente virtual con n8n:
+
+```text
+POST http://localhost:5678/webhook/<id>/chat
+```
+
+El body incluye `chatInput` y `sessionId`.
 
 ## Observable y subscribe
 

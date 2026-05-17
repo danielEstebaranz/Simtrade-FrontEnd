@@ -98,11 +98,13 @@ Cada pieza tiene un trabajo claro:
 - `MarketService`: datos de mercado.
 - `AccountService`: configuracion, fondos y borrado de cuenta.
 - `ThemeService`: tema claro/oscuro y persistencia local.
+- `ChatService`: integracion HTTP con n8n y sesion conversacional del asistente.
 - `MercadoSection`: consulta de activos y compra por importe.
 - `CarteraSection`: interfaz, estado de cartera, grafica, valor actual y ventas.
 - `ConfiguracionSection`: preferencias de cuenta, fondos, reinicio y borrado.
 - `PerfilSection`: resumen de cuenta y distribucion actual de cartera.
 - `EstadisticasSection`: mejores y peores rendimientos de mercado.
+- `AyudaSection`: FAQ y asistente virtual de soporte.
 - `ApiHandler`: proveedor de mercado.
 - `DbHandler`: Firestore.
 - `api_server.py`: capa HTTP.
@@ -272,6 +274,8 @@ No era un fallo del codigo de la app, sino del sandbox al resolver archivos y de
 - El tema oscuro esta implementado con variables CSS y overrides globales; si se crean nuevos componentes, deben usar esas variables o anadir sus propios estados de tema.
 - Si Yahoo Finance no reconoce un ticker, no hay grafica para ese activo.
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
+- El asistente depende de que n8n este encendido en `localhost:5678`.
+- La URL del workflow de n8n esta hardcodeada en `ChatService`.
 - Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
 - El valor actual mostrado y el importe vendido pueden diferir si el precio cambia entre la carga de la grafica y la ejecucion de la venta.
 - Reiniciar cartera es destructivo para las posiciones abiertas. El frontend exige `REINICIAR`, pero la proteccion real esta en backend: token valido y contrasena correcta.
@@ -420,3 +424,11 @@ Porque las unidades de distintos activos no son comparables entre si. El porcent
 ### Por que el sidebar usa una variable CSS para el fondo
 
 Porque permite cambiar la imagen por tema sin duplicar HTML. El tema claro usa `LogoSimtradeFondoAzul.png` y el oscuro `LogoSimtradeFondoBlanco.png`.
+
+### Por que Ayuda no esta en el sidebar
+
+Porque no es una operacion principal del simulador como Cartera o Mercado, sino una utilidad transversal. Por eso vive en la cabecera como boton `?`, junto al perfil.
+
+### Por que el chat no responde preguntas generales
+
+Porque el objetivo del asistente es la atencion al cliente del proyecto. El workflow de n8n usa un mensaje de sistema que limita sus respuestas a dudas sobre SIMTRADE.

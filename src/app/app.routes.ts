@@ -57,6 +57,13 @@ export const routes: Routes = [
             (component) => component.ConfiguracionSection,
           ),
       },
+      {
+        path: 'ayuda',
+        loadComponent: () =>
+          import('./pages/dashboard/components/ayuda-section/ayuda-section').then(
+            (component) => component.AyudaSection,
+          ),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
