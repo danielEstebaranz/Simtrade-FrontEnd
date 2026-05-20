@@ -24,7 +24,7 @@ export class Login {
     this.mode() === 'login' ? 'Inicia sesion' : 'Crea tu cuenta',
   );
   protected readonly submitLabel = computed(() =>
-    this.mode() === 'login' ? 'Entrar' : 'Registrarme',
+    this.mode() === 'login' ? 'Entrar' : 'Registrar',
   );
 
   protected readonly form = this.formBuilder.group({
