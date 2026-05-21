@@ -33,6 +33,13 @@ export const routes: Routes = [
             (component) => component.MercadoSection,
           ),
       },
+      {
+        path: 'bonos',
+        loadComponent: () =>
+          import('./pages/dashboard/components/bonos-section/bonos-section').then(
+            (component) => component.BonosSection,
+          ),
+      },
       { path: 'operaciones', redirectTo: 'mercado' },
       { path: 'alertas', redirectTo: 'historial' },
       {

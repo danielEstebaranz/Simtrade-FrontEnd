@@ -135,6 +135,7 @@ body {
 :root[data-theme='dark'] app-cartera-section,
 :root[data-theme='dark'] app-mercado-section,
 :root[data-theme='dark'] app-historial-section,
+:root[data-theme='dark'] app-bonos-section,
 :root[data-theme='dark'] app-ranking-section {
   color: var(--color-text);
 }
@@ -145,6 +146,8 @@ body {
 :root[data-theme='dark'] app-mercado-section .assets-card,
 :root[data-theme='dark'] app-mercado-section .trend-card,
 :root[data-theme='dark'] app-historial-section .history-card,
+:root[data-theme='dark'] app-bonos-section .offers-card,
+:root[data-theme='dark'] app-bonos-section .bonds-card,
 :root[data-theme='dark'] app-ranking-section {
   background: var(--color-surface);
   border-color: var(--color-border);
@@ -162,6 +165,11 @@ body {
 :root[data-theme='dark'] app-mercado-section .field-label,
 :root[data-theme='dark'] app-historial-section h2,
 :root[data-theme='dark'] app-historial-section .history-content strong,
+:root[data-theme='dark'] app-bonos-section h2,
+:root[data-theme='dark'] app-bonos-section h3,
+:root[data-theme='dark'] app-bonos-section .field-label,
+:root[data-theme='dark'] app-bonos-section .offer-list strong,
+:root[data-theme='dark'] app-bonos-section .bond-row strong,
 :root[data-theme='dark'] app-ranking-section h2 {
   color: var(--color-text);
 }
@@ -185,19 +193,27 @@ body {
 :root[data-theme='dark'] app-mercado-section .buy-preview,
 :root[data-theme='dark'] app-historial-section .history-content span,
 :root[data-theme='dark'] app-historial-section .state-message,
+:root[data-theme='dark'] app-bonos-section .offer-list small,
+:root[data-theme='dark'] app-bonos-section .bond-row span,
+:root[data-theme='dark'] app-bonos-section .empty-state,
+:root[data-theme='dark'] app-bonos-section .bond-preview,
 :root[data-theme='dark'] app-ranking-section p {
   color: var(--color-muted);
 }
 
 :root[data-theme='dark'] app-cartera-section .eyebrow,
 :root[data-theme='dark'] app-mercado-section .eyebrow,
-:root[data-theme='dark'] app-historial-section .eyebrow {
+:root[data-theme='dark'] app-historial-section .eyebrow,
+:root[data-theme='dark'] app-bonos-section .eyebrow {
   color: var(--color-accent-strong);
 }
 
 :root[data-theme='dark'] app-cartera-section .position-row,
 :root[data-theme='dark'] app-mercado-section .asset-row,
-:root[data-theme='dark'] app-historial-section .history-item {
+:root[data-theme='dark'] app-historial-section .history-item,
+:root[data-theme='dark'] app-bonos-section .offer-list button,
+:root[data-theme='dark'] app-bonos-section .bond-row,
+:root[data-theme='dark'] app-bonos-section .bond-preview {
   background: var(--color-surface-muted);
   border-color: var(--color-border);
   color: var(--color-text);
@@ -206,7 +222,9 @@ body {
 :root[data-theme='dark'] app-cartera-section .position-row:hover,
 :root[data-theme='dark'] app-cartera-section .position-row.active,
 :root[data-theme='dark'] app-mercado-section .asset-row:hover,
-:root[data-theme='dark'] app-mercado-section .asset-row.active {
+:root[data-theme='dark'] app-mercado-section .asset-row.active,
+:root[data-theme='dark'] app-bonos-section .offer-list button:hover,
+:root[data-theme='dark'] app-bonos-section .offer-list button.active {
   background: var(--color-info-bg);
   border-color: var(--color-accent-strong);
 }
@@ -285,9 +303,14 @@ body {
 }
 
 :root[data-theme='dark'] app-cartera-section .percentage-input,
-:root[data-theme='dark'] app-mercado-section .amount-input {
+:root[data-theme='dark'] app-mercado-section .amount-input,
+:root[data-theme='dark'] app-bonos-section .amount-field {
   background: var(--color-input-bg);
   border-color: var(--color-input-border);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] app-bonos-section .amount-field input {
   color: var(--color-text);
 }
 
@@ -306,14 +329,16 @@ body {
 :root[data-theme='dark'] app-cartera-section .action-message.error,
 :root[data-theme='dark'] app-cartera-section .dialog-message.error,
 :root[data-theme='dark'] app-mercado-section .dialog-message.error,
-:root[data-theme='dark'] app-historial-section .state-message.error {
+:root[data-theme='dark'] app-historial-section .state-message.error,
+:root[data-theme='dark'] app-bonos-section .action-message.error {
   background: var(--color-danger-bg);
   color: var(--color-danger-text);
 }
 
 :root[data-theme='dark'] app-cartera-section .action-message.success,
 :root[data-theme='dark'] app-cartera-section .dialog-message.success,
-:root[data-theme='dark'] app-mercado-section .dialog-message.success {
+:root[data-theme='dark'] app-mercado-section .dialog-message.success,
+:root[data-theme='dark'] app-bonos-section .action-message.success {
   background: var(--color-success-bg);
   color: var(--color-success-text);
 }
@@ -329,6 +354,11 @@ body {
 }
 
 :root[data-theme='dark'] app-historial-section .operation-badge.deposit {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+:root[data-theme='dark'] app-historial-section .operation-badge.bond {
   background: var(--color-info-bg);
   color: var(--color-info-text);
 }

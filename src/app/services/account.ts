@@ -32,8 +32,61 @@ export interface ResetPortfolioResponse {
 }
 
 export interface DeleteAccountResponse {
+  deleted_bonds?: number;
   deleted_transactions: number;
   message: string;
+}
+
+export interface BondOffer {
+  duration_seconds: number;
+  name: string;
+  return_percent: number;
+  ticker: string;
+}
+
+export interface BondItem {
+  amount: number;
+  balanceAfterSettlement?: number;
+  durationSeconds: number;
+  id: string;
+  maturityAt: string | null;
+  name: string;
+  payout: number;
+  profit: number;
+  returnPercent: number;
+  secondsRemaining: number;
+  settledAt: string | null;
+  startedAt: string | null;
+  status: 'active' | 'settled';
+  ticker: string;
+}
+
+export interface BondOffersResponse {
+  items: BondOffer[];
+}
+
+export interface BondsResponse {
+  active: BondItem[];
+  items: BondItem[];
+  settled: BondItem[];
+  user: AuthUser;
+}
+
+export interface CreateBondResponse {
+  bond: BondItem;
+  message: string;
+  operation: {
+    amount: number;
+    balance: number;
+  };
+  user: AuthUser;
+}
+
+export interface SettleBondsResponse {
+  items: BondItem[];
+  message: string;
+  settledCount: number;
+  user: AuthUser;
 }
 
 @Injectable({
@@ -83,6 +136,30 @@ export class AccountService {
     return this.http.post<DeleteAccountResponse>(
       `${this.apiUrl}/users/me/delete`,
       { password },
+      this.authOptions(token),
+    );
+  }
+
+  getBondOffers(): Observable<BondOffersResponse> {
+    return this.http.get<BondOffersResponse>(`${this.apiUrl}/bonds/offers`);
+  }
+
+  getBonds(token: string): Observable<BondsResponse> {
+    return this.http.get<BondsResponse>(`${this.apiUrl}/users/me/bonds`, this.authOptions(token));
+  }
+
+  createBond(token: string, ticker: string, amount: number): Observable<CreateBondResponse> {
+    return this.http.post<CreateBondResponse>(
+      `${this.apiUrl}/users/me/bonds`,
+      { amount, ticker },
+      this.authOptions(token),
+    );
+  }
+
+  settleBonds(token: string): Observable<SettleBondsResponse> {
+    return this.http.post<SettleBondsResponse>(
+      `${this.apiUrl}/users/me/bonds/settle`,
+      {},
       this.authOptions(token),
     );
   }
