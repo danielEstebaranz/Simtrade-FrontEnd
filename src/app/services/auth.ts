@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { catchError, map, Observable, throwError, tap } from 'rxjs';
@@ -58,6 +58,24 @@ export class AuthService {
 
   register(payload: AuthPayload): Observable<AuthUser> {
     return this.sendAuthRequest('/auth/register', payload);
+  }
+
+  refreshCurrentUser(): Observable<AuthUser> {
+    const token = this.tokenState();
+
+    if (!token) {
+      return throwError(() => 'No hay sesion activa.');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get<AuthResponse>(`${this.apiUrl}/auth/me`, { headers }).pipe(
+      tap((response) => this.updateUser(response.user)),
+      map((response) => response.user),
+      catchError((error: HttpErrorResponse) => throwError(() => this.getErrorMessage(error))),
+    );
   }
 
   logout(): void {

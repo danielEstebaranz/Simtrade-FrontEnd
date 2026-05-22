@@ -236,6 +236,32 @@
   margin: 0;
 }
 
+:host-context([data-theme='dark']) .section-heading h2,
+:host-context([data-theme='dark']) .card-header h3,
+:host-context([data-theme='dark']) .offer-list strong,
+:host-context([data-theme='dark']) .bond-row strong,
+:host-context([data-theme='dark']) .field-label {
+  color: #f8fafc;
+}
+
+:host-context([data-theme='dark']) .offer-list small,
+:host-context([data-theme='dark']) .bond-row span,
+:host-context([data-theme='dark']) .empty-state,
+:host-context([data-theme='dark']) .bond-preview {
+  color: #d1d5db;
+}
+
+:host-context([data-theme='dark']) .card-header > strong {
+  color: #5eead4;
+}
+
+:host-context([data-theme='dark']) .return-pill,
+:host-context([data-theme='dark']) .count-pill,
+:host-context([data-theme='dark']) .timer {
+  background: #12382b;
+  color: #bbf7d0;
+}
+
 @media (max-width: 900px) {
   .bonds-layout {
     grid-template-columns: 1fr;

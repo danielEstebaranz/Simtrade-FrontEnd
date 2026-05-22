@@ -91,6 +91,7 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
   private chart: Chart<'line'> | null = null;
   private readonly chartReady = signal(false);
   private gainsRequestId = 0;
+  private refreshUserIntervalId: number | null = null;
   private requestId = 0;
 
   protected readonly user = this.authService.user;
@@ -224,10 +225,16 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
     }
 
     this.chartReady.set(true);
+    this.refreshUserFromBackend();
+    this.refreshUserIntervalId = window.setInterval(() => this.refreshUserFromBackend(), 60000);
   }
 
   ngOnDestroy(): void {
     this.chart?.destroy();
+
+    if (this.refreshUserIntervalId !== null) {
+      window.clearInterval(this.refreshUserIntervalId);
+    }
   }
 
   protected selectPosition(ticker: string): void {
@@ -365,6 +372,20 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
     }
 
     return 'No se pudo realizar la venta.';
+  }
+
+  private refreshUserFromBackend(): void {
+    if (!this.idToken()) {
+      return;
+    }
+
+    this.authService
+      .refreshCurrentUser()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => undefined,
+        error: () => undefined,
+      });
   }
 
   private loadTrend(ticker: string | null, range: TrendRange): void {

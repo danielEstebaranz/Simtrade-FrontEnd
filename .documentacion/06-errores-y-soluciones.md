@@ -1122,3 +1122,68 @@ Se reforzo la actualizacion visual del modal y se hizo autoscroll explicito al u
 - enviar una pregunta
 - recibir una respuesta
 - recibir un error
+
+## 47. Los textos de bonos se veian mal en tema oscuro
+
+### Error
+
+En la pestana `Bonos`, al activar el tema oscuro algunos titulos y textos quedaban demasiado oscuros sobre tarjetas oscuras. En concreto se veian mal textos como:
+
+```text
+Bonos temporales
+Elige un bono
+Bonos activos
+```
+
+### Causa
+
+El componente `BonosSection` tenia colores locales pensados para tema claro:
+
+```css
+color: #111827;
+```
+
+Aunque habia reglas globales para el tema oscuro, algunos selectores del propio componente seguian ganando prioridad o no cubrian todos los textos.
+
+### Solucion
+
+Se anadieron reglas dentro de `bonos-section.css` con:
+
+```css
+:host-context([data-theme='dark'])
+```
+
+Asi el componente detecta cuando la aplicacion esta en modo oscuro y cambia:
+
+- titulos y nombres a blanco claro
+- textos secundarios a gris claro
+- saldo, contador y etiquetas verdes a tonos con mas contraste
+
+Esto mantiene el tema claro igual y corrige solo la visualizacion oscura.
+
+## 48. El perfil mostraba el identificador interno del usuario
+
+### Error
+
+En `Perfil -> Datos de la cuenta` aparecia el campo:
+
+```text
+Identificador
+```
+
+con el `uid` interno del usuario.
+
+### Causa
+
+Ese dato venia en `AuthService.user().id` y se estaba pintando directamente en el template de `PerfilSection`.
+
+### Solucion
+
+Se elimino del HTML visible:
+
+```html
+<dt>Identificador</dt>
+<dd>{{ user()?.id }}</dd>
+```
+
+El identificador sigue existiendo internamente para autenticacion, llamadas al backend y memoria de n8n, pero ya no se muestra al usuario porque es informacion tecnica y no aporta valor en la interfaz.

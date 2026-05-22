@@ -11,6 +11,8 @@ Frontend Angular del TFG Simtrade. Incluye autenticacion, panel protegido, carte
 - Gestion de fondos, reinicio de cartera y borrado de cuenta.
 - Tema claro/oscuro persistente.
 - Login con tema claro fijo aunque el usuario tenga modo oscuro guardado.
+- Perfil sin mostrar identificadores internos del usuario.
+- Bonos legibles en tema oscuro con reglas de contraste propias.
 - FAQ y chat de soporte de SIMTRADE en `/panel/ayuda`.
 - Integracion con n8n para el asistente IA mediante `src/app/services/chat.ts`.
 
@@ -45,6 +47,8 @@ Flujo:
 5. Cuando el contador llega a 0, llama a liquidar bonos vencidos.
 6. El saldo se actualiza con `user` devuelto por backend.
 7. Historial muestra `bono_inversion` y `bono_cierre`.
+
+Los bonos no dependen de tener comprada la accion en cartera. Un bono de Tesla se puede contratar aunque el usuario no tenga acciones de Tesla, porque es una oferta temporal independiente de la cartera.
 
 Estetica actual:
 
@@ -96,6 +100,14 @@ bono_cierre
 ### Bonos activos desalineados
 
 La lista se dejo en columna simetrica, todos pegados a la izquierda y con el mismo ancho.
+
+### Bonos con poco contraste en modo oscuro
+
+Los textos de `Bonos temporales`, `Elige un bono` y `Bonos activos` quedaban demasiado oscuros. Se reforzaron los colores del componente en tema oscuro con `:host-context([data-theme='dark'])`.
+
+### Perfil mostraba identificador interno
+
+El perfil mostraba el `id` tecnico del usuario. Se retiro de la interfaz: el dato sigue disponible internamente para autenticacion y servicios, pero no se ensena al usuario final.
 
 ## Servicios locales necesarios
 

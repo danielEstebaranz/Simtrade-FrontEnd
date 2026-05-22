@@ -67,7 +67,21 @@
         <div>
           <p class="eyebrow">Tendencia</p>
           <h2>{{ assetName(position.ticker) }}</h2>
-          <p class="position-detail">{{ position.ticker }} · {{ formatNumber(position.quantity, 4) }} unidades en cartera</p>
+          <p class="position-detail">{{ position.ticker }} - {{ formatNumber(position.quantity, 4) }} unidades en cartera</p>
+          @if (selectedPositionGains(); as positionGains) {
+            <dl class="position-meta" aria-label="Resumen de inversion del activo">
+              <div>
+                <dt>Invertido</dt>
+                <dd>
+                  @if (positionGains.hasCostBasis) {
+                    {{ formatNumber(positionGains.investedCost, 2) }} $
+                  } @else {
+                    Sin coste
+                  }
+                </dd>
+              </div>
+            </dl>
+          }
         </div>
 
         <div class="trend-actions">

@@ -211,9 +211,11 @@ src/app/pages/dashboard/components/perfil-section/
 Muestra:
 
 - resumen en columna con saldo disponible, numero de activos y tema actual
-- datos de la cuenta
+- datos de la cuenta visibles para el usuario, como email y preferencia visual
 - cartera actual
 - grafica tipo queso con la distribucion de la cartera por valor actual
+
+No muestra el identificador interno del usuario (`uid`/`id`). Ese dato se conserva dentro de `AuthService` para autenticar llamadas, mantener la sesion del chat y comunicarse con el backend, pero no se pinta en la interfaz porque es un dato tecnico sin utilidad para el usuario final.
 
 La distribucion no usa simplemente unidades, porque `0,1` Bitcoin y `0,1` Apple no representan el mismo dinero. Usa:
 
@@ -232,6 +234,8 @@ La solucion fue esperar al siguiente frame del navegador:
 ```ts
 window.requestAnimationFrame(() => this.renderCompositionChart(items));
 ```
+
+Tambien se elimino el campo `Identificador` de `Datos de la cuenta`. El usuario solo ve informacion entendible y relevante; el identificador queda reservado para uso interno.
 
 ## Configuracion
 

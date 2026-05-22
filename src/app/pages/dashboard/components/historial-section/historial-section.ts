@@ -181,7 +181,9 @@ export class HistorialSection {
     items: [],
     status: 'idle',
   });
-  protected readonly notifications = computed(() => this.historyState().items);
+  protected readonly notifications = computed(() =>
+    this.historyState().items.filter((item) => item.type !== 'dividendo_reinvertido'),
+  );
 
   constructor() {
     const token = this.authService.idToken();

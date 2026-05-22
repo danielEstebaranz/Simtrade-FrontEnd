@@ -75,7 +75,16 @@ export interface HistoryItem {
   quantity: number;
   ticker: string;
   total: number;
-  type: 'compra' | 'deposito' | 'reinicio' | 'retirada' | 'venta' | string;
+  type:
+    | 'bono_cierre'
+    | 'bono_inversion'
+    | 'compra'
+    | 'deposito'
+    | 'dividendo_reinvertido'
+    | 'reinicio'
+    | 'retirada'
+    | 'venta'
+    | string;
 }
 
 export interface MarketPerformance {
