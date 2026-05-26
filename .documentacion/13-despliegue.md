@@ -62,9 +62,9 @@ Es valida, pero deja mas servicios vivos y por eso es algo mas compleja que publ
 
 ## Estado actual que impide desplegar tal cual
 
-### URLs locales hardcodeadas
+### URLs hardcodeadas
 
-Actualmente el frontend usa direcciones locales en varios servicios:
+Actualmente el frontend usa direcciones fijas en varios servicios:
 
 ```text
 src/app/services/auth.ts
@@ -77,10 +77,10 @@ Ejemplos:
 
 ```text
 http://127.0.0.1:8000
-http://localhost:5678/webhook/...
+https://simtrade.app.n8n.cloud/webhook/...
 ```
 
-En internet no funcionarian, porque cada navegador intentaria llamar a su propio ordenador.
+La URL local del backend no funcionaria en internet, porque cada navegador intentaria llamar a su propio ordenador. La URL de n8n Cloud ya es publica y puede funcionar desde otros equipos si el workflow esta activo.
 
 ### CORS local
 
@@ -107,15 +107,15 @@ En cloud debe escuchar en:
 0.0.0.0:$PORT
 ```
 
-### n8n local
+### n8n Cloud
 
-El chat apunta hoy a:
+El chat apunta hoy a un webhook publicado de n8n Cloud:
 
 ```text
-http://localhost:5678/webhook/...
+https://simtrade.app.n8n.cloud/webhook/...
 ```
 
-Eso solo funciona en desarrollo.
+Para que funcione en la entrega, el workflow debe estar activo y debe usarse la URL de produccion del webhook, no la URL de test.
 
 ### Credenciales de Firebase
 
@@ -146,7 +146,7 @@ Ejemplo de desarrollo:
 export const environment = {
   production: false,
   apiUrl: 'http://127.0.0.1:8000',
-  chatUrl: 'http://localhost:5678/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat',
+  chatUrl: 'https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat',
 };
 ```
 

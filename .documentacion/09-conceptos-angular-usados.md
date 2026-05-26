@@ -272,7 +272,7 @@ DELETE http://127.0.0.1:8000/users/me
 Y en `ChatService` para integrar el asistente virtual con n8n:
 
 ```text
-POST http://localhost:5678/webhook/<id>/chat
+POST https://simtrade.app.n8n.cloud/webhook/<id>/chat
 ```
 
 El body incluye `chatInput` y `sessionId`.

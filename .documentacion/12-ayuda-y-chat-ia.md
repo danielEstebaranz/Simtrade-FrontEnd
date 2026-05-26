@@ -48,7 +48,7 @@ Las preguntas se muestran como acordeon accesible usando:
 El chat del frontend no usa el widget visual de n8n. La interfaz es propia de Angular y llama a un workflow publicado de n8n mediante HTTP:
 
 ```text
-POST http://localhost:5678/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat
+POST https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat
 ```
 
 Body enviado:
@@ -116,7 +116,7 @@ No debe responder preguntas generales sin relacion con SIMTRADE.
 
 - La URL de n8n esta hardcodeada en `ChatService`.
 - El conocimiento del asistente depende principalmente del prompt y de la FAQ; todavia no consume una base documental propia del proyecto.
-- Si n8n no esta levantado en `localhost:5678`, el chat no responde.
+- Si el workflow de n8n Cloud no esta activo o la URL publica cambia, el chat no responde.
 - La memoria depende del `sessionId`; si se cambia la logica de sesion, hay que mantenerla alineada con el workflow.
 
 ## Mejoras futuras

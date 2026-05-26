@@ -274,8 +274,8 @@ No era un fallo del codigo de la app, sino del sandbox al resolver archivos y de
 - El tema oscuro esta implementado con variables CSS y overrides globales; si se crean nuevos componentes, deben usar esas variables o anadir sus propios estados de tema.
 - Si Yahoo Finance no reconoce un ticker, no hay grafica para ese activo.
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
-- El asistente depende de que n8n este encendido en `localhost:5678`.
-- La URL del workflow de n8n esta hardcodeada en `ChatService`.
+- El asistente depende de que el workflow publicado de n8n Cloud este activo.
+- La URL del workflow de n8n Cloud esta hardcodeada en `ChatService`.
 - Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
 - El valor actual mostrado y el importe vendido pueden diferir si el precio cambia entre la carga de la grafica y la ejecucion de la venta.
 - Reiniciar cartera es destructivo para las posiciones abiertas. El frontend exige `REINICIAR`, pero la proteccion real esta en backend: token valido y contrasena correcta.

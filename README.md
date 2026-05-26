@@ -114,13 +114,13 @@ El perfil mostraba el `id` tecnico del usuario. Se retiro de la interfaz: el dat
 ```text
 Frontend Angular: http://localhost:4200
 Backend FastAPI:  http://127.0.0.1:8000
-n8n:              http://localhost:5678
+n8n Cloud:        https://simtrade.app.n8n.cloud
 ```
 
 El chat usa el workflow publicado de n8n:
 
 ```text
-POST /webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat
+POST https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat
 ```
 
 La peticion envia `chatInput` y `sessionId`; el `sessionId` permite que la memoria del agente conserve el contexto de la conversacion.

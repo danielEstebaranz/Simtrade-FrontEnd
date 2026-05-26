@@ -163,7 +163,7 @@ http://localhost:4200/panel/ayuda
 Con n8n arrancado en Docker y el workflow activo:
 
 ```powershell
-curl.exe -s -X POST "http://localhost:5678/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat" `
+curl.exe -s -X POST "https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat" `
   -H "Content-Type: application/json" `
   -d "{\"chatInput\":\"Como compro un activo?\",\"sessionId\":\"prueba-local\"}"
 ```

@@ -16,7 +16,7 @@ export class ChatService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly chatUrl =
-    'http://localhost:5678/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat';
+    'https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat';
 
   sendMessage(chatInput: string): Observable<string> {
     return this.http
