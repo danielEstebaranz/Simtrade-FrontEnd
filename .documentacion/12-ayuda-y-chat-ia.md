@@ -1,4 +1,4 @@
-# Ayuda y chat IA
+# Ayuda y asistente virtual
 
 ## Objetivo
 
@@ -32,7 +32,7 @@ La FAQ cubre actualmente:
 
 - compra de activos
 - venta desde cartera
-- anadir fondos
+- añadir fondos
 - reinicio de cartera
 - historial de operaciones
 - cambio entre tema claro y oscuro
@@ -75,8 +75,8 @@ Respuesta esperada:
 El flujo actual contiene:
 
 ```text
-Chat Trigger -> AI Agent
-                  |-> OpenAI Chat Model
+Chat Trigger -> agente conversacional
+                  |-> modelo conversacional
                   |-> Simple Memory
 ```
 
@@ -100,7 +100,7 @@ El chat:
 - muestra error accesible si n8n no responde
 - separa visualmente mensajes del usuario y del asistente
 
-Se corrigio un problema donde la respuesta solo aparecia tras volver a enfocar el textarea. La solucion final fue forzar el scroll al final inmediatamente despues de anadir mensajes y actualizar la vista al resolver la respuesta asincrona.
+Se corrigio un problema donde la respuesta solo aparecia tras volver a enfocar el textarea. La solucion final fue forzar el scroll al final inmediatamente despues de añadir mensajes y actualizar la vista al resolver la respuesta asincrona.
 
 ## Alcance funcional
 
@@ -124,4 +124,4 @@ No debe responder preguntas generales sin relacion con SIMTRADE.
 - mover la URL de n8n a configuracion por entorno
 - alimentar al agente con documentacion oficial del proyecto
 - registrar consultas frecuentes para ampliar la FAQ
-- anadir pruebas automatizadas del flujo de chat
+- añadir pruebas automatizadas del flujo de chat

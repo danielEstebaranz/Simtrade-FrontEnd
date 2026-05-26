@@ -64,7 +64,7 @@ Se ejecuto la build o el servidor con permisos elevados cuando hizo falta.
 
 ### Error
 
-El icono no aparecia en la pestana.
+El icono no aparecia en la pestaña.
 
 ### Causa
 
@@ -267,7 +267,7 @@ La grafica parecia funcionar, pero podia estar usando datos generados en el fron
 
 `MarketService` tenia un fallback `createDemoTrend(...)`. Si el backend fallaba, Angular inventaba puntos de precio para que la grafica no quedara vacia.
 
-Eso era comodo para probar el diseno, pero peligroso para entender la app, porque el usuario podia pensar que estaba viendo mercado real.
+Eso era comodo para probar el diseño, pero peligroso para entender la app, porque el usuario podia pensar que estaba viendo mercado real.
 
 ### Solucion
 
@@ -379,7 +379,7 @@ Esa clave es necesaria para que el backend pueda iniciar sesion contra Firebase 
 
 ### Solucion
 
-Anadir al `.env` del backend:
+Añadir al `.env` del backend:
 
 ```env
 FIREBASE_WEB_API_KEY=tu_api_key_de_firebase
@@ -708,14 +708,14 @@ La ruta `/panel/configuracion` y el enlace del sidebar ya existian, pero el comp
 Aqui podras ajustar las preferencias de la cuenta.
 ```
 
-No permitia probar el modo oscuro/claro, anadir fondos ni borrar cuenta desde el frontend.
+No permitia probar el modo oscuro/claro, añadir fondos ni borrar cuenta desde el frontend.
 
 ### Solucion
 
 Se creo una pantalla completa de configuracion con:
 
 - selector de tema claro/oscuro
-- formulario de anadir fondos con validacion
+- formulario de añadir fondos con validacion
 - botones rapidos de 100 $, 500 $ y 1000 $
 - borrado de cuenta con confirmacion `BORRAR`
 - mensajes de carga, exito y error
@@ -736,7 +736,7 @@ src/app/services/theme.ts
 
 ### Error
 
-Despues de anadir fondos, el backend registra una transaccion con:
+Despues de añadir fondos, el backend registra una transaccion con:
 
 ```text
 type = deposito
@@ -760,10 +760,10 @@ reinicio
 Y muestra para depositos:
 
 ```text
-Has anadido 250 $ al saldo.
+Has añadido 250 $ al saldo.
 ```
 
-Despues, al anadir `Quitar fondos` y `Reiniciar cartera`, se amplio el historial para mostrar tambien:
+Despues, al añadir `Quitar fondos` y `Reiniciar cartera`, se amplio el historial para mostrar tambien:
 
 ```text
 Has retirado 250 $ del saldo.
@@ -830,7 +830,7 @@ Se fijaron colores estaticos en `login.css`:
 
 Asi el login se ve igual aunque el usuario tenga modo oscuro guardado.
 
-## 34. Anadir fondos manual no aceptaba bien algunos importes
+## 34. Añadir fondos manual no aceptaba bien algunos importes
 
 ### Error
 
@@ -850,11 +850,11 @@ Number(valor.replace(',', '.'))
 
 La validacion final sigue estando en frontend y backend.
 
-## 35. Borrar cuenta aceptaba contrasena incorrecta si el backend viejo seguia arrancado
+## 35. Borrar cuenta aceptaba contraseña incorrecta si el backend viejo seguia arrancado
 
 ### Error
 
-El usuario podia pensar que la cuenta se borraba aunque la contrasena introducida no fuera correcta.
+El usuario podia pensar que la cuenta se borraba aunque la contraseña introducida no fuera correcta.
 
 ### Causa
 
@@ -868,7 +868,7 @@ Se cambio el frontend para llamar a:
 POST /users/me/delete
 ```
 
-Y el backend verifica la contrasena con Firebase Authentication antes de borrar. Si la contrasena no corresponde al usuario autenticado, devuelve error.
+Y el backend verifica la contraseña con Firebase Authentication antes de borrar. Si la contraseña no corresponde al usuario autenticado, devuelve error.
 
 ## 36. Configuracion se rediseno primero como desplegable, pero no era la interfaz deseada
 
@@ -888,7 +888,7 @@ Se sustituyo por una estructura de dos columnas:
 barra lateral interna de opciones | panel activo
 ```
 
-La barra izquierda contiene botones grandes con abreviatura y nombre. El panel derecho ocupa el resto del ancho disponible. En pantallas pequenas, la estructura pasa a una sola columna.
+La barra izquierda contiene botones grandes con abreviatura y nombre. El panel derecho ocupa el resto del ancho disponible. En pantallas pequeñas, la estructura pasa a una sola columna.
 
 ## 37. Cartera mostraba codigos de ticker demasiado grandes
 
@@ -912,7 +912,7 @@ TSLA -> Tesla
 BINANCE:BTCUSDT -> Bitcoin
 ```
 
-Tambien se redujo el tamano de texto y la fila se cambio a grid:
+Tambien se redujo el tamaño de texto y la fila se cambio a grid:
 
 ```text
 nombre del activo | unidades
@@ -938,7 +938,7 @@ POST /users/me/funds/withdraw
 POST /users/me/portfolio/reset
 ```
 
-`/funds/withdraw` resta saldo si el usuario tiene suficiente. `/portfolio/reset` exige token valido, palabra `REINICIAR` y contrasena correcta antes de vaciar cartera y devolver saldo a 1000 $.
+`/funds/withdraw` resta saldo si el usuario tiene suficiente. `/portfolio/reset` exige token valido, palabra `REINICIAR` y contraseña correcta antes de vaciar cartera y devolver saldo a 1000 $.
 
 En Firestore, `DbHandler` anadio:
 
@@ -979,7 +979,7 @@ Con esto, aunque solo haya una accion, la cartera actual empieza arriba.
 
 ### Error
 
-Al anadir fondos si aparecia una notificacion en Historial, pero al quitar fondos no aparecia con mensaje propio.
+Al añadir fondos si aparecia una notificacion en Historial, pero al quitar fondos no aparecia con mensaje propio.
 
 ### Causa
 
@@ -998,7 +998,7 @@ Y muestra mensajes especificos. Tambien se anadieron clases visuales propias par
 
 Ademas, el backend ajusta los calculos auxiliares:
 
-- `RETIRADA` resta en el calculo de fondos anadidos.
+- `RETIRADA` resta en el calculo de fondos añadidos.
 - `REINICIO` limpia costes abiertos anteriores.
 
 ## 41. El color o fondo del sidebar no cambiaba al editar `sidebar.css`
@@ -1035,12 +1035,12 @@ Y los activos nuevos del backend no aparecian en Mercado.
 
 ### Causas
 
-1. Seguía arrancado un proceso viejo del backend en el puerto `8000`, sin los endpoints nuevos.
+1. Seguia arrancado un proceso viejo del backend en el puerto `8000`, sin los endpoints nuevos.
 2. Habia listas de activos duplicadas: una en backend y otra en frontend.
 
 ### Solucion
 
-Se añadieron endpoints nuevos:
+Se anadieron endpoints nuevos:
 
 ```text
 GET /market/assets
@@ -1076,7 +1076,7 @@ window.requestAnimationFrame(() => this.renderCompositionChart(items));
 
 Tambien se fijo un contenedor cuadrado para que el canvas tenga tamaño estable.
 
-## 44. El chat IA fallaba si faltaba `sessionId`
+## 44. El asistente virtual fallaba si faltaba `sessionId`
 
 ### Error
 
@@ -1103,17 +1103,17 @@ Si no hay usuario autenticado, genera una sesion local persistente.
 
 ### Error
 
-El agente respondia preguntas generales como una IA abierta.
+El agente respondia preguntas generales como un asistente abierto.
 
 ### Solucion
 
-Se anadio un `systemMessage` al AI Agent de n8n para limitarlo al dominio funcional del proyecto y redirigir preguntas fuera de alcance.
+Se anadio un `systemMessage` al agente conversacional de n8n para limitarlo al dominio funcional del proyecto y redirigir preguntas fuera de alcance.
 
 ## 46. La respuesta del chat solo aparecia al volver a hacer clic
 
 ### Error
 
-La IA ya habia respondido, pero el usuario solo veia el nuevo mensaje despues de volver a enfocar el textarea.
+El asistente ya habia respondido, pero el usuario solo veia el nuevo mensaje despues de volver a enfocar el textarea.
 
 ### Solucion
 
@@ -1127,7 +1127,7 @@ Se reforzo la actualizacion visual del modal y se hizo autoscroll explicito al u
 
 ### Error
 
-En la pestana `Bonos`, al activar el tema oscuro algunos titulos y textos quedaban demasiado oscuros sobre tarjetas oscuras. En concreto se veian mal textos como:
+En la pestaña `Bonos`, al activar el tema oscuro algunos titulos y textos quedaban demasiado oscuros sobre tarjetas oscuras. En concreto se veian mal textos como:
 
 ```text
 Bonos temporales

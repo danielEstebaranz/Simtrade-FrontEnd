@@ -14,7 +14,7 @@ Frontend Angular del TFG Simtrade. Incluye autenticacion, panel protegido, carte
 - Perfil sin mostrar identificadores internos del usuario.
 - Bonos legibles en tema oscuro con reglas de contraste propias.
 - FAQ y chat de soporte de SIMTRADE en `/panel/ayuda`.
-- Integracion con n8n para el asistente IA mediante `src/app/services/chat.ts`.
+- Integracion con n8n para el asistente virtual mediante `src/app/services/chat.ts`.
 
 ## Secciones principales
 

@@ -54,7 +54,7 @@ export class AyudaSection {
     {
       question: 'Como anado fondos?',
       answer:
-        'Ve a Configuracion, abre la seccion Fondos y usa la opcion Anadir fondos. Puedes introducir una cantidad manualmente o elegir una cantidad rapida.',
+        'Ve a Configuracion, abre la seccion Fondos y usa la opcion Añadir fondos. Puedes introducir una cantidad manualmente o elegir una cantidad rapida.',
     },
     {
       question: 'Que ocurre si reinicio mi cartera?',

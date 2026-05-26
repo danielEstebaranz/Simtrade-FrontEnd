@@ -226,7 +226,7 @@ export class ConfiguracionSection {
 
     if (!password) {
       this.resetState.set({
-        errorMessage: 'Introduce la contrasena de la cuenta.',
+        errorMessage: 'Introduce la contraseña de la cuenta.',
         status: 'error',
         successMessage: '',
       });
@@ -271,7 +271,7 @@ export class ConfiguracionSection {
 
     if (!token) {
       this.fundsState.set({
-        errorMessage: `Debes iniciar sesion para ${action === 'add' ? 'anadir' : 'quitar'} fondos.`,
+        errorMessage: `Debes iniciar sesion para ${action === 'add' ? 'añadir' : 'quitar'} fondos.`,
         status: 'error',
         successMessage: '',
       });
@@ -308,7 +308,7 @@ export class ConfiguracionSection {
             errorMessage: '',
             status: 'success',
             successMessage: action === 'add'
-              ? `Fondos anadidos: ${this.formatNumber(response.operation.amount, 2)} $.`
+              ? `Fondos añadidos: ${this.formatNumber(response.operation.amount, 2)} $.`
               : `Fondos retirados: ${this.formatNumber(response.operation.amount, 2)} $.`,
           });
         },
@@ -316,7 +316,7 @@ export class ConfiguracionSection {
           this.fundsState.set({
             errorMessage: this.getErrorMessage(
               error,
-              action === 'add' ? 'No se pudieron anadir fondos.' : 'No se pudieron quitar fondos.',
+              action === 'add' ? 'No se pudieron añadir fondos.' : 'No se pudieron quitar fondos.',
             ),
             status: 'error',
             successMessage: '',
@@ -388,7 +388,7 @@ export class ConfiguracionSection {
 
     if (!password) {
       this.deleteState.set({
-        errorMessage: 'Introduce la contrasena de la cuenta.',
+        errorMessage: 'Introduce la contraseña de la cuenta.',
         status: 'error',
         successMessage: '',
       });

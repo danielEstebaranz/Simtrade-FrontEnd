@@ -10,7 +10,7 @@ Eso significa que el navegador no podia hacer esto directamente:
 Angular -> funcion Python autenticar_usuario()
 ```
 
-Un navegador solo puede comunicarse con el backend mediante HTTP, WebSocket u otro protocolo de red. Por eso se creo una API pequena en el backend.
+Un navegador solo puede comunicarse con el backend mediante HTTP, WebSocket u otro protocolo de red. Por eso se creo una API pequeña en el backend.
 
 ## Backend creado
 
@@ -53,7 +53,7 @@ Cuando el login va bien, devuelve algo de este estilo:
 }
 ```
 
-No devuelve la contrasena. Eso es importante por seguridad.
+No devuelve la contraseña. Eso es importante por seguridad.
 
 ## Servicio Angular
 
@@ -122,7 +122,7 @@ Como son puertos distintos, el navegador lo considera origen distinto. Por eso `
 Ademas del backend FastAPI, el frontend se comunica con n8n para el asistente virtual de soporte:
 
 ```text
-Angular -> ChatService -> n8n Chat Trigger -> AI Agent
+Angular -> ChatService -> n8n Chat Trigger -> agente conversacional
 ```
 
 La llamada se centraliza en:

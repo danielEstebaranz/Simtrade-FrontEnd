@@ -126,7 +126,7 @@ export class CarteraSection implements AfterViewInit, OnDestroy {
   protected readonly rangeOptions: { label: string; value: TrendRange }[] = [
     { label: '1 dia', value: '1d' },
     { label: '1 semana', value: '1w' },
-    { label: '1 ano', value: '1y' },
+    { label: '1 año', value: '1y' },
   ];
   protected readonly positions = computed<PortfolioPosition[]>(() =>
     Object.entries(this.user()?.cartera ?? {})

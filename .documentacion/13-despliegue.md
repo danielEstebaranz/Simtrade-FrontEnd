@@ -10,7 +10,7 @@ Poder abrir una URL publica del frontend y usar:
 - cartera, mercado, historial, estadisticas, perfil y configuracion
 - Firestore y Firebase Authentication
 - graficas y datos de mercado reales
-- chat IA conectado a n8n
+- asistente virtual conectado a n8n
 
 ## Arquitectura recomendada
 
@@ -23,7 +23,7 @@ Usuario
           -> yfinance / Finnhub
 
       -> n8n publico
-          -> workflow del chat IA
+          -> workflow del asistente virtual
 ```
 
 ## Recomendacion de alojamiento
@@ -33,7 +33,7 @@ Usuario
 ```text
 Frontend: Vercel o Netlify
 Backend: Render
-Chat IA: n8n Cloud
+Asistente virtual: n8n Cloud
 Base de datos y autenticacion: Firebase
 ```
 
@@ -49,7 +49,7 @@ Motivo:
 ```text
 Frontend SSR: Render como servicio Node
 Backend: Render como servicio Python
-Chat IA: n8n Cloud
+Asistente virtual: n8n Cloud
 ```
 
 Esta opcion aprovecha que el proyecto Angular actual tiene SSR configurado con:
@@ -210,7 +210,7 @@ Recomendacion para Firebase Admin:
 
 ## 5. Dominio autorizado en Firebase
 
-Cuando exista la URL publica del frontend, anadir su dominio en Firebase Authentication.
+Cuando exista la URL publica del frontend, añadir su dominio en Firebase Authentication.
 
 Ejemplo:
 
@@ -218,7 +218,7 @@ Ejemplo:
 simtrade.vercel.app
 ```
 
-## 6. Chat IA en produccion
+## 6. Asistente virtual en produccion
 
 Mover la URL de n8n a `environment.chatUrl`.
 
@@ -249,7 +249,7 @@ sean servidas por `index.html` al refrescar.
 
 ## 8. Endpoint de salud recomendado
 
-Es recomendable anadir:
+Es recomendable añadir:
 
 ```text
 GET /health
@@ -339,7 +339,7 @@ Soluciones:
 - mantener mensajes de error claros
 - valorar cache ligera mas adelante
 
-### Chat IA
+### Asistente virtual
 
 Riesgos:
 
@@ -374,7 +374,7 @@ Soluciones:
 - abrir la URL publica
 - iniciar sesion
 - visitar todas las pestañas
-- probar una compra pequena
+- probar una compra pequeña
 - probar el chat
 - dejar una cuenta demo con datos visuales buenos
 
@@ -385,7 +385,7 @@ Soluciones:
 - una grabacion corta del flujo principal
 - segunda pestaña con sesion ya iniciada
 
-## Chat IA y documentacion del proyecto
+## Asistente virtual y documentacion del proyecto
 
 ### Que sabe ahora mismo
 
@@ -428,7 +428,7 @@ con solo:
 - que hace cada pestaña
 - como comprar
 - como vender
-- como anadir o quitar fondos
+- como añadir o quitar fondos
 - como funciona historial
 - que significa cada grafica
 - como cambiar tema

@@ -78,7 +78,7 @@
                     [attr.aria-selected]="fundsAction() === 'add'"
                     (click)="selectFundsAction('add')"
                   >
-                    Anadir fondos
+                    Añadir fondos
                   </button>
                   <button
                     type="button"
@@ -141,7 +141,7 @@
                     @if (fundsState().status === 'saving') {
                       Guardando...
                     } @else {
-                      {{ fundsAction() === 'add' ? 'Anadir fondos' : 'Quitar fondos' }}
+                      {{ fundsAction() === 'add' ? 'Añadir fondos' : 'Quitar fondos' }}
                     }
                   </button>
                 </form>
@@ -252,16 +252,16 @@
       <div class="dialog-header">
         <div>
           <p class="eyebrow danger">Confirmacion final</p>
-          <h3 id="reset-dialog-title">Verifica tu contrasena</h3>
+          <h3 id="reset-dialog-title">Verifica tu contraseña</h3>
         </div>
         <button class="icon-button" type="button" aria-label="Cerrar reinicio" (click)="closeResetDialog()">x</button>
       </div>
 
       <p class="danger-copy">
-        Para reiniciar la cartera introduce la contrasena actual.
+        Para reiniciar la cartera introduce la contraseña actual.
       </p>
 
-      <label class="field-label" for="reset-password">Contrasena</label>
+      <label class="field-label" for="reset-password">Contraseña</label>
       <input
         id="reset-password"
         class="danger-input"
@@ -303,16 +303,16 @@
       <div class="dialog-header">
         <div>
           <p class="eyebrow danger">Confirmacion final</p>
-          <h3 id="delete-dialog-title">Verifica tu contrasena</h3>
+          <h3 id="delete-dialog-title">Verifica tu contraseña</h3>
         </div>
         <button class="icon-button" type="button" aria-label="Cerrar borrado" (click)="closeDeleteDialog()">x</button>
       </div>
 
       <p class="danger-copy">
-        Para borrar la cuenta introduce la contrasena actual.
+        Para borrar la cuenta introduce la contraseña actual.
       </p>
 
-      <label class="field-label" for="delete-password">Contrasena</label>
+      <label class="field-label" for="delete-password">Contraseña</label>
       <input
         id="delete-password"
         class="danger-input"

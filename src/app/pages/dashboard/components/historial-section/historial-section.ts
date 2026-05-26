@@ -202,7 +202,7 @@ export class HistorialSection {
 
   protected buildMessage(item: HistoryItem): string {
     if (item.type === 'deposito') {
-      return `Has anadido ${this.formatNumber(item.total, 2)} $ al saldo.`;
+      return `Has añadido ${this.formatNumber(item.total, 2)} $ al saldo.`;
     }
 
     if (item.type === 'retirada') {

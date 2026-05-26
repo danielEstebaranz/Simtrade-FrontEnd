@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-La pestana `Cartera` muestra:
+La pestaña `Cartera` muestra:
 
 - saldo disponible
 - activos en cartera
@@ -18,7 +18,7 @@ La grafica tiene tres vistas:
 
 - `1 dia`
 - `1 semana`
-- `1 ano`
+- `1 año`
 
 ## Archivos implicados
 
@@ -246,7 +246,7 @@ En la demo actual:
 1 ciclo del worker = 30 dias simulados de dividendo
 ```
 
-Se eligio 30 dias simulados por ciclo para que el efecto se pueda ver durante la presentacion. Si fuese 1 dia por minuto, el importe seria mucho mas pequeno y muchas veces quedaria redondeado a 0.
+Se eligio 30 dias simulados por ciclo para que el efecto se pueda ver durante la presentacion. Si fuese 1 dia por minuto, el importe seria mucho mas pequeño y muchas veces quedaria redondeado a 0.
 
 Importante: esto solo aplica a acciones en cartera. Los bonos son otro producto distinto. Puedes contratar un bono de Tesla aunque no tengas acciones de Tesla, porque el bono no depende de la cartera sino de las ofertas disponibles del backend.
 
@@ -278,7 +278,7 @@ Ademas, el endpoint `GET /users/me/history` tambien descarta ese tipo antes de r
 
 ## Venta desde cartera
 
-La pestana `Operaciones` se elimino como opcion visual del sidebar. Las compras se hacen desde `Mercado` y las ventas desde `Cartera`.
+La pestaña `Operaciones` se elimino como opcion visual del sidebar. Las compras se hacen desde `Mercado` y las ventas desde `Cartera`.
 
 En cartera, junto a los filtros de rango de la grafica, hay cuatro opciones de venta:
 
@@ -368,7 +368,7 @@ status: 'idle' | 'loading' | 'loaded' | 'error'
 
 Antes existia un metodo en frontend que generaba puntos falsos si el backend fallaba.
 
-Eso ayudaba a probar el diseno, pero era mala idea para la aplicacion final porque la grafica parecia real.
+Eso ayudaba a probar el diseño, pero era mala idea para la aplicacion final porque la grafica parecia real.
 
 Ahora la regla es:
 
@@ -420,7 +420,7 @@ Se multiplica por `1000` porque JavaScript trabaja con milisegundos.
 - El valor actual y la venta pueden diferir ligeramente porque se consulta precio real en momentos distintos.
 - La cartera solo sabe los tickers guardados en Firestore. Si un ticker no existe en Yahoo Finance, la grafica dara error.
 - `1 semana` usa historico de dias de mercado. En acciones, fines de semana y festivos pueden no tener datos.
-- Chart.js aumenta el tamano del bundle. La build funciona, pero Angular avisa de presupuesto de tamano.
+- Chart.js aumenta el tamaño del bundle. La build funciona, pero Angular avisa de presupuesto de tamaño.
 - No hay cache de tendencias ni de ganancias.
 
 ## Preguntas tipicas

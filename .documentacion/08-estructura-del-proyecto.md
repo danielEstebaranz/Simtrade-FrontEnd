@@ -225,7 +225,7 @@ POST http://127.0.0.1:8000/users/me/portfolio/reset
 POST http://127.0.0.1:8000/users/me/delete
 ```
 
-Se separa de `MarketService` porque anadir fondos, quitar fondos, cambiar tema, reiniciar cartera o borrar cuenta no son operaciones de mercado.
+Se separa de `MarketService` porque añadir fondos, quitar fondos, cambiar tema, reiniciar cartera o borrar cuenta no son operaciones de mercado.
 
 `assets.ts` mantiene un catalogo fallback para nombres legibles. La fuente principal de activos disponibles ya es el backend mediante `/market/assets`:
 

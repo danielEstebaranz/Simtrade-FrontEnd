@@ -47,7 +47,7 @@ icono {
 }
 ```
 
-El favicon no es un elemento visual dentro del DOM de la pagina. Es un recurso que el navegador usa para la pestana.
+El favicon no es un elemento visual dentro del DOM de la pagina. Es un recurso que el navegador usa para la pestaña.
 
 Por eso se creo una imagen nueva ya redondeada:
 

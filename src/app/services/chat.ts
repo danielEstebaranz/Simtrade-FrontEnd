@@ -18,10 +18,10 @@ export class ChatService {
   private readonly chatUrl =
     'https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat';
 
-  sendMessage(chatInput: string): Observable<string> {
+  sendMessage(message: string): Observable<string> {
     return this.http
       .post<ChatResponse>(this.chatUrl, {
-        chatInput,
+        chatInput: message,
         sessionId: this.getSessionId(),
       })
       .pipe(
@@ -50,9 +50,9 @@ export class ChatService {
       return existingSessionId;
     }
 
-    const newSessionId = `simtrade-guest-${crypto.randomUUID()}`;
-    localStorage.setItem(storageKey, newSessionId);
-    return newSessionId;
+    const sessionId = `simtrade-guest-${crypto.randomUUID()}`;
+    localStorage.setItem(storageKey, sessionId);
+    return sessionId;
   }
 
   private getErrorMessage(error: HttpErrorResponse): string {

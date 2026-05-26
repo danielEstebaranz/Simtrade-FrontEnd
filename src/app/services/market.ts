@@ -126,43 +126,33 @@ export class MarketService {
   }
 
   getPortfolioGains(token: string): Observable<PortfolioGains> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<PortfolioGains>(`${this.apiUrl}/users/me/portfolio/gains`, { headers });
+    return this.http.get<PortfolioGains>(
+      `${this.apiUrl}/users/me/portfolio/gains`,
+      this.authOptions(token),
+    );
   }
 
   buyAsset(token: string, ticker: string, amount: number): Observable<BuyAssetResponse> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
     return this.http.post<BuyAssetResponse>(
       `${this.apiUrl}/users/me/portfolio/buy`,
       { amount, ticker },
-      { headers },
+      this.authOptions(token),
     );
   }
 
   sellAsset(token: string, ticker: string, percentage: number): Observable<SellAssetResponse> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
     return this.http.post<SellAssetResponse>(
       `${this.apiUrl}/users/me/portfolio/sell`,
       { percentage, ticker },
-      { headers },
+      this.authOptions(token),
     );
   }
 
   getHistory(token: string): Observable<HistoryResponse> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<HistoryResponse>(`${this.apiUrl}/users/me/history`, { headers });
+    return this.http.get<HistoryResponse>(
+      `${this.apiUrl}/users/me/history`,
+      this.authOptions(token),
+    );
   }
 
   getStatistics(): Observable<MarketStatisticsResponse> {
@@ -171,5 +161,13 @@ export class MarketService {
 
   getAssets(): Observable<MarketAssetsResponse> {
     return this.http.get<MarketAssetsResponse>(`${this.apiUrl}/market/assets`);
+  }
+
+  private authOptions(token: string): { headers: HttpHeaders } {
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      }),
+    };
   }
 }
