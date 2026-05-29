@@ -1,20 +1,20 @@
 # SIMTRADE FrontEnd
 
-Frontend Angular del TFG Simtrade. Incluye autenticacion, panel protegido, cartera, mercado, bonos temporales, historial, estadisticas, perfil, configuracion y centro de ayuda con asistente virtual conectado a n8n.
+Frontend Angular del TFG Simtrade. Incluye autenticación, panel protegido, cartera, mercado, bonos temporales, historial, estadisticas, perfil, configuración y centro de ayuda con asistente virtual conectado a n8n.
 
 ## Funcionalidades principales
 
 - Login y registro contra el backend FastAPI.
 - Operativa de compra y venta de activos.
-- Bonos temporales: contratacion de bonos por saldo, contador de vencimiento, liquidacion automatica y rastro en historial.
-- Graficas reales con Chart.js.
-- Gestion de fondos, reinicio de cartera y borrado de cuenta.
+- Bonos temporales: contratación de bonos por saldo, contador de vencimiento, liquidacion automática y rastro en historial.
+- Gráficas reales con Chart.js.
+- Gestión de fondos, reinicio de cartera y borrado de cuenta.
 - Tema claro/oscuro persistente.
 - Login con tema claro fijo aunque el usuario tenga modo oscuro guardado.
 - Perfil sin mostrar identificadores internos del usuario.
 - Bonos legibles en tema oscuro con reglas de contraste propias.
 - FAQ y chat de soporte de SIMTRADE en `/panel/ayuda`.
-- Integracion con n8n para el asistente virtual mediante `src/app/services/chat.ts`.
+- Integración con n8n para el asistente virtual mediante `src/app/services/chat.ts`.
 
 ## Secciones principales
 
@@ -31,12 +31,10 @@ Frontend Angular del TFG Simtrade. Incluye autenticacion, panel protegido, carte
 
 La pantalla de bonos usa `AccountService` para consumir:
 
-```text
 GET  /bonds/offers
 GET  /users/me/bonds
 POST /users/me/bonds
 POST /users/me/bonds/settle
-```
 
 Flujo:
 
@@ -58,9 +56,9 @@ Estetica actual:
 
 ## Servicios Angular
 
-- `AuthService`: login, registro, sesion, usuario actual y sincronizacion del tema guardado.
+- `AuthService`: login, registro, sesion, usuario actual y sincronización del tema guardado.
 - `MarketService`: mercado, compra, venta, cartera, ganancias e historial.
-- `AccountService`: configuracion, fondos, retiradas, reinicio, borrado de cuenta y bonos.
+- `AccountService`: configuración, fondos, retiradas, reinicio, borrado de cuenta y bonos.
 - `ThemeService`: aplica `data-theme` en el documento y guarda preferencia en `localStorage`.
 - `ChatService`: comunica el chat de ayuda con n8n.
 
@@ -69,16 +67,16 @@ Estetica actual:
 - `@angular/core`, `@angular/common`, `@angular/router`, `@angular/forms`: base de la aplicacion, componentes standalone, rutas y formularios reactivos.
 - `@angular/common/http`: llamadas HTTP al backend FastAPI y al webhook de n8n.
 - `rxjs`: manejo de observables y suscripciones HTTP.
-- `chart.js`: graficas de tendencia y cartera.
+- `chart.js`: gráficas de tendencia y cartera.
 - `express` y `@angular/ssr`: soporte SSR generado por Angular.
 - `vitest` y `jsdom`: base disponible para tests.
-- `typescript`: tipado de la aplicacion.
+- `typescript`: tipado de la aplicación.
 
 ## Errores corregidos recientes
 
 ### Fondos manuales no se aplicaban
 
-Los botones rapidos funcionaban, pero la cantidad escrita manualmente podia viajar como texto. El backend ahora acepta numero o texto y el frontend normaliza comas decimales antes de enviar.
+Los botones rápidos funcionaban, pero la cantidad escrita manualmente podia viajar como texto. El backend ahora acepta numero o texto y el frontend normaliza comas decimales antes de enviar.
 
 ### Login heredaba el modo oscuro
 
@@ -92,10 +90,10 @@ El contador ahora se calcula con `maturityAt`. Si hay un bono vencido, el fronte
 
 `HistorialSection` ahora muestra mensajes especificos para:
 
-```text
+
 bono_inversion
 bono_cierre
-```
+
 
 ### Bonos activos desalineados
 
@@ -107,7 +105,7 @@ Los textos de `Bonos temporales`, `Elige un bono` y `Bonos activos` quedaban dem
 
 ### Perfil mostraba identificador interno
 
-El perfil mostraba el `id` tecnico del usuario. Se retiro de la interfaz: el dato sigue disponible internamente para autenticacion y servicios, pero no se ensena al usuario final.
+El perfil mostraba el `id` tecnico del usuario. Se retiro de la interfaz: el dato sigue disponible internamente para autenticacion y servicios, pero no se enseña al usuario final.
 
 ## Servicios locales necesarios
 
@@ -119,64 +117,52 @@ n8n Cloud:        https://simtrade.app.n8n.cloud
 
 El chat usa el workflow publicado de n8n:
 
-```text
+
 POST https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat
-```
 
-La peticion envia `chatInput` y `sessionId`; el `sessionId` permite que la memoria del agente conserve el contexto de la conversacion.
+La petición envía `chatInput` y `sessionId`; el `sessionId` permite que la memoria del agente conserve el contexto de la conversación.
 
-## Development server
+## Servidor de desarrollo
 
-To start a local development server, run:
+Para iniciar un servidor de desarrollo local, ejecuta:
 
-```bash
 ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Una vez que el servidor esté en funcionamiento, abre tu navegador y navega a `http://localhost:4200/`. La aplicación se recargará automáticamente cada vez que modifiques cualquiera de los archivos fuente.
 
-## Code scaffolding
+## Generación de código
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Angular CLI incluye potentes herramientas de generación de código. Para generar un nuevo componente, ejecuta:
 
-```bash
+
 ng generate component component-name
-```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Para obtener una lista completa de los esquemas disponibles, como `components`,`directives`,`pipes`, ejecuta:
 
-```bash
 ng generate --help
-```
 
-## Building
+## Construcción 
 
-To build the project run:
+Para construir el proyecto, ejecuta:
 
-```bash
 ng build
-```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Esto compilará el proyecto y almacenará los artefactos de construcción en el directorio `dist/`. Por defecto, la construcción de producción optimiza tu aplicación para rendimiento y velocidad.
 
-## Running unit tests
+## Ejecuta de pruebas unitarias
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Para ejecutar pruebas unitarias con el ejecutor de pruebas `Vitest, usa el siguiente comando:
 
-```bash
 ng test
-```
 
-## Running end-to-end tests
+## Ejecución de pruebas end-to-end
 
-For end-to-end (e2e) testing, run:
+Para pruebas end-to-end, ejecuta:
 
-```bash
 ng e2e
-```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Angular CLI no viene con un framework de pruebas end-to-end por defecto. Puedes elegir uno que se adapte a tus necesidades.
 
-## Additional Resources
+## Recursos adicionales 
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Para obtener más información sobre el uso de Angular CLI, incluidas referencias detalladas de comandos, visita la página `https://angular.dev/tools/cli`
