@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-La pestana `Cartera` muestra:
+La pestaña `Cartera` muestra:
 
 - saldo disponible
 - activos en cartera
@@ -11,13 +11,14 @@ La pestana `Cartera` muestra:
 - lista de acciones del usuario
 - grafica de tendencia del activo seleccionado
 - valor actual del activo seleccionado
+- dinero invertido en el activo seleccionado
 - acciones de venta por porcentaje
 
 La grafica tiene tres vistas:
 
 - `1 dia`
 - `1 semana`
-- `1 ano`
+- `1 año`
 
 ## Archivos implicados
 
@@ -65,6 +66,7 @@ CarteraSection
   -> ApiHandler consulta precios reales con yfinance
   -> backend calcula ganancia total y diaria
   -> backend devuelve tambien positions[ticker].totalValue
+  -> backend devuelve tambien positions[ticker].investedCost
   -> frontend pinta tarjetas en verde, rojo o neutro
 ```
 
@@ -194,9 +196,89 @@ que viene del backend dentro de:
 }
 ```
 
+## Dinero invertido visible en la tendencia
+
+Debajo del nombre del activo seleccionado se muestra una etiqueta compacta con `Invertido`.
+
+Ese dato sale de:
+
+```ts
+selectedPositionGains().investedCost
+```
+
+Sirve para comparar de forma rapida:
+
+- cuanto dinero costo abrir la posicion
+- cuanto vale ahora (`Valor actual`)
+- cuanto se podria recibir al vender un porcentaje
+
+Si el backend no puede calcular un coste de compra fiable, la etiqueta muestra `Sin coste`.
+
+## Reinversion automatica de dividendos simulados
+
+La reinversion no la hace el usuario manualmente desde la interfaz. Se hace por detras desde el backend, reutilizando el mismo ciclo del worker de precios.
+
+El flujo es:
+
+```text
+worker_precios.py se ejecuta cada 60 segundos
+  -> actualiza precios de mercado
+  -> revisa usuarios con cartera
+  -> calcula dividendos simulados para los activos configurados
+  -> compra fracciones del mismo activo con ese importe
+  -> registra la operacion interna como DIVIDENDO_REINVERTIDO
+```
+
+Las tasas de dividendo simuladas estan definidas en el backend, dentro del worker. No vienen de Finnhub ni de yfinance. La tabla indica que porcentaje anual simulado tiene cada activo.
+
+La reinversion no se aplica a todos los activos de esa tabla. El backend primero mira que acciones tiene el usuario en su cartera y solo despues consulta si ese ticker tiene una tasa configurada mayor que 0.
+
+```text
+tabla de tasas hardcodeada
+  + cartera real del usuario
+  = activos concretos sobre los que se reinvierte
+```
+
+En la demo actual:
+
+```text
+1 ciclo del worker = 60 segundos reales
+1 ciclo del worker = 30 dias simulados de dividendo
+```
+
+Se eligio 30 dias simulados por ciclo para que el efecto se pueda ver durante la presentacion. Si fuese 1 dia por minuto, el importe seria mucho mas pequeño y muchas veces quedaria redondeado a 0.
+
+Importante: esto solo aplica a acciones en cartera. Los bonos son otro producto distinto. Puedes contratar un bono de Tesla aunque no tengas acciones de Tesla, porque el bono no depende de la cartera sino de las ofertas disponibles del backend.
+
+El frontend refresca el usuario actual cada 60 segundos con:
+
+```ts
+AuthService.refreshCurrentUser()
+```
+
+Ese metodo llama a:
+
+```text
+GET /auth/me
+```
+
+Asi, cuando el worker aumenta las unidades de una accion por reinversion, la cartera puede actualizarse sin que el usuario tenga que cerrar sesion o recargar la pagina.
+
+## Dividendos ocultos en historial
+
+Aunque el backend guarda `DIVIDENDO_REINVERTIDO` como transaccion interna, el apartado `Historial` lo filtra:
+
+```ts
+this.historyState().items.filter((item) => item.type !== 'dividendo_reinvertido')
+```
+
+Se hizo asi porque el usuario pidio no mostrar nada de dividendos en el historial. La transaccion sigue existiendo para que el calculo de coste invertido sea coherente.
+
+Ademas, el endpoint `GET /users/me/history` tambien descarta ese tipo antes de responder, de forma que no aparezca aunque se recargue el historial desde el backend.
+
 ## Venta desde cartera
 
-La pestana `Operaciones` se elimino como opcion visual del sidebar. Las compras se hacen desde `Mercado` y las ventas desde `Cartera`.
+La pestaña `Operaciones` se elimino como opcion visual del sidebar. Las compras se hacen desde `Mercado` y las ventas desde `Cartera`.
 
 En cartera, junto a los filtros de rango de la grafica, hay cuatro opciones de venta:
 
@@ -286,7 +368,7 @@ status: 'idle' | 'loading' | 'loaded' | 'error'
 
 Antes existia un metodo en frontend que generaba puntos falsos si el backend fallaba.
 
-Eso ayudaba a probar el diseno, pero era mala idea para la aplicacion final porque la grafica parecia real.
+Eso ayudaba a probar el diseño, pero era mala idea para la aplicacion final porque la grafica parecia real.
 
 Ahora la regla es:
 
@@ -338,7 +420,7 @@ Se multiplica por `1000` porque JavaScript trabaja con milisegundos.
 - El valor actual y la venta pueden diferir ligeramente porque se consulta precio real en momentos distintos.
 - La cartera solo sabe los tickers guardados en Firestore. Si un ticker no existe en Yahoo Finance, la grafica dara error.
 - `1 semana` usa historico de dias de mercado. En acciones, fines de semana y festivos pueden no tener datos.
-- Chart.js aumenta el tamano del bundle. La build funciona, pero Angular avisa de presupuesto de tamano.
+- Chart.js aumenta el tamaño del bundle. La build funciona, pero Angular avisa de presupuesto de tamaño.
 - No hay cache de tendencias ni de ganancias.
 
 ## Preguntas tipicas

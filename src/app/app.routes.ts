@@ -33,6 +33,13 @@ export const routes: Routes = [
             (component) => component.MercadoSection,
           ),
       },
+      {
+        path: 'bonos',
+        loadComponent: () =>
+          import('./pages/dashboard/components/bonos-section/bonos-section').then(
+            (component) => component.BonosSection,
+          ),
+      },
       { path: 'operaciones', redirectTo: 'mercado' },
       { path: 'alertas', redirectTo: 'historial' },
       {
@@ -55,6 +62,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/dashboard/components/configuracion-section/configuracion-section').then(
             (component) => component.ConfiguracionSection,
+          ),
+      },
+      {
+        path: 'ayuda',
+        loadComponent: () =>
+          import('./pages/dashboard/components/ayuda-section/ayuda-section').then(
+            (component) => component.AyudaSection,
           ),
       },
     ],

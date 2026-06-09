@@ -78,7 +78,7 @@ Asi no aparecen cortes blancos debajo del menu ni franjas mal alineadas.
 El sidebar es una pieza que no deberia mezclarse con el dashboard. Separarlo permite:
 
 - Reutilizarlo en otras pantallas si hace falta.
-- Cambiar su diseno sin tocar el login.
+- Cambiar su diseño sin tocar el login.
 - Mantener mas limpio el `dashboard.html`.
 
 ### Estado del menu
@@ -109,7 +109,7 @@ El logo se pinta con `NgOptimizedImage`:
 >
 ```
 
-Se usa `NgOptimizedImage` porque Angular lo recomienda para imagenes estaticas. Ayuda a que Angular entienda mejor tamano, carga y optimizacion de imagenes.
+Se usa `NgOptimizedImage` porque Angular lo recomienda para imagenes estaticas. Ayuda a que Angular entienda mejor tamaño, carga y optimizacion de imagenes.
 
 ## Login
 
@@ -124,7 +124,7 @@ src/app/pages/login/
 El componente `Login` muestra un formulario con:
 
 - Usuario.
-- Contrasena.
+- Contraseña.
 - Boton para entrar.
 - Cambio entre modo login y modo registro.
 - Mensajes de error.
@@ -164,7 +164,33 @@ El dashboard es la pantalla que se muestra despues del login. Contiene:
 - Saludo con el nombre de usuario.
 - Un `router-outlet` donde se cargan Cartera, Mercado, Historial, Estadisticas, Configuracion o Perfil.
 - Icono redondo de perfil a la izquierda del boton de cerrar sesion.
+- Boton circular de ayuda con `?` junto al perfil.
 - Boton de cerrar sesion.
+
+## Ayuda
+
+Ruta:
+
+```text
+src/app/pages/dashboard/components/ayuda-section/
+```
+
+### Que hace
+
+`AyudaSection` muestra:
+
+- FAQ desplegable
+- tarjeta de soporte inteligente
+- modal de chat con SIMTRADE
+
+El chat usa `ChatService` para llamar a n8n y no permite usar al asistente como soporte generalista: el workflow esta configurado para responder solo sobre el proyecto.
+
+### Detalles de interfaz
+
+- El compositor permanece visible mientras se desplaza solo el historial.
+- Los mensajes del usuario y del asistente tienen estilos diferenciados.
+- El historial hace autoscroll al ultimo mensaje.
+- La respuesta asincrona muestra `Escribiendo...` y errores con `role="alert"`.
 
 ### Por que el sidebar esta aqui y no en App
 
@@ -185,9 +211,11 @@ src/app/pages/dashboard/components/perfil-section/
 Muestra:
 
 - resumen en columna con saldo disponible, numero de activos y tema actual
-- datos de la cuenta
+- datos de la cuenta visibles para el usuario, como email y preferencia visual
 - cartera actual
 - grafica tipo queso con la distribucion de la cartera por valor actual
+
+No muestra el identificador interno del usuario (`uid`/`id`). Ese dato se conserva dentro de `AuthService` para autenticar llamadas, mantener la sesion del chat y comunicarse con el backend, pero no se pinta en la interfaz porque es un dato tecnico sin utilidad para el usuario final.
 
 La distribucion no usa simplemente unidades, porque `0,1` Bitcoin y `0,1` Apple no representan el mismo dinero. Usa:
 
@@ -206,6 +234,8 @@ La solucion fue esperar al siguiente frame del navegador:
 ```ts
 window.requestAnimationFrame(() => this.renderCompositionChart(items));
 ```
+
+Tambien se elimino el campo `Identificador` de `Datos de la cuenta`. El usuario solo ve informacion entendible y relevante; el identificador queda reservado para uso interno.
 
 ## Configuracion
 
@@ -229,7 +259,7 @@ configuracion-section.css
 
 - barra lateral interna de seleccion, parecida a la lista de activos de Mercado
 - apartado `Apariencia` con selector de tema claro/oscuro
-- apartado `Fondos` con anadir fondos, quitar fondos y reiniciar cartera
+- apartado `Fondos` con añadir fondos, quitar fondos y reiniciar cartera
 - botones rapidos de 100 $, 500 $ y 1000 $
 - zona de borrado de cuenta con confirmacion escribiendo `BORRAR`
 
@@ -239,13 +269,13 @@ La primera version del redisenio se hizo con un desplegable al pasar el raton. D
 
 En fondos hay dos operaciones normales:
 
-- `Anadir fondos`: suma saldo disponible.
+- `Añadir fondos`: suma saldo disponible.
 - `Quitar fondos`: resta saldo disponible, siempre que haya saldo suficiente.
 
 Tambien existe `Reiniciar cartera`. Es una accion sensible porque borra los activos actuales y devuelve el saldo a 1000 $. Por eso exige dos pasos:
 
 1. escribir `REINICIAR` en mayusculas
-2. confirmar la contrasena en un popup
+2. confirmar la contraseña en un popup
 
 La comprobacion importante se hace en el backend. El frontend solo ayuda a evitar clics accidentales.
 
@@ -338,4 +368,4 @@ GET /market/assets
 
 `assets.ts` se conserva como fallback para que la interfaz tenga nombres legibles aunque el backend no responda. Antes Mercado tenia una lista duplicada dentro del componente y Cartera mostraba directamente el codigo del ticker. Ahora Mercado pregunta al backend y Cartera traduce los tickers a nombres como `Apple`, `Tesla`, `Bitcoin` o `Alphabet`.
 
-Tambien se redujo el tamano del texto en la fila de cartera y se cambio la fila a una cuadricula con dos columnas: nombre flexible a la izquierda y unidades fijas a la derecha. Esto evita que el nombre choque con la cantidad de unidades.
+Tambien se redujo el tamaño del texto en la fila de cartera y se cambio la fila a una cuadricula con dos columnas: nombre flexible a la izquierda y unidades fijas a la derecha. Esto evita que el nombre choque con la cantidad de unidades.

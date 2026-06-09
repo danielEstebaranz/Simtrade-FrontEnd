@@ -61,7 +61,7 @@ curl.exe -i -X POST http://127.0.0.1:8000/auth/login -H "Content-Type: applicati
 Debe devolver un error controlado parecido a:
 
 ```json
-{"message": "Usuario y contrasena son obligatorios."}
+{"message": "Usuario y contraseña son obligatorios."}
 ```
 
 Eso indica que la API esta viva.
@@ -116,7 +116,7 @@ Para cambiar a modo oscuro:
 curl.exe -s -i -X PATCH "http://127.0.0.1:8000/users/me/settings" -H "Authorization: Bearer <idToken>" -H "Content-Type: application/json" -d "{\"theme\":\"dark\"}"
 ```
 
-## Probar anadir fondos
+## Probar añadir fondos
 
 ```powershell
 curl.exe -s -i -X POST "http://127.0.0.1:8000/users/me/funds" -H "Authorization: Bearer <idToken>" -H "Content-Type: application/json" -d "{\"amount\":250}"
@@ -153,9 +153,22 @@ Stop-Process -Id <PID> -Force
 http://localhost:4200/login
 http://localhost:4200/panel/cartera
 http://localhost:4200/panel/configuracion
+http://localhost:4200/panel/ayuda
 ```
 
 `/panel` esta protegido por el guard. Si no hay sesion, vuelve a `/login`.
+
+## Comprobar el asistente virtual
+
+Con n8n arrancado en Docker y el workflow activo:
+
+```powershell
+curl.exe -s -X POST "https://simtrade.app.n8n.cloud/webhook/70182b73-2c1e-49d3-b99c-41aaa164ef52/chat" `
+  -H "Content-Type: application/json" `
+  -d "{\"chatInput\":\"Como compro un activo?\",\"sessionId\":\"prueba-local\"}"
+```
+
+La respuesta correcta devuelve un JSON con `output`.
 
 ## Si no ves cambios
 

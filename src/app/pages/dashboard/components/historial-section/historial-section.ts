@@ -32,6 +32,7 @@ interface HistoryState {
                 [class.deposit]="item.type === 'deposito'"
                 [class.withdrawal]="item.type === 'retirada'"
                 [class.reset]="item.type === 'reinicio'"
+                [class.bond]="item.type === 'bono_inversion' || item.type === 'bono_cierre'"
               >
                 {{ getOperationLabel(item) }}
               </span>
@@ -127,6 +128,11 @@ interface HistoryState {
       color: #92400e;
     }
 
+    .operation-badge.bond {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
     .history-content {
       display: grid;
       gap: 0.25rem;
@@ -175,7 +181,9 @@ export class HistorialSection {
     items: [],
     status: 'idle',
   });
-  protected readonly notifications = computed(() => this.historyState().items);
+  protected readonly notifications = computed(() =>
+    this.historyState().items.filter((item) => item.type !== 'dividendo_reinvertido'),
+  );
 
   constructor() {
     const token = this.authService.idToken();
@@ -194,7 +202,7 @@ export class HistorialSection {
 
   protected buildMessage(item: HistoryItem): string {
     if (item.type === 'deposito') {
-      return `Has anadido ${this.formatNumber(item.total, 2)} $ al saldo.`;
+      return `Has añadido ${this.formatNumber(item.total, 2)} $ al saldo.`;
     }
 
     if (item.type === 'retirada') {
@@ -203,6 +211,14 @@ export class HistorialSection {
 
     if (item.type === 'reinicio') {
       return 'Has reiniciado la cartera y el saldo vuelve a 1000 $.';
+    }
+
+    if (item.type === 'bono_inversion') {
+      return `Has invertido ${this.formatNumber(item.total, 2)} $ en un bono de ${item.ticker}.`;
+    }
+
+    if (item.type === 'bono_cierre') {
+      return `Ha finalizado tu bono de ${item.ticker} y has recibido ${this.formatNumber(item.total, 2)} $.`;
     }
 
     const verb = item.type === 'venta' ? 'Has vendido' : 'Has comprado';
@@ -220,6 +236,14 @@ export class HistorialSection {
 
     if (item.type === 'reinicio') {
       return 'Reinicio';
+    }
+
+    if (item.type === 'bono_inversion') {
+      return 'Bono';
+    }
+
+    if (item.type === 'bono_cierre') {
+      return 'Cobro';
     }
 
     return item.type === 'venta' ? 'Venta' : 'Compra';

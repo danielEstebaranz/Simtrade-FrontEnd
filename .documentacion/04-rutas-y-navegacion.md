@@ -30,6 +30,7 @@ export const routes: Routes = [
       { path: 'estadisticas', loadComponent: () => import('./pages/dashboard/components/estadisticas-section/estadisticas-section').then((component) => component.EstadisticasSection) },
       { path: 'ranking', redirectTo: 'estadisticas' },
       { path: 'configuracion', loadComponent: () => import('./pages/dashboard/components/configuracion-section/configuracion-section').then((component) => component.ConfiguracionSection) },
+      { path: 'ayuda', loadComponent: () => import('./pages/dashboard/components/ayuda-section/ayuda-section').then((component) => component.AyudaSection) },
       { path: 'perfil', loadComponent: () => import('./pages/dashboard/components/perfil-section/perfil-section').then((component) => component.PerfilSection) },
     ],
   },
@@ -58,6 +59,7 @@ Dentro de `/panel` hay rutas hijas:
 /panel/historial
 /panel/estadisticas
 /panel/configuracion
+/panel/ayuda
 /panel/perfil
 ```
 
@@ -162,7 +164,10 @@ Ese hueco es donde Angular carga el componente hijo que corresponda:
 - `/panel/estadisticas` carga `EstadisticasSection`.
 - `/panel/ranking` redirige a `EstadisticasSection`.
 - `/panel/configuracion` carga `ConfiguracionSection`.
+- `/panel/ayuda` carga `AyudaSection`.
 - `/panel/perfil` carga `PerfilSection`.
+
+`Ayuda` no aparece en el sidebar. Se abre desde el boton `?` de la cabecera, junto al perfil, porque es una utilidad global del panel.
 
 ## Lazy loading con `loadComponent`
 

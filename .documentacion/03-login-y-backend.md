@@ -10,7 +10,7 @@ Eso significa que el navegador no podia hacer esto directamente:
 Angular -> funcion Python autenticar_usuario()
 ```
 
-Un navegador solo puede comunicarse con el backend mediante HTTP, WebSocket u otro protocolo de red. Por eso se creo una API pequena en el backend.
+Un navegador solo puede comunicarse con el backend mediante HTTP, WebSocket u otro protocolo de red. Por eso se creo una API pequeña en el backend.
 
 ## Backend creado
 
@@ -53,7 +53,7 @@ Cuando el login va bien, devuelve algo de este estilo:
 }
 ```
 
-No devuelve la contrasena. Eso es importante por seguridad.
+No devuelve la contraseña. Eso es importante por seguridad.
 
 ## Servicio Angular
 
@@ -116,3 +116,28 @@ http://127.0.0.1:8000
 ```
 
 Como son puertos distintos, el navegador lo considera origen distinto. Por eso `api_server.py` incluye cabeceras CORS para permitir peticiones desde el frontend.
+
+## Segunda integracion HTTP: n8n
+
+Ademas del backend FastAPI, el frontend se comunica con n8n para el asistente virtual de soporte:
+
+```text
+Angular -> ChatService -> n8n Chat Trigger -> agente conversacional
+```
+
+La llamada se centraliza en:
+
+```text
+src/app/services/chat.ts
+```
+
+El workflow recibe:
+
+```json
+{
+  "chatInput": "pregunta",
+  "sessionId": "simtrade-user-<id>"
+}
+```
+
+`sessionId` es necesario porque la memoria del agente depende de el. Igual que FastAPI, n8n debe permitir CORS desde `http://localhost:4200`.

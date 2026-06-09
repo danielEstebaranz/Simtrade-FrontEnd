@@ -2,7 +2,7 @@
 
 ## Que tipo de aplicacion es
 
-Este proyecto es una aplicacion Angular. Angular separa la aplicacion en piezas pequenas llamadas componentes, servicios, rutas y configuraciones.
+Este proyecto es una aplicacion Angular. Angular separa la aplicacion en piezas pequeñas llamadas componentes, servicios, rutas y configuraciones.
 
 La idea principal es:
 
@@ -33,12 +33,14 @@ src/app/
         historial-section/
         mercado-section/
         perfil-section/
+        ayuda-section/
         ranking-section/
     login/
   services/
     account.ts
     assets.ts
     auth.ts
+    chat.ts
     market.ts
     theme.ts
 
@@ -93,6 +95,7 @@ Ese segundo `router-outlet` sirve para cargar las rutas hijas del panel:
 /panel/estadisticas
 /panel/configuracion
 /panel/perfil
+/panel/ayuda
 ```
 
 La ruta antigua `/panel/operaciones` redirige a `/panel/mercado`. La compra de acciones se integro en mercado.
@@ -100,6 +103,18 @@ La ruta antigua `/panel/alertas` redirige a `/panel/historial`.
 La ruta antigua `/panel/ranking` redirige a `/panel/estadisticas`.
 
 Asi el dashboard mantiene el sidebar y la cabecera fijos, pero el contenido central cambia segun el link pulsado.
+
+## Flujo de ayuda y asistente virtual
+
+La ruta de ayuda combina FAQ y soporte conversacional:
+
+```text
+AyudaSection -> ChatService -> n8n Chat Trigger -> agente conversacional -> modelo conversacional
+```
+
+El acceso visual esta en la cabecera del dashboard como boton `?`, junto al perfil. No aparece en el sidebar porque se considera una utilidad transversal, no una seccion operativa principal.
+
+`ChatService` envia `chatInput` y `sessionId` al workflow de n8n para conservar memoria entre mensajes. El agente se restringe por prompt al dominio funcional de SIMTRADE.
 
 ## Flujo de cartera y grafica
 
@@ -126,10 +141,10 @@ ConfiguracionSection -> AccountService -> FastAPI -> DbHandler -> Firestore
 Desde esa pantalla el usuario puede:
 
 - cambiar entre modo claro y modo oscuro
-- anadir fondos al saldo disponible
+- añadir fondos al saldo disponible
 - quitar fondos
-- reiniciar la cartera con confirmacion y contrasena
-- borrar la cuenta escribiendo una confirmacion y la contrasena
+- reiniciar la cartera con confirmacion y contraseña
+- borrar la cuenta escribiendo una confirmacion y la contraseña
 
 `ThemeService` aplica el tema sobre `document.documentElement` usando `data-theme`. Los estilos globales de `src/styles.css` leen esa marca y cambian colores del dashboard, sidebar, tarjetas, graficas y mensajes.
 
@@ -144,7 +159,7 @@ El reinicio de cartera sigue el mismo flujo, pero exige mas seguridad:
 
 ```text
 ConfiguracionSection -> AccountService -> FastAPI
-FastAPI verifica token + contrasena
+FastAPI verifica token + contraseña
 DbHandler vacia cartera y deja saldo en 1000 $
 FastAPI devuelve user actualizado
 AuthService.updateUser(...) refresca la app

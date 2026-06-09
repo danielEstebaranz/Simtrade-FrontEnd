@@ -8,6 +8,13 @@
       </div>
       <div class="header-actions">
         <a
+          class="help-link"
+          [routerLink]="['/panel', 'ayuda']"
+          aria-label="Abrir ayuda"
+        >
+          ?
+        </a>
+        <a
           class="profile-link"
           [routerLink]="['/panel', 'perfil']"
           aria-label="Abrir perfil"

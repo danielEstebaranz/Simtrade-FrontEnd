@@ -98,11 +98,13 @@ Cada pieza tiene un trabajo claro:
 - `MarketService`: datos de mercado.
 - `AccountService`: configuracion, fondos y borrado de cuenta.
 - `ThemeService`: tema claro/oscuro y persistencia local.
+- `ChatService`: integracion HTTP con n8n y sesion conversacional del asistente.
 - `MercadoSection`: consulta de activos y compra por importe.
 - `CarteraSection`: interfaz, estado de cartera, grafica, valor actual y ventas.
 - `ConfiguracionSection`: preferencias de cuenta, fondos, reinicio y borrado.
 - `PerfilSection`: resumen de cuenta y distribucion actual de cartera.
 - `EstadisticasSection`: mejores y peores rendimientos de mercado.
+- `AyudaSection`: FAQ y asistente virtual de soporte.
 - `ApiHandler`: proveedor de mercado.
 - `DbHandler`: Firestore.
 - `api_server.py`: capa HTTP.
@@ -111,7 +113,7 @@ Esto evita que un componente Angular acabe sabiendo demasiado de Firestore o de 
 
 ### 2. Empezar simple y hacer real lo importante
 
-Al principio una grafica demo puede servir para probar diseno, pero cuando el usuario pregunta por la realidad del dato, se cambia el criterio:
+Al principio una grafica demo puede servir para probar diseño, pero cuando el usuario pregunta por la realidad del dato, se cambia el criterio:
 
 - no simular datos
 - no esconder errores
@@ -225,12 +227,12 @@ El perfil se saco a una ruta propia y se abre desde el icono redondo de la cabec
 
 ### Depositos aparecian como compras en historial
 
-Al anadir fondos, el backend registra una transaccion `DEPOSITO`. El historial del frontend trataba cualquier movimiento que no fuera `venta` como compra.
+Al añadir fondos, el backend registra una transaccion `DEPOSITO`. El historial del frontend trataba cualquier movimiento que no fuera `venta` como compra.
 
 Se anadio una etiqueta y mensaje especifico:
 
 ```text
-Deposito -> Has anadido 250 $ al saldo.
+Deposito -> Has añadido 250 $ al saldo.
 ```
 
 Despues se amplio el mismo criterio a:
@@ -262,20 +264,22 @@ No era un fallo del codigo de la app, sino del sandbox al resolver archivos y de
 ## Puntos debiles actuales
 
 - La sesion del frontend se guarda en `localStorage`. Para produccion seria mejor usar una estrategia mas robusta, por ejemplo cookies seguras o renovacion controlada de tokens.
-- La autenticacion ya vive en Firebase Authentication; Firestore no debe volver a guardar contrasenas.
+- La autenticacion ya vive en Firebase Authentication; Firestore no debe volver a guardar contraseñas.
 - La API ya permite comprar desde mercado y vender desde cartera.
-- La API permite anadir fondos, quitar fondos, reiniciar cartera y borrar cuenta desde Configuracion.
+- La API permite añadir fondos, quitar fondos, reiniciar cartera y borrar cuenta desde Configuracion.
 - No hay cache de historicos de mercado.
 - No hay cache de calculo de ganancias.
 - No hay tests automatizados todavia.
-- `Chart.js` sube el tamano del bundle y Angular avisa de presupuesto.
-- El tema oscuro esta implementado con variables CSS y overrides globales; si se crean nuevos componentes, deben usar esas variables o anadir sus propios estados de tema.
+- `Chart.js` sube el tamaño del bundle y Angular avisa de presupuesto.
+- El tema oscuro esta implementado con variables CSS y overrides globales; si se crean nuevos componentes, deben usar esas variables o añadir sus propios estados de tema.
 - Si Yahoo Finance no reconoce un ticker, no hay grafica para ese activo.
 - El frontend depende de que backend este encendido en `127.0.0.1:8000`.
+- El asistente depende de que el workflow publicado de n8n Cloud este activo.
+- La URL del workflow de n8n Cloud esta hardcodeada en `ChatService`.
 - Si no hay historial de compras, las ganancias totales usan una estimacion basada en saldo inicial de 1000 $.
 - El valor actual mostrado y el importe vendido pueden diferir si el precio cambia entre la carga de la grafica y la ejecucion de la venta.
-- Reiniciar cartera es destructivo para las posiciones abiertas. El frontend exige `REINICIAR`, pero la proteccion real esta en backend: token valido y contrasena correcta.
-- Borrar cuenta es irreversible. El frontend exige escribir `BORRAR`, pero la proteccion real esta en backend: token valido y contrasena correcta.
+- Reiniciar cartera es destructivo para las posiciones abiertas. El frontend exige `REINICIAR`, pero la proteccion real esta en backend: token valido y contraseña correcta.
+- Borrar cuenta es irreversible. El frontend exige escribir `BORRAR`, pero la proteccion real esta en backend: token valido y contraseña correcta.
 
 ## Preguntas tipicas cubiertas
 
@@ -335,7 +339,7 @@ Son rangos de tiempo:
 
 - `1d`: un dia
 - `1w`: una semana de mercado
-- `1y`: un ano
+- `1y`: un año
 
 ### Donde se cambia la URL del backend
 
@@ -372,7 +376,7 @@ Firestore -> usuarios/{uid}.settings.theme
 
 `localStorage` permite aplicar el tema al recargar. Firestore permite recuperar la preferencia del perfil cuando el backend responde.
 
-### Por que anadir fondos esta en Configuracion
+### Por que añadir fondos esta en Configuracion
 
 Porque no es una operacion de mercado sobre un activo, sino una operacion de cuenta. Por eso vive junto a preferencias y acciones sensibles como borrar cuenta.
 
@@ -384,18 +388,18 @@ Por el mismo motivo: quitar fondos modifica el saldo de la cuenta, no compra ni 
 
 Porque afectan al saldo de la cuenta y conviene que el usuario tenga trazabilidad. El backend registra `RETIRADA` en Firestore y el frontend la transforma en una notificacion legible.
 
-### Por que reiniciar cartera pide REINICIAR y contrasena
+### Por que reiniciar cartera pide REINICIAR y contraseña
 
 Porque elimina las posiciones actuales y devuelve el saldo a 1000 $. Es una accion sensible, asi que se usan dos barreras:
 
 - confirmacion textual exacta `REINICIAR`
-- verificacion de contrasena contra Firebase Authentication en backend
+- verificacion de contraseña contra Firebase Authentication en backend
 
 ### Por que borrar cuenta pide escribir BORRAR
 
 Porque es una accion destructiva. El boton queda deshabilitado hasta que el usuario escribe la palabra exacta, reduciendo clics accidentales.
 
-Ademas, el backend vuelve a verificar la contrasena antes de borrar. La palabra `BORRAR` por si sola no basta.
+Ademas, el backend vuelve a verificar la contraseña antes de borrar. La palabra `BORRAR` por si sola no basta.
 
 ### Por que Cartera muestra Apple o Bitcoin en vez de AAPL
 
@@ -420,3 +424,11 @@ Porque las unidades de distintos activos no son comparables entre si. El porcent
 ### Por que el sidebar usa una variable CSS para el fondo
 
 Porque permite cambiar la imagen por tema sin duplicar HTML. El tema claro usa `LogoSimtradeFondoAzul.png` y el oscuro `LogoSimtradeFondoBlanco.png`.
+
+### Por que Ayuda no esta en el sidebar
+
+Porque no es una operacion principal del simulador como Cartera o Mercado, sino una utilidad transversal. Por eso vive en la cabecera como boton `?`, junto al perfil.
+
+### Por que el chat no responde preguntas generales
+
+Porque el objetivo del asistente es la atencion al cliente del proyecto. El workflow de n8n usa un mensaje de sistema que limita sus respuestas a dudas sobre SIMTRADE.
