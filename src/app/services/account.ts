@@ -94,7 +94,7 @@ export interface SettleBondsResponse {
 })
 export class AccountService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://127.0.0.1:8000';
+  private readonly apiUrl = 'https://simtrade-backend-cddh.onrender.com';
 
   getSettings(token: string): Observable<SettingsResponse> {
     return this.http.get<SettingsResponse>(`${this.apiUrl}/users/me/settings`, this.authOptions(token));

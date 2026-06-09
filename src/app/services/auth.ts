@@ -36,7 +36,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly themeService = inject(ThemeService);
-  private readonly apiUrl = 'http://127.0.0.1:8000';
+  private readonly apiUrl = 'https://simtrade-backend-cddh.onrender.com';
   private readonly userState = signal<AuthUser | null>(this.readStoredUser());
   private readonly tokenState = signal<string | null>(this.readStoredToken());
 

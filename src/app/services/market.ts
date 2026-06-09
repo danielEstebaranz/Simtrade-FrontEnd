@@ -116,7 +116,7 @@ export interface MarketAssetsResponse {
 })
 export class MarketService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://127.0.0.1:8000';
+  private readonly apiUrl = 'https://simtrade-backend-cddh.onrender.com';
 
   getTrend(ticker: string, range: TrendRange): Observable<TrendResponse> {
     const params = new HttpParams().set('range', range);
