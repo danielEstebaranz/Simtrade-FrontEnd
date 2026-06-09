@@ -52,7 +52,7 @@ export class AyudaSection {
         'Desde Cartera puedes elegir una posicion abierta y vender un porcentaje de tus participaciones. La operacion quedara registrada en tu historial.',
     },
     {
-      question: 'Como anado fondos?',
+      question: 'Como añado fondos?',
       answer:
         'Ve a Configuracion, abre la seccion Fondos y usa la opcion Añadir fondos. Puedes introducir una cantidad manualmente o elegir una cantidad rapida.',
     },
